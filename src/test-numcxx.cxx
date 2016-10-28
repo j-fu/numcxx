@@ -3,6 +3,7 @@
 #include <ctime>
 #include <cmath>
 #include "numcxx.hxx"
+int test_numcxx2(void);
 
 void speedtest(int n)
 {
@@ -39,6 +40,7 @@ int main (int argc, const char *argv[])
 {
     const int N=4;
 
+
     auto A=numcxx::DArray1::create({3,4,5});
     auto B=A->clone();
     auto C=A->clone();
@@ -53,7 +55,7 @@ int main (int argc, const char *argv[])
     std::cout << "C:\n"<<C<< std::endl;
 
 
-    auto M=numcxx::DArray2::create(
+    auto M=numcxx::DMatrix::create(
         {
             {3,4,7},
             {5,6,-1},
@@ -69,8 +71,8 @@ int main (int argc, const char *argv[])
     auto c=M->apply(b);
     
     std::cout<< "c:\n"<< c << std::endl;
-
     
+    std::cout<< test_numcxx2() << std::endl;
     speedtest(2000000);
 }
 
