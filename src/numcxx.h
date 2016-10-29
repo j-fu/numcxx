@@ -41,7 +41,6 @@ namespace numcxx
         virtual ~TArrayBase() {}
     };
     
-
     template<typename T> class TArray: public TArrayBase
     {
     public:
@@ -117,7 +116,6 @@ namespace numcxx
         TArray1(index n0, T*aliendata, std::shared_ptr<TArrayBase> base);
         TArray1(const std::initializer_list<T> &il );
         static std::shared_ptr<TArray1 <T> > create(index n1);
-
         static std::shared_ptr<TArray1 <T> > create(const std::initializer_list<T> il);
 
         std::shared_ptr<TArray1 <T> > copy() const;
@@ -172,10 +170,7 @@ namespace numcxx
 
 
         friend std::ostream & operator<< <T>(std::ostream & s, TArray2<T> &A);
-        
 
-        void fill_from_initializer_list(const  std::initializer_list<std::initializer_list<T>> &il);
-        
     protected:
         using TArray<T>::data;
         using TArray<T>::idx;
@@ -420,7 +415,7 @@ namespace numcxx
     template <typename T> 
     inline std::shared_ptr<TArray1 <T> > TArray1<T>::create(index n1)
     {
-        return std::shared_ptr<TArray1 <T> >(new TArray1<T>(n1));
+        return std::make_shared<TArray1 <T> >(n1);
     }
     
     template<typename T> 
@@ -433,10 +428,7 @@ namespace numcxx
     template<typename T>
     inline std::shared_ptr<TArray1 <T> > TArray1<T>::create(const std::initializer_list<T> il)
     {
-        auto A=new TArray1<T>(il.size());
-        index i=0;
-        for (auto x = il.begin() ; x != il.end(); x++,i++) A->data[i]= *x;
-        return std::shared_ptr<TArray1<T>> (A);
+        return std::make_shared<TArray1 <T> >(il);
     }
     
     template <typename T> 
@@ -505,7 +497,7 @@ namespace numcxx
     template <typename T> 
     inline std::shared_ptr<TArray2 <T> > TArray2<T>::create(index n0,index n1)
     {
-        return std::shared_ptr<TArray2 <T> >(new TArray2(n0,n1));
+        return std::make_shared<TArray2 <T> >(n0,n1);
     }
     
     
@@ -553,24 +545,11 @@ namespace numcxx
         }
     }
     
-    template <typename T> 
-    inline void TArray2<T>::fill_from_initializer_list(const  std::initializer_list<std::initializer_list<T>> &il)
-    {
-        index i=0;
-        for (auto jl = il.begin() ; jl != il.end(); jl++,i++)
-        {
-            index j=0;
-            for (auto x = jl->begin() ; x != jl->end(); x++,j++) 
-                data[idx(i,j)]= *x;
-        }
-    }
 
     template <typename T> 
     inline std::shared_ptr<TArray2 <T> > TArray2<T>::create(const  std::initializer_list<std::initializer_list<T>> &il)
     {
-        auto A=new TArray2<T>(il.size(),il.begin()->size());
-        A->fill_from_initializer_list(il);
-        return std::shared_ptr<TArray2<T>> (A);
+        return std::make_shared<TArray2<T>> (il);
     }
         
 
@@ -628,16 +607,13 @@ namespace numcxx
     template <typename T> 
     inline std::shared_ptr<TMatrix <T> > TMatrix<T>::create(index n0,index n1)
     {
-        auto A=new TMatrix<T>(n0,n1);
-        return std::shared_ptr<TMatrix<T>> (A);
+        return std::make_shared<TMatrix<T>> (n0,n1);
     }
 
     template <typename T> 
     inline  std::shared_ptr<TMatrix <T> > TMatrix<T>::create(const  std::initializer_list<std::initializer_list<T>> &il)
     {
-        auto A=new TMatrix<T>(il.size(),il.begin()->size());
-        A->fill_from_initializer_list(il);
-        return std::shared_ptr<TMatrix<T>> (A);
+        return std::make_shared<TMatrix<T>> (il);
     }
 
     template <typename T> 

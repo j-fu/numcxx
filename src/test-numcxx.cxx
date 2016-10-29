@@ -42,6 +42,7 @@ int main (int argc, const char *argv[])
 
 
     auto A=numcxx::DArray1::create({3,4,5});
+
     auto B=A->clone();
     auto C=A->clone();
     B->fill([](double x) -> double { return std::sin(x); },*A);
