@@ -4,7 +4,7 @@
 %{
 #define SWIG_FILE_WITH_INIT
 #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
-#include "numcxx.hxx"
+#include "numcxx.h"
   namespace numcxx
   {
     class NumpyProxy: public TArrayBase
@@ -15,22 +15,22 @@
       ~NumpyProxy() {Py_DECREF(o);};
     };
 
-    numcxx::array_ptr<DArray1 > NumpyAsDArray1(PyObject *o,double* v, int n1)
+    std::shared_ptr<DArray1 > NumpyAsDArray1(PyObject *o,double* v, int n1)
       {
           auto proxy=std::shared_ptr<TArrayBase>(new NumpyProxy(o));
-          return numcxx::array_ptr<DArray1 >(new DArray1 (n1,v,proxy));
+          return std::shared_ptr<DArray1 >(new DArray1 (n1,v,proxy));
       }
-    numcxx::array_ptr<DArray2 > NumpyAsDArray2(PyObject *o,double* v, int n1, int n2)
+    std::shared_ptr<DArray2 > NumpyAsDArray2(PyObject *o,double* v, int n1, int n2)
       {
-          return numcxx::array_ptr<DArray2>(new DArray2 (n1, n2, v,std::shared_ptr<TArrayBase>(new NumpyProxy(o))));
+          return std::shared_ptr<DArray2>(new DArray2 (n1, n2, v,std::shared_ptr<TArrayBase>(new NumpyProxy(o))));
       }
 
-    void DArray1AsNumpy(numcxx::array_ptr<DArray1 > a,PyObject *o,double** ARGOUTVIEW_ARRAY1, int* DIM1)
+    void DArray1AsNumpy(std::shared_ptr<DArray1 > a,PyObject *o,double** ARGOUTVIEW_ARRAY1, int* DIM1)
     {
         *DIM1=a->size;
         *ARGOUTVIEW_ARRAY1=a->rawdata();
     }
-    void DArray2AsNumpy(numcxx::array_ptr<DArray2 > a,PyObject *o,double** ARGOUTVIEW_ARRAY2, int* DIM1,int* DIM2)
+    void DArray2AsNumpy(std::shared_ptr<DArray2 > a,PyObject *o,double** ARGOUTVIEW_ARRAY2, int* DIM1,int* DIM2)
     {
         *DIM1=a->shape[0];
         *DIM2=a->shape[1];
@@ -211,7 +211,7 @@
 /* //    aptr(){}; */
 /* }; */
 
-template<class A> struct array_ptr
+template<class A> struct std::shared_ptr
 {
     A* operator->() const;
 };
@@ -230,11 +230,11 @@ namespace numcxx
         void fill(double x);
         std::vector<index> shape;
         
-        static numcxx::array_ptr<DArray1> create(index n0);
+        static std::shared_ptr<DArray1> create(index n0);
         double item(index i0);
         void itemset(index i0, double x);
         
-        numcxx::array_ptr<DArray1> copy();
+        std::shared_ptr<DArray1> copy();
         double __getitem__(index i) const;
         void __setitem__(index i,double);
     };
@@ -247,26 +247,26 @@ namespace numcxx
         void fill(double x);
         std::vector<index> shape;
         
-        static numcxx::array_ptr<DArray2> create(index n0, index n1);
+        static std::shared_ptr<DArray2> create(index n0, index n1);
         double item(index i0,index i1);
         void itemset(index i0,index i1, double x);
         
-        numcxx::array_ptr<DArray2> copy();
-        numcxx::array_ptr<DArray1>   __getitem__(int i);
+        std::shared_ptr<DArray2> copy();
+        std::shared_ptr<DArray1>   __getitem__(int i);
     };
     
     
-    numcxx::array_ptr<DArray1> NumpyAsDArray1(PyObject *O, double* INPLACE_ARRAY1, int DIM1);
-    numcxx::array_ptr<DArray2> NumpyAsDArray2(PyObject *O, double* INPLACE_ARRAY2, int DIM1, int DIM2);
+    std::shared_ptr<DArray1> NumpyAsDArray1(PyObject *O, double* INPLACE_ARRAY1, int DIM1);
+    std::shared_ptr<DArray2> NumpyAsDArray2(PyObject *O, double* INPLACE_ARRAY2, int DIM1, int DIM2);
     
-    void DArray1AsNumpy(numcxx::array_ptr<DArray1> a,PyObject *O,double** ARGOUTVIEW_ARRAY1, int* DIM1);
-    void DArray2AsNumpy(numcxx::array_ptr<DArray2> a,PyObject *O,double** ARGOUTVIEW_ARRAY2, int* DIM1,  int* DIM2);
+    void DArray1AsNumpy(std::shared_ptr<DArray1> a,PyObject *O,double** ARGOUTVIEW_ARRAY1, int* DIM1);
+    void DArray2AsNumpy(std::shared_ptr<DArray2> a,PyObject *O,double** ARGOUTVIEW_ARRAY2, int* DIM1,  int* DIM2);
     
     
 }
 
-%template(array_ptrDArray1) numcxx::array_ptr<numcxx::DArray1 >;
-%template(array_ptrDArray2) numcxx::array_ptr<numcxx::DArray2 >;
+%template(shared_ptrDArray1) std::shared_ptr<numcxx::DArray1 >;
+%template(shared_ptrDArray2) std::shared_ptr<numcxx::DArray2 >;
 // for shape etc.
 %template(vectoru) std::vector<unsigned int>;
 

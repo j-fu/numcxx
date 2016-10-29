@@ -33,20 +33,7 @@
 namespace numcxx
 {
     using index= unsigned int;
-
-
-    template <class A> class array_ptr: public std::shared_ptr <A>
-    {
-        A& a() const {return *(std::shared_ptr<A>::get());}
-    public:
-        array_ptr(A *a):       std::shared_ptr<A>(a)    {};
-        typename A::base_type & operator()(index i0) {return a()(i0);};
-        typename A::base_type & operator()(index i0, index  i1) {return a()(i0,i1);};
-        operator  A&()  const { return  a(); }
-        array_ptr(){};
-    };
-
-
+    
     class TArrayBase 
     {
     public:
@@ -54,7 +41,6 @@ namespace numcxx
         virtual ~TArrayBase() {}
     };
     
-
 
     template<typename T> class TArray: public TArrayBase
     {
@@ -115,8 +101,6 @@ namespace numcxx
     template<typename T>
     class TArray1;
 
-    template<typename T>
-    inline std::ostream & operator << (std::ostream & s, const array_ptr<TArray1<T>>&A);
 
     template<typename T>
     inline std::ostream & operator << (std::ostream & s, TArray1<T> &A);
@@ -131,14 +115,13 @@ namespace numcxx
         TArray1(index n0);
         TArray1(index n0, T*aliendata);
         TArray1(index n0, T*aliendata, std::shared_ptr<TArrayBase> base);
-        static array_ptr<TArray1 <T> > create(index n1);
-
         TArray1(const std::initializer_list<T> &il );
+        static std::shared_ptr<TArray1 <T> > create(index n1);
 
-        static array_ptr<TArray1 <T> > create(const std::initializer_list<T> il);
+        static std::shared_ptr<TArray1 <T> > create(const std::initializer_list<T> il);
 
-        array_ptr<TArray1 <T> > copy() const;
-        array_ptr<TArray1 <T> > clone() const;
+        std::shared_ptr<TArray1 <T> > copy() const;
+        std::shared_ptr<TArray1 <T> > clone() const;
 
         T & operator[](index i0);
 
@@ -147,8 +130,6 @@ namespace numcxx
 
         T __getitem__(index i) const;
         void __setitem__(index i,T d);
-
-        friend std::ostream & operator<< <T>(std::ostream & s, const array_ptr<TArray1<T>>&A);
 
         friend std::ostream & operator<< <T>(std::ostream & s, TArray1<T> &A);
 
@@ -165,8 +146,6 @@ namespace numcxx
     class TArray2;
 
     template<typename T>
-    inline std::ostream & operator << (std::ostream & s, const array_ptr<TArray2<T>>&A);
-    template<typename T>
     inline std::ostream & operator << (std::ostream & s, TArray2<T> &A);
 
     template<typename T> 
@@ -181,17 +160,15 @@ namespace numcxx
         TArray2(index n0, index n1, T*aliendata);
         TArray2(index n0,index n1, T*aliendata, std::shared_ptr<TArrayBase> base);
         TArray2(const  std::initializer_list<std::initializer_list<T>> &il );
-        static array_ptr<TArray2 <T> > create(index n0,index n1);
-        static array_ptr<TArray2 <T> > create(const  std::initializer_list<std::initializer_list<T>> &il);
-        array_ptr<TArray2 <T> > copy() const;
-        array_ptr<TArray2 <T> > clone() const;
+        static std::shared_ptr<TArray2 <T> > create(index n0,index n1);
+        static std::shared_ptr<TArray2 <T> > create(const  std::initializer_list<std::initializer_list<T>> &il);
+        std::shared_ptr<TArray2 <T> > copy() const;
+        std::shared_ptr<TArray2 <T> > clone() const;
 
         T * operator[](index i0);
         T item(index i0,index i1);
         void itemset(index i0, index i1, T x);
-        array_ptr<TArray1 <T> > const __getitem__(index i0);
-
-        friend std::ostream & operator<< <T>(std::ostream & s, const array_ptr<TArray2<T>>&A);
+        std::shared_ptr<TArray1 <T> > const __getitem__(index i0);
 
 
         friend std::ostream & operator<< <T>(std::ostream & s, TArray2<T> &A);
@@ -217,10 +194,10 @@ namespace numcxx
         TMatrix(index n0, index n1, T*aliendata);
         TMatrix(index n0,index n1, T*aliendata, std::shared_ptr<TArrayBase> base);
         TMatrix(const  std::initializer_list<std::initializer_list<T>> &il );
-        static array_ptr<TMatrix <T> > create(index n0,index n1);
-        static array_ptr<TMatrix <T> > create(const  std::initializer_list<std::initializer_list<T>> &il);
-        array_ptr<TMatrix <T> > copy() const;
-        array_ptr<TMatrix <T> > clone() const;
+        static std::shared_ptr<TMatrix <T> > create(index n0,index n1);
+        static std::shared_ptr<TMatrix <T> > create(const  std::initializer_list<std::initializer_list<T>> &il);
+        std::shared_ptr<TMatrix <T> > copy() const;
+        std::shared_ptr<TMatrix <T> > clone() const;
 
         static void lu_decomp(TMatrix<T> &lu, TArray1<int> &ipiv); 
         static void lu_solve(TMatrix<T> &lu, TArray1<int> &ipiv,TArray1<T> &sol, const TArray1<T> &rhs);
@@ -228,15 +205,15 @@ namespace numcxx
         void apply(const TArray1<T> &u, TArray1<T> &v);
 
         static void inverse(TMatrix<T> &lu, TArray1<int> &ipiv, TMatrix<T>& inverse);
-        static void inverse(TMatrix<T>& inverse) const;
+        void inverse(TMatrix<T>& inverse) const;
 
-        std::tuple<array_ptr<TMatrix<T>>, array_ptr<TArray1<int>>> lu_decomp() const;
-        static array_ptr<TArray1<T>> lu_solve(TMatrix<T> &lu, TArray1<int> &ipiv,const TArray1<T> &rhs);
-        array_ptr<TArray1<T>> solve(const TArray1<T> &rhs) const;
-        array_ptr<TArray1<T>> apply(const TArray1<T> &u);
+        std::tuple<std::shared_ptr<TMatrix<T>>, std::shared_ptr<TArray1<int>>> lu_decomp() const;
+        static std::shared_ptr<TArray1<T>> lu_solve(TMatrix<T> &lu, TArray1<int> &ipiv,const TArray1<T> &rhs);
+        std::shared_ptr<TArray1<T>> solve(const TArray1<T> &rhs) const;
+        std::shared_ptr<TArray1<T>> apply(const TArray1<T> &u);
 
-        static array_ptr<TMatrix<T>> inverse(const TMatrix<T> &lu, const TArray1<int> &ipiv);
-        array_ptr<TMatrix<T>> inverse() const;
+        static std::shared_ptr<TMatrix<T>> inverse(const TMatrix<T> &lu, const TArray1<int> &ipiv);
+        std::shared_ptr<TMatrix<T>> inverse() const;
         
         
 
@@ -439,10 +416,11 @@ namespace numcxx
     inline TArray1<T>::TArray1(index n0, T*aliendata, std::shared_ptr<TArrayBase> base):
         TArray<T>(n0,aliendata,base){}; 
     
+
     template <typename T> 
-    inline array_ptr<TArray1 <T> > TArray1<T>::create(index n1)
+    inline std::shared_ptr<TArray1 <T> > TArray1<T>::create(index n1)
     {
-        return array_ptr<TArray1 <T> >(new TArray1<T>(n1));
+        return std::shared_ptr<TArray1 <T> >(new TArray1<T>(n1));
     }
     
     template<typename T> 
@@ -453,12 +431,12 @@ namespace numcxx
     }
     
     template<typename T>
-    inline array_ptr<TArray1 <T> > TArray1<T>::create(const std::initializer_list<T> il)
+    inline std::shared_ptr<TArray1 <T> > TArray1<T>::create(const std::initializer_list<T> il)
     {
         auto A=new TArray1<T>(il.size());
         index i=0;
         for (auto x = il.begin() ; x != il.end(); x++,i++) A->data[i]= *x;
-        return array_ptr<TArray1<T>> (A);
+        return std::shared_ptr<TArray1<T>> (A);
     }
     
     template <typename T> 
@@ -471,7 +449,7 @@ namespace numcxx
     inline void TArray1<T>::itemset(index i0, T x) { data[idx(i0)]=x;};
 
     template <typename T> 
-    inline array_ptr<TArray1 <T> > TArray1<T>::copy() const
+    inline std::shared_ptr<TArray1 <T> > TArray1<T>::copy() const
     {
         auto x=create(shape[0]);
         for (index i=0;i<size;i++) x->data[i]=data[i];
@@ -479,7 +457,7 @@ namespace numcxx
     }
 
     template <typename T> 
-    inline array_ptr<TArray1 <T> > TArray1<T>::clone() const
+    inline std::shared_ptr<TArray1 <T> > TArray1<T>::clone() const
     {
         return create(shape[0]);
     }
@@ -491,7 +469,7 @@ namespace numcxx
     inline void TArray1<T>::__setitem__(index i,T d) { data[idx(i)]=d; } 
 
     template<typename T> 
-    inline std::ostream & operator << (std::ostream & s, const array_ptr<TArray1<T>>&A)
+    inline std::ostream & operator << (std::ostream & s, const std::shared_ptr<TArray1<T>>&A)
     {
         return operator<<(s,*A);
     }
@@ -525,9 +503,9 @@ namespace numcxx
         TArray<T>(n0,n1,aliendata,base) {}
     
     template <typename T> 
-    inline array_ptr<TArray2 <T> > TArray2<T>::create(index n0,index n1)
+    inline std::shared_ptr<TArray2 <T> > TArray2<T>::create(index n0,index n1)
     {
-        return array_ptr<TArray2 <T> >(new TArray2(n0,n1));
+        return std::shared_ptr<TArray2 <T> >(new TArray2(n0,n1));
     }
     
     
@@ -541,7 +519,7 @@ namespace numcxx
     inline void TArray2<T>::itemset(index i0, index i1, T x) { data[idx(i0,i1)]=x;};
 
     template <typename T> 
-    inline array_ptr<TArray2 <T> > TArray2<T>::copy() const
+    inline std::shared_ptr<TArray2 <T> > TArray2<T>::copy() const
     {
         auto x=create(shape[0],shape[1]);
         for (index i=0;i<size;i++) x->data[i]=data[i];
@@ -549,15 +527,15 @@ namespace numcxx
     }
 
     template <typename T> 
-    inline array_ptr<TArray2 <T> > TArray2<T>::clone() const
+    inline std::shared_ptr<TArray2 <T> > TArray2<T>::clone() const
     {
         return create(shape[0],shape[1]);
     }
 
     template <typename T> 
-    inline array_ptr<TArray1 <T> > const TArray2<T>::__getitem__(index i0) 
+    inline std::shared_ptr<TArray1 <T> > const TArray2<T>::__getitem__(index i0) 
     { 
-        return array_ptr<TArray1<T>>(new TArray1<T>(shape[1], &data[idx(i0,0)]));
+        return std::shared_ptr<TArray1<T>>(new TArray1<T>(shape[1], &data[idx(i0,0)]));
     } 
 
 
@@ -588,11 +566,11 @@ namespace numcxx
     }
 
     template <typename T> 
-    inline array_ptr<TArray2 <T> > TArray2<T>::create(const  std::initializer_list<std::initializer_list<T>> &il)
+    inline std::shared_ptr<TArray2 <T> > TArray2<T>::create(const  std::initializer_list<std::initializer_list<T>> &il)
     {
         auto A=new TArray2<T>(il.size(),il.begin()->size());
         A->fill_from_initializer_list(il);
-        return array_ptr<TArray2<T>> (A);
+        return std::shared_ptr<TArray2<T>> (A);
     }
         
 
@@ -617,7 +595,7 @@ namespace numcxx
     }
     
     template <typename T> 
-    inline std::ostream & operator << (std::ostream & s, const array_ptr<TArray2<T>>&A)
+    inline std::ostream & operator << (std::ostream & s, const std::shared_ptr<TArray2<T>>&A)
     {
         return operator<<(s,*A);
     }
@@ -648,22 +626,22 @@ namespace numcxx
     inline TMatrix<T>::TMatrix(const  std::initializer_list<std::initializer_list<T>> &il ): TArray2<T>(il){};
 
     template <typename T> 
-    inline array_ptr<TMatrix <T> > TMatrix<T>::create(index n0,index n1)
+    inline std::shared_ptr<TMatrix <T> > TMatrix<T>::create(index n0,index n1)
     {
         auto A=new TMatrix<T>(n0,n1);
-        return array_ptr<TMatrix<T>> (A);
+        return std::shared_ptr<TMatrix<T>> (A);
     }
 
     template <typename T> 
-    inline  array_ptr<TMatrix <T> > TMatrix<T>::create(const  std::initializer_list<std::initializer_list<T>> &il)
+    inline  std::shared_ptr<TMatrix <T> > TMatrix<T>::create(const  std::initializer_list<std::initializer_list<T>> &il)
     {
         auto A=new TMatrix<T>(il.size(),il.begin()->size());
         A->fill_from_initializer_list(il);
-        return array_ptr<TMatrix<T>> (A);
+        return std::shared_ptr<TMatrix<T>> (A);
     }
 
     template <typename T> 
-    inline  array_ptr<TMatrix <T> > TMatrix<T>::copy() const
+    inline  std::shared_ptr<TMatrix <T> > TMatrix<T>::copy() const
     {
         auto x=create(shape[0],shape[1]);
         for (index i=0;i<size;i++) x->data[i]=data[i];
@@ -671,7 +649,7 @@ namespace numcxx
     }
 
     template <typename T> 
-    inline   array_ptr<TMatrix <T> > TMatrix<T>::clone() const
+    inline   std::shared_ptr<TMatrix <T> > TMatrix<T>::clone() const
     { 
         return create(shape[0],shape[1]);
     } 
@@ -690,7 +668,7 @@ namespace numcxx
     }
     
     template <typename T> 
-    inline   std::tuple<array_ptr<TMatrix<T>>, array_ptr<TArray1<int>>> TMatrix<T>::lu_decomp() const
+    inline   std::tuple<std::shared_ptr<TMatrix<T>>, std::shared_ptr<TArray1<int>>> TMatrix<T>::lu_decomp() const
     {
         assert(shape[0]==shape[1]);
         auto lu=this->copy();
@@ -700,10 +678,10 @@ namespace numcxx
     }
 
     template <typename T> 
-    inline   array_ptr<TArray1<T>> TMatrix<T>::lu_solve(TMatrix<T> &lu, TArray1<int> &ipiv,const TArray1<T> &rhs)
+    inline   std::shared_ptr<TArray1<T>> TMatrix<T>::lu_solve(TMatrix<T> &lu, TArray1<int> &ipiv,const TArray1<T> &rhs)
     {
         auto sol=rhs.clone();
-        lu_solve(lu,ipiv,sol,rhs);
+        lu_solve(lu,ipiv,*sol,rhs);
         return sol;
     }
 
@@ -724,17 +702,17 @@ namespace numcxx
     template <typename T> 
     inline   void TMatrix<T>::solve(TArray1<T> &sol, const TArray1<T> &rhs) const
         {
-            array_ptr< TMatrix<T> > lu;
-            array_ptr< TArray1<int> > ipiv;
+            std::shared_ptr< TMatrix<T> > lu;
+            std::shared_ptr< TArray1<int> > ipiv;
             std::tie(lu,ipiv)=lu_decomp();
-            lu_solve(lu,ipiv,sol,rhs);
+            lu_solve(*lu,*ipiv,sol,rhs);
         }
     
     template <typename T> 
-    inline   array_ptr<TArray1<T>> TMatrix<T>::solve(const TArray1<T> &rhs) const
+    inline   std::shared_ptr<TArray1<T>> TMatrix<T>::solve(const TArray1<T> &rhs) const
         {
             auto sol=rhs.clone();
-            solve(sol,rhs);
+            solve(*sol,rhs);
             return sol;
         }
     
@@ -763,7 +741,7 @@ namespace numcxx
         }
 
     template <typename T> 
-    inline   array_ptr<TArray1<T>> TMatrix<T>::apply(const TArray1<T> &u)
+    inline   std::shared_ptr<TArray1<T>> TMatrix<T>::apply(const TArray1<T> &u)
     {
         auto v=u.clone();
         apply(u,*v);

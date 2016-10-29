@@ -2,7 +2,7 @@
 #include <iostream>
 #include <ctime>
 #include <cmath>
-#include "numcxx.hxx"
+#include "numcxx.h"
 int test_numcxx2(void);
 
 void speedtest(int n)
@@ -44,9 +44,9 @@ int main (int argc, const char *argv[])
     auto A=numcxx::DArray1::create({3,4,5});
     auto B=A->clone();
     auto C=A->clone();
-    B->fill([](double x) -> double { return std::sin(x); },A);
+    B->fill([](double x) -> double { return std::sin(x); },*A);
     
-    numcxx::DArray1::operate([](double &a, double &b, double &c){c=2.0*a+b;},A,B,C);
+    numcxx::DArray1::operate([](double &a, double &b, double &c){c=2.0*a+b;},*A,*B,*C);
 
     std::cout << "A:\n"<<A << std::endl;
 
@@ -63,12 +63,12 @@ int main (int argc, const char *argv[])
         });
     std::cout << "M:\n"<<M<< std::endl;
     auto a=numcxx::DArray1::create({1,2,3});
-    auto b=M->solve(a);
+    auto b=M->solve(*a);
 
     std::cout<< "b:\n"<< b << std::endl;
 
 
-    auto c=M->apply(b);
+    auto c=M->apply(*b);
     
     std::cout<< "c:\n"<< c << std::endl;
     

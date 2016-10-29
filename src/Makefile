@@ -1,7 +1,7 @@
 CXX=g++-5
 CXX=g++
 CXX=clang++
-CXX=icpc
+#CXX=icpc
 
 PYTHON=python
 CXXFLAGS=-fPIC -O3  -DNUMCXX_CHECK_BOUNDS -std=c++11 `$(PYTHON) find_python_paths.py --includes`
@@ -19,16 +19,16 @@ SHLDFLAGS= -shared
 all: test-numcxx _numcxx.so
 
 
-numcxx.o:  numcxx.hxx
+numcxx.o:  numcxx.h
 numcxx.o:  numcxx.cxx
 
 
 numcxx_wrap.o: numcxx_wrap.cxx
 
-test-numcxx: test-numcxx.cxx numcxx.hxx test-numcxx2.o
+test-numcxx: test-numcxx.cxx numcxx.h test-numcxx2.o
 	$(CXX) $(CXXFLAGS) -o $@  $< test-numcxx2.o $(LALIBS)
 
-numcxx_wrap.cxx: numcxx.i numcxx.hxx
+numcxx_wrap.cxx: numcxx.i numcxx.h
 	swig  -c++ -python   numcxx.i 
 
 _numcxx.so: numcxx_wrap.o 
