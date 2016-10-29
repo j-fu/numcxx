@@ -227,10 +227,18 @@ namespace numcxx
         void solve(TArray1<T> &sol, const TArray1<T> &rhs) const;
         void apply(const TArray1<T> &u, TArray1<T> &v);
 
+        static void inverse(TMatrix<T> &lu, TArray1<int> &ipiv, TMatrix<T>& inverse);
+        static void inverse(TMatrix<T>& inverse) const;
+
         std::tuple<array_ptr<TMatrix<T>>, array_ptr<TArray1<int>>> lu_decomp() const;
         static array_ptr<TArray1<T>> lu_solve(TMatrix<T> &lu, TArray1<int> &ipiv,const TArray1<T> &rhs);
         array_ptr<TArray1<T>> solve(const TArray1<T> &rhs) const;
         array_ptr<TArray1<T>> apply(const TArray1<T> &u);
+
+        static array_ptr<TMatrix<T>> inverse(const TMatrix<T> &lu, const TArray1<int> &ipiv);
+        array_ptr<TMatrix<T>> inverse() const;
+        
+        
 
 
     private:
