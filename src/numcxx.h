@@ -28,6 +28,7 @@
 
 #include <cmath>
 #include <cassert>
+#include <cstdlib>
 
 
 namespace numcxx
@@ -40,6 +41,8 @@ namespace numcxx
         TArrayBase() {}
         virtual ~TArrayBase() {}
     };
+
+
     
     template<typename T> class TArray: public TArrayBase
     {
@@ -74,9 +77,9 @@ namespace numcxx
         typedef T base_type;
 
     private:
-        const bool owndata=true;
         std::shared_ptr<TArrayBase>base =0;
         void check_bounds(index acc_dim, index acc_ndim, index acc_idx) const;
+        const std::function<void(T*p)> deleter;
 
     protected:
         T* data=nullptr;
@@ -293,22 +296,22 @@ namespace numcxx
     }
     
     template <typename T> 
-    inline TArray<T>::TArray(index n0):
+        inline TArray<T>::TArray(index n0):
         ndim(1),
         shape{n0},
-        size(n0)
-        {
-            data=new T[size];
-        };
+        size(n0),
+        data((T*)malloc(sizeof(T)*size)),
+        deleter([](T*p){free(p);})
+        {};
     
     template <typename T> 
     inline TArray<T>::TArray(index n0, index n1):
         ndim(2),
         shape{n0,n1},
-        size(n0*n1)
-        {
-            data=new T[size];
-        };
+        size(n0*n1),
+        data((T*)malloc(sizeof(T)*size)),
+        deleter([](T*p){free(p);})
+        {};
     
     template <typename T> 
     inline TArray<T>::TArray(index n0, T*aliendata):
@@ -316,7 +319,8 @@ namespace numcxx
         ndim(1),
         shape{n0},
         size(n0),
-        owndata(false){};
+        deleter([](T*p){;})
+        {};
     
     template <typename T> 
     inline TArray<T>::TArray(index n0, T*aliendata,std::shared_ptr<TArrayBase> xbase):
@@ -328,8 +332,9 @@ namespace numcxx
         ndim(2),
         shape{n0,n1},
         size(n0*n1),
-        owndata(false){};
-    
+        deleter([](T*p){;})
+        {}
+
     template <typename T> 
     inline TArray<T>::TArray(index n0, index n1, T*aliendata,std::shared_ptr<TArrayBase> xbase):
         TArray(n0,n1,aliendata){base=xbase;};
@@ -337,11 +342,11 @@ namespace numcxx
     template <typename T> 
     inline TArray<T>::~TArray()
     {
-        if (owndata) delete[] data;
+       deleter(data);
     };
     
     template <typename T> 
-    inline TArray<T>::TArray():ndim(0),owndata(false){};   
+    inline TArray<T>::TArray():ndim(0),deleter([](T*p){;}){};   
     
 
     template <typename T> 

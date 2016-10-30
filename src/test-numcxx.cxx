@@ -55,7 +55,6 @@ int main (int argc, const char *argv[])
 
     std::cout << "C:\n"<<C<< std::endl;
 
-
     auto M=numcxx::DMatrix::create(
         {
             {3,4,7},
@@ -73,6 +72,7 @@ int main (int argc, const char *argv[])
     
     std::cout<< "c:\n"<< c << std::endl;
     
+ 
     std::cout<< test_numcxx2() << std::endl;
     speedtest(2000000);
 }

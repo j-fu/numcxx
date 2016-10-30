@@ -4,7 +4,7 @@ CXX=clang++
 #CXX=icpc
 
 PYTHON=python
-CXXFLAGS=-fPIC -O3  -DNUMCXX_CHECK_BOUNDS -std=c++11 `$(PYTHON) find_python_paths.py --includes`
+CXXFLAGS=-fPIC -O3 -g  -DNUMCXX_CHECK_BOUNDS -std=c++11 `$(PYTHON) find_python_paths.py --includes`
 PYTHONLIBS=`$(PYTHON) find_python_paths.py --libs`
 LALIBS=-llapack -lblas
 SHLDFLAGS= -shared 
@@ -21,6 +21,7 @@ all: test-numcxx _numcxx.so
 
 numcxx.o:  numcxx.h
 numcxx.o:  numcxx.cxx
+test-numcxx2.o:  numcxx.h
 
 
 numcxx_wrap.o: numcxx_wrap.cxx
