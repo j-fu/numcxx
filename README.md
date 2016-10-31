@@ -16,3 +16,8 @@ marray
 eigen
 armadillo
 numcpp
+
+
+   pybind11? Young project.
+   https://community.lsst.org/t/using-pybind11-instead-of-swig-to-wrap-c-code/1096
+   http://eli.thegreenplace.net/2015/memory-layout-of-multi-dimensional-arrays/  

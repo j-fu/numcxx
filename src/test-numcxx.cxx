@@ -2,7 +2,7 @@
 #include <iostream>
 #include <ctime>
 #include <cmath>
-#include "numcxx.h"
+#include "numcxx/numcxx.hxx"
 int test_numcxx2(void);
 
 void speedtest(int n)

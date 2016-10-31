@@ -11,7 +11,7 @@ a.itemset(3,5.0)
 
 print(a.item(3))
 print(a[3])
-print(a.shape[0])
+print(a.shape(0))
 
 
 npa=numcxx.DArray1AsNumpy(a)
@@ -39,7 +39,7 @@ for i in range(4):
     for j in range(5):
         a2[i][j]=10*i+j
 
-print(a2.shape[0],a2.shape[1])
+print(a2.shape(0),a2.shape(1))
 
 
 a2x=numcxx.asnumpy(a2)

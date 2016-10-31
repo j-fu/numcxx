@@ -4,7 +4,7 @@
 %{
 #define SWIG_FILE_WITH_INIT
 #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
-#include "numcxx.h"
+#include "numcxx/numcxx.hxx"
     namespace numcxx
     {
         class NumpyProxy
@@ -33,8 +33,8 @@
         }
         void DArray2AsNumpy(std::shared_ptr<DArray2 > a,PyObject *o,double** ARGOUTVIEW_ARRAY2, int* DIM1,int* DIM2)
         {
-            *DIM1=a->shape[0];
-            *DIM2=a->shape[1];
+            *DIM1=a->shape(0);
+            *DIM2=a->shape(1);
             *ARGOUTVIEW_ARRAY2=a->data();
         }
     }
@@ -229,7 +229,7 @@ namespace numcxx
         const index ndim();
         index size();
         void fill(double x);
-        std::vector<index> shape;
+        int shape(int idim);
         
         static std::shared_ptr<DArray1> create(index n0);
         double item(index i0);
@@ -246,7 +246,7 @@ namespace numcxx
         const index ndim();
         index size();
         void fill(double x);
-        std::vector<index> shape;
+        int shape(int idim);
         
         static std::shared_ptr<DArray2> create(index n0, index n1);
         double item(index i0,index i1);
@@ -268,8 +268,8 @@ namespace numcxx
 
 %template(shared_ptrDArray1) std::shared_ptr<numcxx::DArray1 >;
 %template(shared_ptrDArray2) std::shared_ptr<numcxx::DArray2 >;
-// for shape etc.
-%template(vectoru) std::vector<unsigned int>;
+
+
 
 %pythoncode{
 from  numpy import ndarray,array,float64
@@ -290,9 +290,9 @@ def asnumcxx(proto):
 
 
 def asnumpy(a):
-    if a.ndim==1:
+    if a.ndim()==1:
         return DArray1AsNumpy(a)
-    elif a.ndim==2:
+    elif a.ndim()==2:
         return DArray2AsNumpy(a)
 
     raise RuntimeError("asnumpy: error")

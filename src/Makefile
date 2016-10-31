@@ -2,9 +2,10 @@ CXX=g++-5
 CXX=g++
 CXX=clang++
 #CXX=icpc
+NUMCXX=numcxx
 
 PYTHON=python
-CXXFLAGS=-fPIC -O3 -g  -DNUMCXX_CHECK_BOUNDS -std=c++11 `$(PYTHON) find_python_paths.py --includes`
+CXXFLAGS=-fPIC -O3 -g  -DNUMCXX_CHECK_BOUNDS -std=c++11 `$(PYTHON) $(NUMCXX)/find_python_paths.py --includes`
 PYTHONLIBS=`$(PYTHON) find_python_paths.py --libs`
 LALIBS=-llapack -lblas
 SHLDFLAGS= -shared 
@@ -19,20 +20,21 @@ SHLDFLAGS= -shared
 all: test-numcxx _numcxx.so
 
 
-numcxx.o:  numcxx.h
-numcxx.o:  numcxx.cxx
-test-numcxx2.o:  numcxx.h
+NUMCXX_HEADERS=$(wildcard $(NUMCXX)/*.hxx)
 
 
-numcxx_wrap.o: numcxx_wrap.cxx
+test-numcxx2.o: $(NUMCXX_HEADERS)
 
-test-numcxx: test-numcxx.cxx numcxx.h test-numcxx2.o
+
+swigwrap_numcxx.o: swigwrap_numcxx.cxx
+
+test-numcxx: test-numcxx.cxx $(NUMCXX_HEADERS) test-numcxx2.o
 	$(CXX) $(CXXFLAGS) -o $@  $< test-numcxx2.o $(LALIBS)
 
-numcxx_wrap.cxx: numcxx.i numcxx.h
-	swig  -c++ -python   numcxx.i 
+swigwrap_numcxx.cxx: $(NUMCXX)/numcxx.i $(NUMCXX_HEADERS)
+	swig  -c++ -python  -o swigwrap_numcxx.cxx $(NUMCXX)/numcxx.i 
 
-_numcxx.so: numcxx_wrap.o 
+_numcxx.so: swigwrap_numcxx.cxx
 	$(CXX) $(CXXFLAGS) $(PYTHONLIBS) $(SHLDFLAGS) $< -o $@
 
 clean:
