@@ -3096,39 +3096,40 @@ namespace swig {
 #define SWIG_FILE_WITH_INIT
 #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
 #include "numcxx.h"
-  namespace numcxx
-  {
-    class NumpyProxy: public TArrayBase
+    namespace numcxx
     {
-      PyObject *o;
-    public:
-    NumpyProxy(PyObject *o): o(o) { Py_INCREF(o);};
-      ~NumpyProxy() {Py_DECREF(o);};
-    };
-
-    std::shared_ptr<DArray1 > NumpyAsDArray1(PyObject *o,double* v, int n1)
-      {
-          auto proxy=std::shared_ptr<TArrayBase>(new NumpyProxy(o));
-          return std::shared_ptr<DArray1 >(new DArray1 (n1,v,proxy));
-      }
-    std::shared_ptr<DArray2 > NumpyAsDArray2(PyObject *o,double* v, int n1, int n2)
-      {
-          return std::shared_ptr<DArray2>(new DArray2 (n1, n2, v,std::shared_ptr<TArrayBase>(new NumpyProxy(o))));
-      }
-
-    void DArray1AsNumpy(std::shared_ptr<DArray1 > a,PyObject *o,double** ARGOUTVIEW_ARRAY1, int* DIM1)
-    {
-        *DIM1=a->size;
-        *ARGOUTVIEW_ARRAY1=a->rawdata();
+        class NumpyProxy
+        {
+            PyObject *o;
+        public:
+            NumpyProxy(PyObject *o): o(o) { Py_INCREF(o);};
+            ~NumpyProxy() {Py_DECREF(o);};
+        };
+        
+        std::shared_ptr<DArray1 > NumpyAsDArray1(PyObject *o,double* v, int n1)
+        {
+            auto proxy=std::make_shared<NumpyProxy>(o);
+            return std::make_shared<DArray1 >(n1,v,proxy);
+        }
+        std::shared_ptr<DArray2 > NumpyAsDArray2(PyObject *o,double* v, int n1, int n2)
+        {
+            auto proxy=std::make_shared<NumpyProxy>(o);
+            return std::make_shared<DArray2>(n1, n2, v,proxy);
+        }
+        
+        void DArray1AsNumpy(std::shared_ptr<DArray1 > a,PyObject *o,double** ARGOUTVIEW_ARRAY1, int* DIM1)
+        {
+            *DIM1=a->size();
+            *ARGOUTVIEW_ARRAY1=a->data();
+        }
+        void DArray2AsNumpy(std::shared_ptr<DArray2 > a,PyObject *o,double** ARGOUTVIEW_ARRAY2, int* DIM1,int* DIM2)
+        {
+            *DIM1=a->shape[0];
+            *DIM2=a->shape[1];
+            *ARGOUTVIEW_ARRAY2=a->data();
+        }
     }
-    void DArray2AsNumpy(std::shared_ptr<DArray2 > a,PyObject *o,double** ARGOUTVIEW_ARRAY2, int* DIM1,int* DIM2)
-    {
-        *DIM1=a->shape[0];
-        *DIM2=a->shape[1];
-        *ARGOUTVIEW_ARRAY2=a->rawdata();
-    }
-  }
-
+    
 
 
 #include <iostream>
@@ -6106,7 +6107,7 @@ SWIGINTERN PyObject *SwigPyIterator_swigregister(PyObject *SWIGUNUSEDPARM(self),
   return SWIG_Py_Void();
 }
 
-SWIGINTERN PyObject *_wrap_DArray1_ndim_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_DArray1_ndim(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   numcxx::DArray1 *arg1 = (numcxx::DArray1 *) 0 ;
   void *argp1 = 0 ;
@@ -6114,13 +6115,13 @@ SWIGINTERN PyObject *_wrap_DArray1_ndim_get(PyObject *SWIGUNUSEDPARM(self), PyOb
   PyObject * obj0 = 0 ;
   numcxx::index result;
   
-  if (!PyArg_ParseTuple(args,(char *)"O:DArray1_ndim_get",&obj0)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"O:DArray1_ndim",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_numcxx__DArray1, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DArray1_ndim_get" "', argument " "1"" of type '" "numcxx::DArray1 *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DArray1_ndim" "', argument " "1"" of type '" "numcxx::DArray1 *""'"); 
   }
   arg1 = reinterpret_cast< numcxx::DArray1 * >(argp1);
-  result = (numcxx::index)(numcxx::index) ((arg1)->ndim);
+  result = (numcxx::index)(arg1)->ndim();
   resultobj = SWIG_From_unsigned_SS_int(static_cast< unsigned int >(result));
   return resultobj;
 fail:
@@ -6128,37 +6129,7 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_DArray1_size_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  numcxx::DArray1 *arg1 = (numcxx::DArray1 *) 0 ;
-  numcxx::index arg2 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  unsigned int val2 ;
-  int ecode2 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OO:DArray1_size_set",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_numcxx__DArray1, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DArray1_size_set" "', argument " "1"" of type '" "numcxx::DArray1 *""'"); 
-  }
-  arg1 = reinterpret_cast< numcxx::DArray1 * >(argp1);
-  ecode2 = SWIG_AsVal_unsigned_SS_int(obj1, &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "DArray1_size_set" "', argument " "2"" of type '" "numcxx::index""'");
-  } 
-  arg2 = static_cast< numcxx::index >(val2);
-  if (arg1) (arg1)->size = arg2;
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_DArray1_size_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_DArray1_size(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   numcxx::DArray1 *arg1 = (numcxx::DArray1 *) 0 ;
   void *argp1 = 0 ;
@@ -6166,13 +6137,13 @@ SWIGINTERN PyObject *_wrap_DArray1_size_get(PyObject *SWIGUNUSEDPARM(self), PyOb
   PyObject * obj0 = 0 ;
   numcxx::index result;
   
-  if (!PyArg_ParseTuple(args,(char *)"O:DArray1_size_get",&obj0)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"O:DArray1_size",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_numcxx__DArray1, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DArray1_size_get" "', argument " "1"" of type '" "numcxx::DArray1 *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DArray1_size" "', argument " "1"" of type '" "numcxx::DArray1 *""'"); 
   }
   arg1 = reinterpret_cast< numcxx::DArray1 * >(argp1);
-  result = (numcxx::index) ((arg1)->size);
+  result = (numcxx::index)(arg1)->size();
   resultobj = SWIG_From_unsigned_SS_int(static_cast< unsigned int >(result));
   return resultobj;
 fail:
@@ -6487,7 +6458,7 @@ SWIGINTERN PyObject *DArray1_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObje
   return SWIG_Py_Void();
 }
 
-SWIGINTERN PyObject *_wrap_DArray2_ndim_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_DArray2_ndim(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   numcxx::DArray2 *arg1 = (numcxx::DArray2 *) 0 ;
   void *argp1 = 0 ;
@@ -6495,13 +6466,13 @@ SWIGINTERN PyObject *_wrap_DArray2_ndim_get(PyObject *SWIGUNUSEDPARM(self), PyOb
   PyObject * obj0 = 0 ;
   numcxx::index result;
   
-  if (!PyArg_ParseTuple(args,(char *)"O:DArray2_ndim_get",&obj0)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"O:DArray2_ndim",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_numcxx__DArray2, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DArray2_ndim_get" "', argument " "1"" of type '" "numcxx::DArray2 *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DArray2_ndim" "', argument " "1"" of type '" "numcxx::DArray2 *""'"); 
   }
   arg1 = reinterpret_cast< numcxx::DArray2 * >(argp1);
-  result = (numcxx::index)(numcxx::index) ((arg1)->ndim);
+  result = (numcxx::index)(arg1)->ndim();
   resultobj = SWIG_From_unsigned_SS_int(static_cast< unsigned int >(result));
   return resultobj;
 fail:
@@ -6509,37 +6480,7 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_DArray2_size_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  numcxx::DArray2 *arg1 = (numcxx::DArray2 *) 0 ;
-  numcxx::index arg2 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  unsigned int val2 ;
-  int ecode2 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OO:DArray2_size_set",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_numcxx__DArray2, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DArray2_size_set" "', argument " "1"" of type '" "numcxx::DArray2 *""'"); 
-  }
-  arg1 = reinterpret_cast< numcxx::DArray2 * >(argp1);
-  ecode2 = SWIG_AsVal_unsigned_SS_int(obj1, &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "DArray2_size_set" "', argument " "2"" of type '" "numcxx::index""'");
-  } 
-  arg2 = static_cast< numcxx::index >(val2);
-  if (arg1) (arg1)->size = arg2;
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_DArray2_size_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_DArray2_size(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   numcxx::DArray2 *arg1 = (numcxx::DArray2 *) 0 ;
   void *argp1 = 0 ;
@@ -6547,13 +6488,13 @@ SWIGINTERN PyObject *_wrap_DArray2_size_get(PyObject *SWIGUNUSEDPARM(self), PyOb
   PyObject * obj0 = 0 ;
   numcxx::index result;
   
-  if (!PyArg_ParseTuple(args,(char *)"O:DArray2_size_get",&obj0)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"O:DArray2_size",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_numcxx__DArray2, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DArray2_size_get" "', argument " "1"" of type '" "numcxx::DArray2 *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DArray2_size" "', argument " "1"" of type '" "numcxx::DArray2 *""'"); 
   }
   arg1 = reinterpret_cast< numcxx::DArray2 * >(argp1);
-  result = (numcxx::index) ((arg1)->size);
+  result = (numcxx::index)(arg1)->size();
   resultobj = SWIG_From_unsigned_SS_int(static_cast< unsigned int >(result));
   return resultobj;
 fail:
@@ -7079,7 +7020,7 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_shared_ptrDArray1_ndim_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_shared_ptrDArray1_ndim(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   std::shared_ptr< numcxx::DArray1 > *arg1 = (std::shared_ptr< numcxx::DArray1 > *) 0 ;
   void *argp1 = 0 ;
@@ -7087,13 +7028,13 @@ SWIGINTERN PyObject *_wrap_shared_ptrDArray1_ndim_get(PyObject *SWIGUNUSEDPARM(s
   PyObject * obj0 = 0 ;
   numcxx::index result;
   
-  if (!PyArg_ParseTuple(args,(char *)"O:shared_ptrDArray1_ndim_get",&obj0)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"O:shared_ptrDArray1_ndim",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_std__shared_ptrT_numcxx__DArray1_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "shared_ptrDArray1_ndim_get" "', argument " "1"" of type '" "std::shared_ptr< numcxx::DArray1 > *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "shared_ptrDArray1_ndim" "', argument " "1"" of type '" "std::shared_ptr< numcxx::DArray1 > *""'"); 
   }
   arg1 = reinterpret_cast< std::shared_ptr< numcxx::DArray1 > * >(argp1);
-  result = (numcxx::index)(numcxx::index) ((*arg1)->ndim);
+  result = (numcxx::index)(*arg1)->ndim();
   resultobj = SWIG_From_unsigned_SS_int(static_cast< unsigned int >(result));
   return resultobj;
 fail:
@@ -7101,37 +7042,7 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_shared_ptrDArray1_size_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  std::shared_ptr< numcxx::DArray1 > *arg1 = (std::shared_ptr< numcxx::DArray1 > *) 0 ;
-  numcxx::index arg2 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  unsigned int val2 ;
-  int ecode2 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OO:shared_ptrDArray1_size_set",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_std__shared_ptrT_numcxx__DArray1_t, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "shared_ptrDArray1_size_set" "', argument " "1"" of type '" "std::shared_ptr< numcxx::DArray1 > *""'"); 
-  }
-  arg1 = reinterpret_cast< std::shared_ptr< numcxx::DArray1 > * >(argp1);
-  ecode2 = SWIG_AsVal_unsigned_SS_int(obj1, &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "shared_ptrDArray1_size_set" "', argument " "2"" of type '" "numcxx::index""'");
-  } 
-  arg2 = static_cast< numcxx::index >(val2);
-  if (arg1) (*arg1)->size = arg2;
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_shared_ptrDArray1_size_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_shared_ptrDArray1_size(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   std::shared_ptr< numcxx::DArray1 > *arg1 = (std::shared_ptr< numcxx::DArray1 > *) 0 ;
   void *argp1 = 0 ;
@@ -7139,13 +7050,13 @@ SWIGINTERN PyObject *_wrap_shared_ptrDArray1_size_get(PyObject *SWIGUNUSEDPARM(s
   PyObject * obj0 = 0 ;
   numcxx::index result;
   
-  if (!PyArg_ParseTuple(args,(char *)"O:shared_ptrDArray1_size_get",&obj0)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"O:shared_ptrDArray1_size",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_std__shared_ptrT_numcxx__DArray1_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "shared_ptrDArray1_size_get" "', argument " "1"" of type '" "std::shared_ptr< numcxx::DArray1 > *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "shared_ptrDArray1_size" "', argument " "1"" of type '" "std::shared_ptr< numcxx::DArray1 > *""'"); 
   }
   arg1 = reinterpret_cast< std::shared_ptr< numcxx::DArray1 > * >(argp1);
-  result = (numcxx::index) ((*arg1)->size);
+  result = (numcxx::index)(*arg1)->size();
   resultobj = SWIG_From_unsigned_SS_int(static_cast< unsigned int >(result));
   return resultobj;
 fail:
@@ -7491,7 +7402,7 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_shared_ptrDArray2_ndim_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_shared_ptrDArray2_ndim(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   std::shared_ptr< numcxx::DArray2 > *arg1 = (std::shared_ptr< numcxx::DArray2 > *) 0 ;
   void *argp1 = 0 ;
@@ -7499,13 +7410,13 @@ SWIGINTERN PyObject *_wrap_shared_ptrDArray2_ndim_get(PyObject *SWIGUNUSEDPARM(s
   PyObject * obj0 = 0 ;
   numcxx::index result;
   
-  if (!PyArg_ParseTuple(args,(char *)"O:shared_ptrDArray2_ndim_get",&obj0)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"O:shared_ptrDArray2_ndim",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_std__shared_ptrT_numcxx__DArray2_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "shared_ptrDArray2_ndim_get" "', argument " "1"" of type '" "std::shared_ptr< numcxx::DArray2 > *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "shared_ptrDArray2_ndim" "', argument " "1"" of type '" "std::shared_ptr< numcxx::DArray2 > *""'"); 
   }
   arg1 = reinterpret_cast< std::shared_ptr< numcxx::DArray2 > * >(argp1);
-  result = (numcxx::index)(numcxx::index) ((*arg1)->ndim);
+  result = (numcxx::index)(*arg1)->ndim();
   resultobj = SWIG_From_unsigned_SS_int(static_cast< unsigned int >(result));
   return resultobj;
 fail:
@@ -7513,37 +7424,7 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_shared_ptrDArray2_size_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  std::shared_ptr< numcxx::DArray2 > *arg1 = (std::shared_ptr< numcxx::DArray2 > *) 0 ;
-  numcxx::index arg2 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  unsigned int val2 ;
-  int ecode2 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OO:shared_ptrDArray2_size_set",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_std__shared_ptrT_numcxx__DArray2_t, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "shared_ptrDArray2_size_set" "', argument " "1"" of type '" "std::shared_ptr< numcxx::DArray2 > *""'"); 
-  }
-  arg1 = reinterpret_cast< std::shared_ptr< numcxx::DArray2 > * >(argp1);
-  ecode2 = SWIG_AsVal_unsigned_SS_int(obj1, &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "shared_ptrDArray2_size_set" "', argument " "2"" of type '" "numcxx::index""'");
-  } 
-  arg2 = static_cast< numcxx::index >(val2);
-  if (arg1) (*arg1)->size = arg2;
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_shared_ptrDArray2_size_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_shared_ptrDArray2_size(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   std::shared_ptr< numcxx::DArray2 > *arg1 = (std::shared_ptr< numcxx::DArray2 > *) 0 ;
   void *argp1 = 0 ;
@@ -7551,13 +7432,13 @@ SWIGINTERN PyObject *_wrap_shared_ptrDArray2_size_get(PyObject *SWIGUNUSEDPARM(s
   PyObject * obj0 = 0 ;
   numcxx::index result;
   
-  if (!PyArg_ParseTuple(args,(char *)"O:shared_ptrDArray2_size_get",&obj0)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"O:shared_ptrDArray2_size",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_std__shared_ptrT_numcxx__DArray2_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "shared_ptrDArray2_size_get" "', argument " "1"" of type '" "std::shared_ptr< numcxx::DArray2 > *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "shared_ptrDArray2_size" "', argument " "1"" of type '" "std::shared_ptr< numcxx::DArray2 > *""'"); 
   }
   arg1 = reinterpret_cast< std::shared_ptr< numcxx::DArray2 > * >(argp1);
-  result = (numcxx::index) ((*arg1)->size);
+  result = (numcxx::index)(*arg1)->size();
   resultobj = SWIG_From_unsigned_SS_int(static_cast< unsigned int >(result));
   return resultobj;
 fail:
@@ -9770,9 +9651,8 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"SwigPyIterator___add__", _wrap_SwigPyIterator___add__, METH_VARARGS, NULL},
 	 { (char *)"SwigPyIterator___sub__", _wrap_SwigPyIterator___sub__, METH_VARARGS, NULL},
 	 { (char *)"SwigPyIterator_swigregister", SwigPyIterator_swigregister, METH_VARARGS, NULL},
-	 { (char *)"DArray1_ndim_get", _wrap_DArray1_ndim_get, METH_VARARGS, NULL},
-	 { (char *)"DArray1_size_set", _wrap_DArray1_size_set, METH_VARARGS, NULL},
-	 { (char *)"DArray1_size_get", _wrap_DArray1_size_get, METH_VARARGS, NULL},
+	 { (char *)"DArray1_ndim", _wrap_DArray1_ndim, METH_VARARGS, NULL},
+	 { (char *)"DArray1_size", _wrap_DArray1_size, METH_VARARGS, NULL},
 	 { (char *)"DArray1_fill", _wrap_DArray1_fill, METH_VARARGS, NULL},
 	 { (char *)"DArray1_shape_set", _wrap_DArray1_shape_set, METH_VARARGS, NULL},
 	 { (char *)"DArray1_shape_get", _wrap_DArray1_shape_get, METH_VARARGS, NULL},
@@ -9785,9 +9665,8 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"new_DArray1", _wrap_new_DArray1, METH_VARARGS, NULL},
 	 { (char *)"delete_DArray1", _wrap_delete_DArray1, METH_VARARGS, NULL},
 	 { (char *)"DArray1_swigregister", DArray1_swigregister, METH_VARARGS, NULL},
-	 { (char *)"DArray2_ndim_get", _wrap_DArray2_ndim_get, METH_VARARGS, NULL},
-	 { (char *)"DArray2_size_set", _wrap_DArray2_size_set, METH_VARARGS, NULL},
-	 { (char *)"DArray2_size_get", _wrap_DArray2_size_get, METH_VARARGS, NULL},
+	 { (char *)"DArray2_ndim", _wrap_DArray2_ndim, METH_VARARGS, NULL},
+	 { (char *)"DArray2_size", _wrap_DArray2_size, METH_VARARGS, NULL},
 	 { (char *)"DArray2_fill", _wrap_DArray2_fill, METH_VARARGS, NULL},
 	 { (char *)"DArray2_shape_set", _wrap_DArray2_shape_set, METH_VARARGS, NULL},
 	 { (char *)"DArray2_shape_get", _wrap_DArray2_shape_get, METH_VARARGS, NULL},
@@ -9806,9 +9685,8 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"shared_ptrDArray1___deref__", _wrap_shared_ptrDArray1___deref__, METH_VARARGS, NULL},
 	 { (char *)"new_shared_ptrDArray1", _wrap_new_shared_ptrDArray1, METH_VARARGS, NULL},
 	 { (char *)"delete_shared_ptrDArray1", _wrap_delete_shared_ptrDArray1, METH_VARARGS, NULL},
-	 { (char *)"shared_ptrDArray1_ndim_get", _wrap_shared_ptrDArray1_ndim_get, METH_VARARGS, NULL},
-	 { (char *)"shared_ptrDArray1_size_set", _wrap_shared_ptrDArray1_size_set, METH_VARARGS, NULL},
-	 { (char *)"shared_ptrDArray1_size_get", _wrap_shared_ptrDArray1_size_get, METH_VARARGS, NULL},
+	 { (char *)"shared_ptrDArray1_ndim", _wrap_shared_ptrDArray1_ndim, METH_VARARGS, NULL},
+	 { (char *)"shared_ptrDArray1_size", _wrap_shared_ptrDArray1_size, METH_VARARGS, NULL},
 	 { (char *)"shared_ptrDArray1_fill", _wrap_shared_ptrDArray1_fill, METH_VARARGS, NULL},
 	 { (char *)"shared_ptrDArray1_shape_set", _wrap_shared_ptrDArray1_shape_set, METH_VARARGS, NULL},
 	 { (char *)"shared_ptrDArray1_shape_get", _wrap_shared_ptrDArray1_shape_get, METH_VARARGS, NULL},
@@ -9822,9 +9700,8 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"shared_ptrDArray2___deref__", _wrap_shared_ptrDArray2___deref__, METH_VARARGS, NULL},
 	 { (char *)"new_shared_ptrDArray2", _wrap_new_shared_ptrDArray2, METH_VARARGS, NULL},
 	 { (char *)"delete_shared_ptrDArray2", _wrap_delete_shared_ptrDArray2, METH_VARARGS, NULL},
-	 { (char *)"shared_ptrDArray2_ndim_get", _wrap_shared_ptrDArray2_ndim_get, METH_VARARGS, NULL},
-	 { (char *)"shared_ptrDArray2_size_set", _wrap_shared_ptrDArray2_size_set, METH_VARARGS, NULL},
-	 { (char *)"shared_ptrDArray2_size_get", _wrap_shared_ptrDArray2_size_get, METH_VARARGS, NULL},
+	 { (char *)"shared_ptrDArray2_ndim", _wrap_shared_ptrDArray2_ndim, METH_VARARGS, NULL},
+	 { (char *)"shared_ptrDArray2_size", _wrap_shared_ptrDArray2_size, METH_VARARGS, NULL},
 	 { (char *)"shared_ptrDArray2_fill", _wrap_shared_ptrDArray2_fill, METH_VARARGS, NULL},
 	 { (char *)"shared_ptrDArray2_shape_set", _wrap_shared_ptrDArray2_shape_set, METH_VARARGS, NULL},
 	 { (char *)"shared_ptrDArray2_shape_get", _wrap_shared_ptrDArray2_shape_get, METH_VARARGS, NULL},

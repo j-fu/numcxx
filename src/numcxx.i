@@ -5,39 +5,40 @@
 #define SWIG_FILE_WITH_INIT
 #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
 #include "numcxx.h"
-  namespace numcxx
-  {
-    class NumpyProxy: public TArrayBase
+    namespace numcxx
     {
-      PyObject *o;
-    public:
-    NumpyProxy(PyObject *o): o(o) { Py_INCREF(o);};
-      ~NumpyProxy() {Py_DECREF(o);};
-    };
-
-    std::shared_ptr<DArray1 > NumpyAsDArray1(PyObject *o,double* v, int n1)
-      {
-          auto proxy=std::shared_ptr<TArrayBase>(new NumpyProxy(o));
-          return std::shared_ptr<DArray1 >(new DArray1 (n1,v,proxy));
-      }
-    std::shared_ptr<DArray2 > NumpyAsDArray2(PyObject *o,double* v, int n1, int n2)
-      {
-          return std::shared_ptr<DArray2>(new DArray2 (n1, n2, v,std::shared_ptr<TArrayBase>(new NumpyProxy(o))));
-      }
-
-    void DArray1AsNumpy(std::shared_ptr<DArray1 > a,PyObject *o,double** ARGOUTVIEW_ARRAY1, int* DIM1)
-    {
-        *DIM1=a->size;
-        *ARGOUTVIEW_ARRAY1=a->rawdata();
+        class NumpyProxy
+        {
+            PyObject *o;
+        public:
+            NumpyProxy(PyObject *o): o(o) { Py_INCREF(o);};
+            ~NumpyProxy() {Py_DECREF(o);};
+        };
+        
+        std::shared_ptr<DArray1 > NumpyAsDArray1(PyObject *o,double* v, int n1)
+        {
+            auto proxy=std::make_shared<NumpyProxy>(o);
+            return std::make_shared<DArray1 >(n1,v,proxy);
+        }
+        std::shared_ptr<DArray2 > NumpyAsDArray2(PyObject *o,double* v, int n1, int n2)
+        {
+            auto proxy=std::make_shared<NumpyProxy>(o);
+            return std::make_shared<DArray2>(n1, n2, v,proxy);
+        }
+        
+        void DArray1AsNumpy(std::shared_ptr<DArray1 > a,PyObject *o,double** ARGOUTVIEW_ARRAY1, int* DIM1)
+        {
+            *DIM1=a->size();
+            *ARGOUTVIEW_ARRAY1=a->data();
+        }
+        void DArray2AsNumpy(std::shared_ptr<DArray2 > a,PyObject *o,double** ARGOUTVIEW_ARRAY2, int* DIM1,int* DIM2)
+        {
+            *DIM1=a->shape[0];
+            *DIM2=a->shape[1];
+            *ARGOUTVIEW_ARRAY2=a->data();
+        }
     }
-    void DArray2AsNumpy(std::shared_ptr<DArray2 > a,PyObject *o,double** ARGOUTVIEW_ARRAY2, int* DIM1,int* DIM2)
-    {
-        *DIM1=a->shape[0];
-        *DIM2=a->shape[1];
-        *ARGOUTVIEW_ARRAY2=a->rawdata();
-    }
-  }
-
+    
 %}
 
 
@@ -225,8 +226,8 @@ namespace numcxx
     class DArray1
     {
     public:
-        const index ndim;
-        index size;
+        const index ndim();
+        index size();
         void fill(double x);
         std::vector<index> shape;
         
@@ -242,8 +243,8 @@ namespace numcxx
     class DArray2
     {
     public:
-        const index ndim;
-        index size;
+        const index ndim();
+        index size();
         void fill(double x);
         std::vector<index> shape;
         

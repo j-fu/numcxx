@@ -41,6 +41,12 @@ int main (int argc, const char *argv[])
     const int N=4;
 
 
+    auto v=std::make_shared<std::vector<double>>(10);
+    for (int i=1;i<10;i++) (*v)[i]=-i;
+
+    auto xv=std::make_shared<numcxx::DArray1>(v);
+    std::cout << *xv << std::endl;
+
     auto A=numcxx::DArray1::create({3,4,5});
 
     auto B=A->clone();
