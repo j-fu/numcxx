@@ -1,0 +1,7 @@
+syntax:glob
+QUARRY
+*.o
+*.so
+*.pyc
+wrap*.cxx
+numcxx.py
