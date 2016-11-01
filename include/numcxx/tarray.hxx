@@ -265,5 +265,5 @@ namespace numcxx
 }
 
 
-#include "tarray-def.hxx"
+#include "tarray-imp.hxx"
 #endif

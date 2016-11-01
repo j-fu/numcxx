@@ -57,5 +57,5 @@ namespace numcxx
 
 }
 
-#include "tmatrix-def.hxx"
+#include "tmatrix-imp.hxx"
 #endif

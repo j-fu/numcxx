@@ -1,8 +1,9 @@
+/////////////////////////////////////////////////
+// Implementation of  methods of TArray1<T>
+
 namespace numcxx
 {
 
-/////////////////////////////////////////////////
-// Inline methods of TArray1<T>
 
     template <typename T> 
     inline TArray1<T>::TArray1():TArray<T>(){};   

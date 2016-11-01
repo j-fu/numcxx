@@ -132,5 +132,5 @@ namespace numcxx
     };
 }
 
-#include "tarray1-def.hxx"
+#include "tarray1-imp.hxx"
 #endif
