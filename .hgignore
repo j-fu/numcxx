@@ -1,5 +1,6 @@
 syntax:glob
 QUARRY
+html
 *.o
 *.so
 *.pyc

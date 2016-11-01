@@ -1,5 +1,7 @@
 /////////////////////////////////////////////////
 // Inline methods of TArray<T>
+#include <cstdlib>
+#include <cmath>
 
 namespace numcxx
 {
@@ -14,12 +16,6 @@ namespace numcxx
     template <typename T> 
     inline    index TArray<T>::shape(const index dim)  const {return _shape[dim];}
 
-
-    template <typename T> 
-    inline T & TArray<T>::operator()(index i0) { return _data[_idx(i0)];};
-
-    template <typename T> 
-    inline T & TArray<T>::operator()(index i0, index i1) { return _data[_idx(i0,i1)];};
 
     template <typename T> 
     inline void TArray<T>::fill(T x)
@@ -59,7 +55,7 @@ namespace numcxx
     template <typename T> 
     inline index TArray<T>::_idx(index i0) const
     {
-#ifdef NUMCXX__CHECK_BOUNDS
+#ifdef NUMCXX_CHECK_BOUNDS
         _check_bounds(0,1,i0);
 #endif
         return i0;
@@ -68,7 +64,7 @@ namespace numcxx
     template <typename T> 
     inline index TArray<T>::_idx(index i0,index i1)  const
     { 
-#ifdef NUMCXX__CHECK_BOUNDS
+#ifdef NUMCXX_CHECK_BOUNDS
         _check_bounds(0,2,i0);
         _check_bounds(1,2,i1);
 #endif
@@ -78,7 +74,7 @@ namespace numcxx
     template <typename T> 
     inline index TArray<T>::_idx(index i0,index i1, index i2)  const
     { 
-#ifdef NUMCXX__CHECK_BOUNDS
+#ifdef NUMCXX_CHECK_BOUNDS
         _check_bounds(0,3,i0);
         _check_bounds(1,3,i1);
         _check_bounds(2,3,i2);
@@ -87,19 +83,19 @@ namespace numcxx
     }
     
     template <typename T> 
-        inline TArray<T>::TArray(index n0):
-        _ndim(1),
-        _shape{n0},
-        _size(n0),
+    inline TArray<T>::TArray(index n0, index n1):
+        _ndim(2),
+        _shape{n0,n1},
+        _size(n0*n1),
         _data((T*)malloc(sizeof(T)*_size)),
         _deleter([](T*p){free(p);})
         {};
     
     template <typename T> 
-    inline TArray<T>::TArray(index n0, index n1):
-        _ndim(2),
-        _shape{n0,n1},
-        _size(n0*n1),
+        inline TArray<T>::TArray(index n0):
+        _ndim(1),
+        _shape{n0},
+        _size(n0),
         _data((T*)malloc(sizeof(T)*_size)),
         _deleter([](T*p){free(p);})
         {};
@@ -137,7 +133,12 @@ namespace numcxx
     template <typename T> 
     inline TArray<T>::~TArray()
     {
-       _deleter(_data);
+        if (_datamanager==nullptr)
+        {
+            _deleter(_data);
+        }
+        // otherwise we assume that datamaager takes care
+        // of the data pointer
     };
     
     template <typename T> 
@@ -158,26 +159,31 @@ namespace numcxx
 
     template <typename T> 
     inline void TArray<T>::operator/=(const T a) { for(index i=0;i<_size;i++) _data[i]/=a;}
-    
-    
-    
-    template <typename T> 
-    inline T TArray<T>::min() const { T min=_data[0]; for(index i=0;i<_size;i++) if (_data[i]<min) min=_data[i]; return min;}
 
     template <typename T> 
-    inline T TArray<T>::max() const { T max=_data[0]; for(index i=0;i<_size;i++) if (_data[i]>max) max=_data[i]; return max;}
+    inline void TArray<T>::operator+=(const TArray<T> & a) { for(index i=0;i<_size;i++) _data[i]+=a._data[i];}
 
     template <typename T> 
-    inline T TArray<T>::sum() const { T sum=_data[0]; for(index i=0;i<_size;i++) sum+=_data[i]; return sum;}
+    inline void TArray<T>::operator-=(const TArray<T> & a) { for(index i=0;i<_size;i++) _data[i]-=a._data[i];}
+
+            
+    template <typename T> 
+    inline T TArray<T>::min() const { T min=_data[0]; for(index i=1;i<_size;i++) if (_data[i]<min) min=_data[i]; return min;}
 
     template <typename T> 
-    inline T TArray<T>::norm2() const  { return dot(*this,*this);}
+    inline T TArray<T>::max() const { T max=_data[0]; for(index i=1;i<_size;i++) if (_data[i]>max) max=_data[i]; return max;}
 
     template <typename T> 
-    inline T TArray<T>::norm1() const  { T sum=std::abs(_data[0]); for(index i=0;i<_size;i++) sum+=abs(_data[i]); return max; }
+    inline T TArray<T>::sum() const { T sum=_data[0]; for(index i=1;i<_size;i++) sum+=_data[i]; return sum;}
 
     template <typename T> 
-    inline T TArray<T>::normi() const  { T x,max=std::abs(_data[0]); for(index i=0;i<_size;i++) if ((x=abs(_data[i]))>max) max=x; return max; }
+    inline T TArray<T>::norm2() const  { return sqrt(dot(*this,*this));}
+
+    template <typename T> 
+    inline T TArray<T>::norm1() const  { T sum=std::abs(_data[0]); for(index i=1;i<_size;i++) sum+=std::abs(_data[i]); return sum; }
+
+    template <typename T> 
+    inline T TArray<T>::normi() const  { T x,max=std::abs(_data[0]); for(index i=1;i<_size;i++) if ((x=std::abs(_data[i]))>max) max=x; return max; }
 
     template <typename T> 
     inline void TArray<T>::fill(const TArray<T> &A) { for(index i=0;i<_size;i++) _data[i]=A._data[i];}
@@ -192,7 +198,7 @@ namespace numcxx
     inline void TArray<T>::operate(std::function< void ( T& a, T&b,T&c)> f, TArray<T> & A, TArray<T> & B,TArray<T> & C)  { for(index i=0;i<A._size;i++) f(A._data[i],B._data[i],C._data[i]);}
 
     template <typename T> 
-    inline T TArray<T>::dot(const TArray<T>& A,const TArray<T> &B) { T xdot=A->_data[0]*B->_data[0];for(index i=0;i<A._size;i++) xdot+=A._data[i]*B._data[i]; return xdot;}
+    inline T TArray<T>::dot(const TArray<T>& A,const TArray<T> &B) { T xdot=A._data[0]*B._data[0];for(index i=1;i<A._size;i++) xdot+=A._data[i]*B._data[i]; return xdot;}
 
 
 }

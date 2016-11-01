@@ -45,6 +45,9 @@ namespace numcxx
     }
     
     template <typename T> 
+    inline T & TArray1<T>::operator()(index i0) { return _data[_idx(i0)];};
+
+    template <typename T> 
     inline T & TArray1<T>::operator[](index i0) { return _data[_idx(i0)];};
     
     template <typename T> 

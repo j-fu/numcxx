@@ -1,23 +1,35 @@
-numcxx - a collection of python compatible classes for numerics in C++
+numcxx - a collection of python compatible classes for linear algebra in C++ {#mainpage}
 ======================================================================
 
-One of  the main goals: use  in teaching. So transparency  of the code
-for people new to C++ is  important. Therefore numcxx does not provide
-expression templates.   OTOH, based on  SWIG, numcxx provided  a fully
-bidirectional bridge to python, which  transfers data buffers and does
-not  copy. Many  ideas used  behind this  library have  been developed
-together wit Timo Streckenbach from  the WIAS pdelib project, and they
-evolved over may years. In some sense, numcxx is a rewrite of parts of
-the code developed in that project.
+## Rationale
+- Provide lightweight multidimensional linear algebra classes for C++11
+
+- Keep the  code reasonably simple and transparent  for beginners in order  to be
+  useful for teaching
+     - Stay away from expression templates
+     - Study expressive capabilities of modern C++
+
+- Efficient, reference counted exchange of array data with other packages without copying
+  data
+     - python/numpy
+     - triangle, TetGen etc.
+     - LAPACK
+     - UMFPACK
+
+- SWIG based interface to python/numpy
 
 
-Similar libraries
-marray
-eigen
-armadillo
-numcpp
+Many ideas used behind this  library have been developed together with
+or even  inspired by Timo  Streckenbach from the WIAS  pdelib project,
+and   they   evolved   over   may   years.    C++11   allows   for   a
+standard-conforming and concise implementation.
 
+Anyone expecting more sophisticated work (expression templates in particular)
+may have a look at these projects:
 
-   pybind11? Young project.
-   https://community.lsst.org/t/using-pybind11-instead-of-swig-to-wrap-c-code/1096
-   http://eli.thegreenplace.net/2015/memory-layout-of-multi-dimensional-arrays/  
+- eigen
+- armadillo
+- Trilinos/DOMI
+- marray
+- numcpp
+

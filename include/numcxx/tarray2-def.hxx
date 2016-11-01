@@ -26,6 +26,8 @@ namespace numcxx
         return std::make_shared<TArray2 <T> >(n0,n1);
     }
     
+    template <typename T> 
+    inline T & TArray2<T>::operator()(index i0, index i1) { return _data[_idx(i0,i1)];};
     
     template <typename T> 
     inline T * TArray2<T>::operator[](index i0) { return &_data[_idx(i0,0)];};
@@ -85,13 +87,13 @@ namespace numcxx
     inline std::ostream & operator << (std::ostream & s, TArray2<T> &A)
     {
         s << "    ";
-        for (index j=0;j<A._shape[1];j++) 
+        for (index j=0;j<A.shape(1);j++) 
             s << "[" << j << "]     ";
         s<< std::endl;
-        for (index i=0;i<A._shape[0];i++) 
+        for (index i=0;i<A.shape(0);i++) 
         {
             s << "[" << i << "]: ";
-            for (index j=0;j<A._shape[1];j++) 
+            for (index j=0;j<A.shape(1);j++) 
                 s << A(i,j) << "   ";
             s<< std::endl;
             }

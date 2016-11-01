@@ -1,11 +1,11 @@
 CXX=g++-5
 CXX=g++
-CXX=clang++
+#CXX=clang++
 #CXX=icpc
-NUMCXX=numcxx
+NUMCXX=../include/numcxx
 
 PYTHON=python
-CXXFLAGS=-fPIC -O3 -g  -DNUMCXX_CHECK_BOUNDS -std=c++11 `$(PYTHON) $(NUMCXX)/find_python_paths.py --includes`
+CXXFLAGS=-fPIC -O3 -g  -DNUMCXX_CHECK_BOUNDS -I ../include -std=c++11 `$(PYTHON) $(NUMCXX)/find_python_paths.py --includes`
 PYTHONLIBS=`$(PYTHON) $(NUMCXX)/find_python_paths.py --libs`
 LALIBS=-llapack -lblas
 SHLDFLAGS= -shared 
@@ -17,14 +17,16 @@ SHLDFLAGS= -shared
 .cxx:
 	$(CXX) $(CXXFLAGS) -o $@  $< $(LALIBS)
 
-all: test-numcxx _numcxx.so
+
+BINARIES= featuretest test-numcxx _numcxx.so
+all: $(BINARIES)
 
 
 NUMCXX_HEADERS=$(wildcard $(NUMCXX)/*.hxx)
 
 
 test-numcxx2.o: $(NUMCXX_HEADERS)
-
+featuretest: $(NUMCXX_HEADERS)
 
 swigwrap_numcxx.o: swigwrap_numcxx.cxx
 
@@ -38,5 +40,5 @@ _numcxx.so: swigwrap_numcxx.cxx
 	$(CXX) $(CXXFLAGS) $(PYTHONLIBS) $(SHLDFLAGS) $< -o $@
 
 clean:
-	-rm *.o *.so *wrap* test-numcxx *.pyc numcxx.py
+	-rm *.o  *wrap*  *.pyc numcxx.py $(BINARIES) *~
 
