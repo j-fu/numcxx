@@ -11,8 +11,25 @@
 
 namespace numcxx
 {
+    template<typename T> class TLinSolver
+    {
+    public:
+        TLinSolver(){};
+        virtual void solve( TArray<T> & sol,  const TArray<T> & rhs){};
+        virtual void update(void){};
+    };
+
+    template<typename T> class TLinOperator
+    {
+    public:
+        TLinOperator(){};
+        virtual void apply( const TArray<T> & sol,   TArray<T> & rhs){};
+    };
+
+
+
     template<typename T> 
-    class TMatrix: public TArray2<T>
+    class TMatrix: public TArray2<T>, TLinOperator<T>
     {
     public:
         using TArray2<T>::size;
@@ -54,6 +71,46 @@ namespace numcxx
 
     };
     
+    extern "C"
+    {
+        extern void dgetrf_(int *n, int *m, double *a, int *lda, int* ipiv, int *info);
+        extern void dgetrs_(char *trans,int *n, const int *nrhs, double*a, int* lda, int *ipiv , double *b, int *ldb, int *info );
+        extern void dgemm_(char *TRANSA, char *TRANSB, int *M, int * N, int *K,  double *ALPHA, const double *A, int *LDA,  double *B, int *LDB,  double *BETA,double * C, int *LDC);
+        extern void dgetri_(int *n, double*a, int* lda, int *ipiv , double *work, int *lwork, int *info );
+    }
+
+    template<typename T> 
+    class TSolverLapackLU: public  TLinSolver<T>
+    {
+        const std::shared_ptr< TMatrix<T> >a;
+        const std::shared_ptr< TMatrix<T> >lu;
+        const std::shared_ptr< TArray1<int>> ipiv;
+    public:
+        TSolverLapackLU(const std::shared_ptr<TMatrix<T>> a):
+            TLinSolver<T>(),
+            a(a),
+            lu(a->clone()),
+            ipiv(TArray1<int>::create(a->shape(0)))
+        {;}
+        void update()
+        {
+            int n=lu->shape(0);
+            int info;
+            lu->fill(*a);
+            dgetrf_(&n,&n,lu->data(),&n,ipiv->data(),&info);
+        }
+        void solve( TArray<T> & sol,  const TArray<T> & rhs)
+        {
+            sol.fill(rhs);
+            char trans[2]={'T','\0'};
+            int n=lu->shape(0);
+            int one=1;
+            int info;
+            dgetrs_(trans,&n,&one,lu->data(),&n,ipiv->data(),sol.data(),&n,&info);
+        }
+
+    };
+
 
 }
 

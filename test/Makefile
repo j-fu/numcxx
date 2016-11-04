@@ -1,5 +1,5 @@
 CXX=g++-5
-CXX=g++
+#CXX=g++
 #CXX=clang++
 #CXX=icpc
 NUMCXX=../include/numcxx
@@ -18,7 +18,8 @@ SHLDFLAGS= -shared
 	$(CXX) $(CXXFLAGS) -o $@  $< $(LALIBS)
 
 
-BINARIES= featuretest test-numcxx _numcxx.so
+BINARIES=test-et featuretest test-numcxx test-numcxx3 
+#_numcxx.so 
 all: $(BINARIES)
 
 
@@ -27,6 +28,7 @@ NUMCXX_HEADERS=$(wildcard $(NUMCXX)/*.hxx)
 
 test-numcxx2.o: $(NUMCXX_HEADERS)
 featuretest: $(NUMCXX_HEADERS)
+test-et: $(NUMCXX_HEADERS)
 
 swigwrap_numcxx.o: swigwrap_numcxx.cxx
 

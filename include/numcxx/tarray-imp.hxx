@@ -7,6 +7,31 @@ namespace numcxx
 {
 
 
+    template <typename T>
+    inline T TArray<T>::xentry(const index i) const
+    {
+        return _data[i];
+    }
+
+    template <typename T, typename EXPR,typename= typename std::enable_if<std::is_class<EXPR>::value, EXPR>::type>
+    inline void assign(TArray<T>& A, const  EXPR& expr) 
+    {
+//            resize( expr.size() );
+        T *data=A.data();
+        for(index i=0; i<expr.size(); i++ )
+            data[i] = expr.xentry(i);
+    }
+
+    template <typename T>
+    inline void  assign(TArray<T> &A,const  T &a)
+    {
+        T *data=A.data();
+        for( index i=0; i<A.size(); ++i )
+            data[i] = a;
+    }
+
+
+
     template <typename T> 
     inline        T*TArray<T>::data() const { return _data;}
     template <typename T> 
@@ -144,9 +169,8 @@ namespace numcxx
     template <typename T> 
     inline TArray<T>::TArray():_ndim(0),_deleter([](T*p){;}){};   
     
-
-    template <typename T> 
-    inline void TArray<T>::operator=(const T a) { for(index i=0;i<_size;i++) _data[i]=a;}
+    // template <typename T> 
+    // inline void TArray<T>::operator=(const T a) { for(index i=0;i<_size;i++) _data[i]=a;}
 
     template <typename T> 
     inline void TArray<T>::operator+=(const T a) { for(index i=0;i<_size;i++) _data[i]+=a;}

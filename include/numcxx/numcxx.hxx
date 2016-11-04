@@ -5,6 +5,7 @@
 #include "tarray1.hxx"
 #include "tarray2.hxx"
 #include "tmatrix.hxx"
+#include "expression.hxx"
 
 namespace numcxx
 {

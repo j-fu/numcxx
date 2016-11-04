@@ -3,8 +3,12 @@
 
 #include <vector>
 #include <ostream>
+#include <iostream>
+#include <type_traits>
 
 #include "tarray.hxx"
+
+
 
 
 namespace numcxx
@@ -16,6 +20,8 @@ namespace numcxx
 
     template<typename T>
     inline std::ostream & operator << (std::ostream & s, TArray1<T> &A);
+        
+ 
 
     template<typename T> class TArray1: public TArray<T>
     {
@@ -23,9 +29,12 @@ namespace numcxx
         using TArray<T>::size;
 
 
+
+        
+
         // Default constructor.
         TArray1();
-
+        
 
         /// Construct an empty 1D array.
         ///
@@ -81,6 +90,14 @@ namespace numcxx
         std::shared_ptr<TArray1 <T> > clone() const;
 
 
+        template <typename VAL>
+        TArray1<T>&  operator=(const VAL  &expr)  { assign(*this,expr); return *this;}
+
+        TArray1<T>&  operator=(const T &expr) { assign(*this,expr); return *this;}
+
+        TArray1<T>&  operator=(const TArray1<T> &expr) { assign(*this,expr); return *this;}
+
+
         /// Access operator for 1D arrays.
         ///
         /// \param i0  Index of element to be accessed.
@@ -96,7 +113,7 @@ namespace numcxx
         /// 
         /// \param i0  Index of element to be accessed.
         /// \return Value of element at i0
-        T item(index i0);
+        T item(index i0) const;
 
 
         /// Element write access.
@@ -130,6 +147,9 @@ namespace numcxx
         using TArray<T>::_idx;
        
     };
+
+
+
 }
 
 #include "tarray1-imp.hxx"

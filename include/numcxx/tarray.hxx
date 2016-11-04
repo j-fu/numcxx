@@ -5,6 +5,8 @@
 #include <memory>
 #include <stdexcept> 
 
+
+
 namespace numcxx
 {
     using index= unsigned int;
@@ -14,6 +16,9 @@ namespace numcxx
     template<typename T> class TArray
     {
     public:
+
+        typedef T value_type;
+
         /// Obtain C-pointer of data array.
         /// 
         /// \return Address of C-Array managed by the class which holds
@@ -43,11 +48,10 @@ namespace numcxx
         /// \return Number of elements in given dimension.
         index shape(const index dim)  const;
 
+       
+        T xentry(const index i) const;
 
-        /// Set all elements of array to  given value.
-        ///
-        /// \param a Assignment value for each element
-        void operator=(const T a);
+    
 
         /// Add value to all elements.
         ///

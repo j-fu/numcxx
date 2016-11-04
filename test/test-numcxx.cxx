@@ -36,9 +36,16 @@ void speedtest(int n)
   delete[] ca;
 }
 
+template <typename T> 
+void xtest(numcxx::TArray<T> & x)
+{
+     std::cout << x.size() <<  std::endl;
+}
+
 int main (int argc, const char *argv[])
 {
     const int N=4;
+
 
 
     auto v=std::make_shared<std::vector<double>>(10);
@@ -46,6 +53,7 @@ int main (int argc, const char *argv[])
 
     auto xv=std::make_shared<numcxx::DArray1>(v);
     std::cout << *xv << std::endl;
+    xtest(*xv);
 
     auto A=numcxx::DArray1::create({3,4,5});
 
