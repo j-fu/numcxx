@@ -27,6 +27,7 @@ namespace numcxx
     {
     public:
         using TArray<T>::size;
+        using TArray<T>::operator[];
 
 
 

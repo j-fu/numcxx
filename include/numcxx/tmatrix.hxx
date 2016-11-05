@@ -34,6 +34,7 @@ namespace numcxx
     public:
         using TArray2<T>::size;
         using TArray2<T>::shape;
+        using TArray<T>::operator[];
 
         TMatrix();
         TMatrix(index n0, index n1);
@@ -44,6 +45,15 @@ namespace numcxx
         static std::shared_ptr<TMatrix <T> > create(const  std::initializer_list<std::initializer_list<T>> &il);
         std::shared_ptr<TMatrix <T> > copy() const;
         std::shared_ptr<TMatrix <T> > clone() const;
+
+        T xentry(const index i, const index j) const {return _data[_idx(i,j)];}
+
+        template <typename VAL>
+        TMatrix<T>&  operator=(const VAL  &expr)  { assign(*this,expr); return *this;}
+
+        TMatrix<T>&  operator=(const T &expr) { assign(*this,expr); return *this;}
+
+        TMatrix<T>&  operator=(const TMatrix<T> &expr) { assign(*this,expr); return *this;}
 
         static void lu_decomp(TMatrix<T> &lu, TArray1<int> &ipiv); 
         static void lu_solve(TMatrix<T> &lu, TArray1<int> &ipiv,TArray1<T> &sol, const TArray1<T> &rhs);

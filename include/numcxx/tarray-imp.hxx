@@ -8,7 +8,7 @@ namespace numcxx
 
 
     template <typename T>
-    inline T TArray<T>::xentry(const index i) const
+    inline const T& TArray<T>::operator[](const index i) const
     {
         return _data[i];
     }
@@ -19,7 +19,7 @@ namespace numcxx
 //            resize( expr.size() );
         T *data=A.data();
         for(index i=0; i<expr.size(); i++ )
-            data[i] = expr.xentry(i);
+            data[i] = expr[i];
     }
 
     template <typename T>

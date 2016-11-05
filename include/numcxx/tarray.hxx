@@ -48,10 +48,10 @@ namespace numcxx
         /// \return Number of elements in given dimension.
         index shape(const index dim)  const;
 
-       
-        T xentry(const index i) const;
+        /// Entry value for use in expression templates
+        /// 
+        const T & operator[](index i0) const;
 
-    
 
         /// Add value to all elements.
         ///
