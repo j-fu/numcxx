@@ -43,5 +43,6 @@ int main()
     std::cout<< B << std::endl;
     B=Mat*E;
     std::cout<< B << std::endl;
-    
+    B=E;
+    std::cout<< B << std::endl;
 }

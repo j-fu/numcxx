@@ -13,40 +13,185 @@ namespace numcxx
         return _data[i];
     }
 
-    template <typename T, typename EXPR,typename= typename std::enable_if<std::is_class<EXPR>::value, EXPR>::type>
-    inline void assign(TArray<T>& A, const  EXPR& expr) 
+    template <typename T, typename EXPR,
+              typename= typename std::enable_if<std::is_class<EXPR>::value, EXPR>::type>
+    inline void assign(TArray<T>& A, const  EXPR& expr , const EXPR *x=0) 
     {
 //            resize( expr.size() );
         T *data=A.data();
-        for(index i=0; i<expr.size(); i++ )
-            data[i] = expr[i];
+        for(index i=0; i<expr.size(); i++ ) data[i] = expr[i];
     }
 
-    template <typename T>
-    inline void  assign(TArray<T> &A,const  T &a)
+    template <typename T, typename VAL,
+              typename= typename std::enable_if<!std::is_class<VAL>::value, VAL>::type>
+    inline void assign(TArray<T>& A, const  VAL& a) 
     {
         T *data=A.data();
-        for( index i=0; i<A.size(); ++i )
-            data[i] = a;
+        for(index i=0; i<A.size(); i++ ) data[i] = a;
+    }
+
+    template <typename T, typename EXPR,
+              typename= typename std::enable_if<std::is_class<EXPR>::value, EXPR>::type>
+    inline void xadd(TArray<T>& A, const  EXPR& expr , const EXPR *x=0) 
+    {
+//            resize( expr.size() );
+        T *data=A.data();
+        for(index i=0; i<expr.size(); i++ ) data[i] += expr[i];
     }
 
 
+    template <typename T, typename VAL,
+              typename= typename std::enable_if<!std::is_class<VAL>::value, VAL>::type>
+    inline void xadd(TArray<T>& A, const  VAL& a) 
+    {
+        T *data=A.data();
+        for(index i=0; i<A.size(); i++ )data[i] += a;
+    }
+
+
+    template <typename T, typename EXPR,
+              typename= typename std::enable_if<std::is_class<EXPR>::value, EXPR>::type>
+    inline void xsub(TArray<T>& A, const  EXPR& expr , const EXPR *x=0) 
+    {
+//            resize( expr.size() );
+        T *data=A.data();
+        for(index i=0; i<expr.size(); i++ ) data[i] -= expr[i];
+    }
+
+
+    template <typename T, typename VAL,
+              typename= typename std::enable_if<!std::is_class<VAL>::value, VAL>::type>
+    inline void xsub(TArray<T>& A, const  VAL& a) 
+    {
+        T *data=A.data();
+        for(index i=0; i<A.size(); i++ )data[i] -= a;
+    }
+
+
+    template <typename T, typename EXPR,
+              typename= typename std::enable_if<std::is_class<EXPR>::value, EXPR>::type>
+    inline void xmul(TArray<T>& A, const  EXPR& expr , const EXPR *x=0) 
+    {
+//            resize( expr.size() );
+        T *data=A.data();
+        for(index i=0; i<expr.size(); i++ ) data[i] *= expr[i];
+    }
+
+
+    template <typename T, typename VAL,
+              typename= typename std::enable_if<!std::is_class<VAL>::value, VAL>::type>
+    inline void xmul(TArray<T>& A, const  VAL& a) 
+    {
+        T *data=A.data();
+        for(index i=0; i<A.size(); i++ )data[i] *= a;
+    }
+
+
+    template <typename T, typename EXPR,
+              typename= typename std::enable_if<std::is_class<EXPR>::value, EXPR>::type>
+    inline void xdiv(TArray<T>& A, const  EXPR& expr , const EXPR *x=0) 
+    {
+//            resize( expr.size() );
+        T *data=A.data();
+        for(index i=0; i<expr.size(); i++ ) data[i] /= expr[i];
+    }
+
+
+    template <typename T, typename VAL,
+              typename= typename std::enable_if<!std::is_class<VAL>::value, VAL>::type>
+    inline void xdiv(TArray<T>& A, const  VAL& a) 
+    {
+        T *data=A.data();
+        for(index i=0; i<A.size(); i++ )data[i] /= a;
+    }
+
+
+    template <typename A> double normi(const A& a)
+    {
+        double norm=std::abs(a[0]);
+        for(index i=1; i<a.size(); i++ )
+        {
+            double x=std::abs(a[i]);
+            if (x>norm) norm=x;
+        }
+        return norm;
+    }
+
+    template <typename A> double norm1(const A& a)
+    {
+        double norm=std::abs(a[0]);
+        for(index i=1; i<a.size(); i++ )
+        {
+           norm+=std::abs(a[i]);
+        }
+        return norm;
+    }
+
+    template <typename A> double norm2(const A& a)
+    {
+        double norm=0.0;
+        for(index i=0; i<a.size(); i++ )
+        {
+            double x=a[i];
+            norm+=x*x;
+        }
+        return sqrt(norm);
+    }
+
+
+    template <typename A> double min(const A&a)
+    {
+        double m=a[0];
+        for(index i=1; i<a.size(); i++ )
+        {
+            double x=a[i];
+            if (x<m) m=x;
+        }
+        return m;
+    }
+
+    template <typename A> double max(const A&a)
+    {
+        double m=a[0];
+        for(index i=1; i<a.size(); i++ )
+        {
+            double x=a[i];
+            if (x>m) m=x;
+        }
+        return m;
+    }
+
+    template <typename A>  double sum(const A&a)
+    {
+        double s=a[0];
+        for(index i=1; i<a.size(); i++ )
+        {
+           s+=a[i];
+        }
+        return s;
+    }
+
+    template <typename A, typename B> double dot(const A& a, const B&b)
+    {
+        double dot=0.0;
+        for(index i=0; i<a.size(); i++ )
+        {
+            dot+=a[i]*b[i];
+        }
+        return dot;
+    }
 
     template <typename T> 
     inline        T*TArray<T>::data() const { return _data;}
+
     template <typename T> 
     inline    index TArray<T>::ndim() const {return _ndim;}
+
     template <typename T> 
     inline    index TArray<T>::size() const {return _size;}
+
     template <typename T> 
     inline    index TArray<T>::shape(const index dim)  const {return _shape[dim];}
-
-
-    template <typename T> 
-    inline void TArray<T>::fill(T x)
-    {
-        for (index i=0;i<_size;i++) _data[i]=x;
-    }
     
     
     template <typename T> 
@@ -169,60 +314,12 @@ namespace numcxx
     template <typename T> 
     inline TArray<T>::TArray():_ndim(0),_deleter([](T*p){;}){};   
     
-    // template <typename T> 
-    // inline void TArray<T>::operator=(const T a) { for(index i=0;i<_size;i++) _data[i]=a;}
-
-    template <typename T> 
-    inline void TArray<T>::operator+=(const T a) { for(index i=0;i<_size;i++) _data[i]+=a;}
-
-    template <typename T> 
-    inline void TArray<T>::operator*=(const T a) { for(index i=0;i<_size;i++) _data[i]*=a;}
-
-    template <typename T> 
-    inline void TArray<T>::operator-=(const T a) { for(index i=0;i<_size;i++) _data[i]-=a;}
-
-    template <typename T> 
-    inline void TArray<T>::operator/=(const T a) { for(index i=0;i<_size;i++) _data[i]/=a;}
-
-    template <typename T> 
-    inline void TArray<T>::operator+=(const TArray<T> & a) { for(index i=0;i<_size;i++) _data[i]+=a._data[i];}
-
-    template <typename T> 
-    inline void TArray<T>::operator-=(const TArray<T> & a) { for(index i=0;i<_size;i++) _data[i]-=a._data[i];}
-
-            
-    template <typename T> 
-    inline T TArray<T>::min() const { T min=_data[0]; for(index i=1;i<_size;i++) if (_data[i]<min) min=_data[i]; return min;}
-
-    template <typename T> 
-    inline T TArray<T>::max() const { T max=_data[0]; for(index i=1;i<_size;i++) if (_data[i]>max) max=_data[i]; return max;}
-
-    template <typename T> 
-    inline T TArray<T>::sum() const { T sum=_data[0]; for(index i=1;i<_size;i++) sum+=_data[i]; return sum;}
-
-    template <typename T> 
-    inline T TArray<T>::norm2() const  { return sqrt(dot(*this,*this));}
-
-    template <typename T> 
-    inline T TArray<T>::norm1() const  { T sum=std::abs(_data[0]); for(index i=1;i<_size;i++) sum+=std::abs(_data[i]); return sum; }
-
-    template <typename T> 
-    inline T TArray<T>::normi() const  { T x,max=std::abs(_data[0]); for(index i=1;i<_size;i++) if ((x=std::abs(_data[i]))>max) max=x; return max; }
-
-    template <typename T> 
-    inline void TArray<T>::fill(const TArray<T> &A) { for(index i=0;i<_size;i++) _data[i]=A._data[i];}
-
-    template <typename T> 
-    inline void TArray<T>::fill(std::function< T(const T)> f,const TArray<T> & A) { for(index i=0;i<A._size;i++) _data[i]=f(A._data[i]);}
 
     template <typename T> 
     inline void TArray<T>::operate(std::function< void ( T& a, T&b)> f, TArray<T> & A, TArray<T> & B)  { for(index i=0;i<A._size;i++) f(A._data[i],B._data[i]);}
 
     template <typename T> 
     inline void TArray<T>::operate(std::function< void ( T& a, T&b,T&c)> f, TArray<T> & A, TArray<T> & B,TArray<T> & C)  { for(index i=0;i<A._size;i++) f(A._data[i],B._data[i],C._data[i]);}
-
-    template <typename T> 
-    inline T TArray<T>::dot(const TArray<T>& A,const TArray<T> &B) { T xdot=A._data[0]*B._data[0];for(index i=1;i<A._size;i++) xdot+=A._data[i]*B._data[i]; return xdot;}
 
 
 }

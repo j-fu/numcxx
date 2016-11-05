@@ -25,19 +25,19 @@ template <typename T > void arraytest(void)
     for (int i=0;i<a->size();i++) assert((*a)[i]==2*(i+2));
     (*a)-=1;
     for (int i=0;i<a->size();i++) assert((*a)[i]==2*(i+2)-1);
-    assert(a->min()==3);
-    assert(a->max()==21);
-    assert(a->sum()==120);
-    assert(a->norm1()==120);
-    assert(a->normi()==21);
+    assert(min(*a)==3);
+    assert(max(*a)==21);
+    assert(sum(*a)==120);
+    assert(norm1(*a)==120);
+    assert(normi(*a)==21);
     (*a)-=4;
     (*a)(0)+=4;
     (*a)(2)+=1;
     (*a)(3)+=3;
-    assert(a->norm2()==32); //exact value, power of 2, works as well for integer types
+    assert(norm2(*a)==32); //exact value, power of 2, works as well for integer types
 
     auto b=a->clone();
-    b->fill(*a);
+    *b=*a;
     for (int i=0;i<a->size();i++) assert((*a)[i]==(*b)[i]);
 
     numcxx::TArray1<T>::operate([](T&a, T&b){a=2*b;},*a,*b);
@@ -58,56 +58,83 @@ template <typename T > void arraytest(void)
 
 template <typename T > void matrixtest(void)
 {
-    auto M=numcxx::TMatrix<T>::create(
-        {{1,1},
-         {0,1}});
-    auto f=numcxx::TArray1<T>::create({1,1});
-    auto u=M->solve(*f);
-    assert((*u)(0)==0);
-    assert((*u)(1)==1);
 
-
-    auto invM=M->inverse();
-    assert((*invM)(0,0)==1);
-    assert((*invM)(0,1)==-1);
-    assert((*invM)(1,0)==0);
-    assert((*invM)(1,1)==1);
-
-    
-    // this is an unimodular matrix with integer inverse, see
-    // Weisstein, Eric W. "Unimodular Matrix." From MathWorld--A Wolfram Web Resource. 
-    // http://mathworld.wolfram.com/UnimodularMatrix.html
-    auto N=numcxx::TMatrix<T>::create(
+    auto A=numcxx::TMatrix<double>::create(
         {   {2,3,5},
             {3,2,3},
             {9,5,7}});
-    auto invN=N->inverse();
-
-    auto g=numcxx::TArray1<T>::create({1,2,3});
-    auto u1=N->solve(*g);
-    auto u2=u1->clone();
-    u2->fill(0);
-    invN->apply(*g,*u2);
-    (*u2)-=(*u1);
     
-    assert(u2->normi()<50.0*std::numeric_limits<T>::epsilon());
+    auto LU=std::make_shared<numcxx::TSolverLapackLU<double>>(A);
+    LU->update();
+    auto g=numcxx::TArray1<double>::create({1,2,3});
+    auto u=g->clone();
+    auto f=g->clone();
+    LU->solve(*u,*g);
+    A->apply(*u,*f);
+    assert(normi(*f-(*g))<1.0e4*std::numeric_limits<T>::epsilon());
+}
 
+
+template <typename T > void expressiontest(void)
+{
+    const int N=3;
+    numcxx::TArray1<T> A(N);
+    numcxx::TArray1<T> B(N);
+    numcxx::TArray1<T> C(N);
+    numcxx::TArray1<T> D(N);
+    std::vector<T> E{33,44,55};
+
+    numcxx::TMatrix<T> Mat{{1,2,3},{4,5,6},{7,8,9}};
+    auto X=Mat.clone();
+    auto &x=*X;
+    A=0.0;
+
+    x=Mat;
+
+    B=1;
+    C=21;
+    D=3;
+    A=B+5;
+    A=6+B;
+    D=A*4;
+    A=3*(B+C/3)-4*D/2;
+    assert(norm1(A)==72);
+
+
+
+    B=3*(Mat*A);
+    assert(norm1(B)==3240);
+    Mat.apply(A,C);
+    B=Mat*A;
+    assert(norm1(B)==norm1(C));
     
 
+    B=A+E;
+    B+=Mat*E;
+    assert(norm1(B)==2106);
+    B=E;
+    assert(norm1(B)==132);
 }
 
 int main()
 {
 
     arraytest<double>();
-
-    // arraytest<long double>();
-    // arraytest<float>();
-    // arraytest<int>();
-    // arraytest<long int>();
-    // arraytest<short int>();
+    arraytest<long double>();
+    arraytest<float>();
+    arraytest<int>();
+    arraytest<long int>();
+    arraytest<short int>();
 
     matrixtest<double>();
     matrixtest<float>();
+
+    expressiontest<double>();
+    expressiontest<long double>();
+    expressiontest<float>();
+    expressiontest<int>();
+    expressiontest<long int>();
+    expressiontest<short int>();
+
 
 }

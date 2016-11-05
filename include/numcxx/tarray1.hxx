@@ -28,6 +28,7 @@ namespace numcxx
     public:
         using TArray<T>::size;
         using TArray<T>::operator[];
+        using TArray<T>::operator=;
 
 
 
@@ -90,11 +91,6 @@ namespace numcxx
         ///  \return Array of the same size with empty contents.
         std::shared_ptr<TArray1 <T> > clone() const;
 
-
-        template <typename VAL>
-        TArray1<T>&  operator=(const VAL  &expr)  { assign(*this,expr); return *this;}
-
-        TArray1<T>&  operator=(const T &expr) { assign(*this,expr); return *this;}
 
         TArray1<T>&  operator=(const TArray1<T> &expr) { assign(*this,expr); return *this;}
 

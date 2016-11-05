@@ -1,6 +1,6 @@
 CXX=g++-5
-#CXX=g++
-CXX=clang++
+CXX=g++
+#CXX=clang++
 #CXX=icpc
 NUMCXX=../include/numcxx
 
@@ -18,7 +18,7 @@ SHLDFLAGS= -shared
 	$(CXX) $(CXXFLAGS) -o $@  $< $(LALIBS)
 
 
-BINARIES=test-et featuretest test-numcxx test-numcxx3 
+BINARIES=test-et  test-numcxx3  featuretest test-numcxx
 #_numcxx.so 
 all: $(BINARIES)
 
@@ -26,7 +26,8 @@ all: $(BINARIES)
 NUMCXX_HEADERS=$(wildcard $(NUMCXX)/*.hxx)
 
 
-test-numcxx2.o: $(NUMCXX_HEADERS)
+test-numcxx3: $(NUMCXX_HEADERS)
+test-numcxx2: $(NUMCXX_HEADERS)
 featuretest: $(NUMCXX_HEADERS)
 test-et: $(NUMCXX_HEADERS)
 

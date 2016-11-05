@@ -10,7 +10,7 @@ void speedtest(int n)
   int nrun=200;
   auto XA=numcxx::TArray1<double>::create(n);
   auto &xa=*XA;
-  double *ca=new double[n+100];
+  double *ca=new double[n];
   ca[0]=1;
   xa(0)=1;
         
@@ -46,8 +46,6 @@ int main (int argc, const char *argv[])
 {
     const int N=4;
 
-
-
     auto v=std::make_shared<std::vector<double>>(10);
     for (int i=1;i<10;i++) (*v)[i]=-i;
 
@@ -59,7 +57,7 @@ int main (int argc, const char *argv[])
 
     auto B=A->clone();
     auto C=A->clone();
-    B->fill([](double x) -> double { return std::sin(x); },*A);
+    numcxx::DArray1::operate([](double &a, double &b){b=std::sin(a);},*A,*B);
     
     numcxx::DArray1::operate([](double &a, double &b, double &c){c=2.0*a+b;},*A,*B,*C);
 
@@ -75,14 +73,17 @@ int main (int argc, const char *argv[])
             {5,6,-1},
             {0,9,18}
         });
-    std::cout << "M:\n"<<M<< std::endl;
+    std::cout << "M:\n"<<*M<< std::endl;
     auto a=numcxx::DArray1::create({1,2,3});
-    auto b=M->solve(*a);
+    auto b=a->clone();
+    auto solver=numcxx::TSolverLapackLU<double>::create(M);
+    solver->update();
+    solver->solve(*b,*a);
 
     std::cout<< "b:\n"<< b << std::endl;
 
-
-    auto c=M->apply(*b);
+    auto c=b->clone();
+    M->apply(*b,*c);
     
     std::cout<< "c:\n"<< c << std::endl;
     

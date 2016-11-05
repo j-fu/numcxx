@@ -49,6 +49,8 @@ namespace  numcxx
         /// Construct 2D Array from std::initializer list.
         TArray2(const  std::initializer_list<std::initializer_list<T>> &il );
 
+        template <typename VAL>
+        TArray2<T>&  operator=(const VAL  &expr)  { assign(*this,expr); return *this;}
 
         /// Construct empty 2D Array
         ///

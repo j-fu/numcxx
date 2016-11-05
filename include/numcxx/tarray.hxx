@@ -48,89 +48,40 @@ namespace numcxx
         /// \return Number of elements in given dimension.
         index shape(const index dim)  const;
 
-        /// Entry value for use in expression templates
-        /// 
+        /// Const reference to entry for use in expression templates
         const T & operator[](index i0) const;
+        
+        template <typename VAL>
+        TArray<T>&  operator=(const VAL  &expr)  { assign(*this,expr); return *this;}
 
 
         /// Add value to all elements.
         ///
         /// \param a Summand for each element.
-        void operator+=(const T a);
+        template <typename VAL>
+        void operator+=(const VAL & a) {xadd(*this,a);}
 
         /// Subtract value from all elements.
         ///
         /// \param a Value to be subracted from each element.
-        void operator-=(const T a);
+        template <typename VAL>
+        void operator-=(const VAL& a) {xsub(*this,a);}
 
 
         /// Multiply all elements by value
         ///
         /// \param a Multiplicator for each element.
-        void operator*=(const T a);
+        template <typename VAL>
+        void operator*=(const VAL& a) {xmul(*this,a);}
 
 
         /// Divide each element by value
         ///
         /// \param a Divisor for each element.
-        void operator/=(const T a);
-
-        /// Add vector.
-        ///
-        /// \param a Summand.
-        void operator+=(const TArray<T> & a);
-
-        /// Subtract vector.
-        ///
-        /// \param a Vector to be subtracted
-        void operator-=(const TArray<T> & a);
+        template <typename VAL>
+        void operator/=(const VAL & a) {xdiv(*this,a);}
 
 
-        /// Minimum of array.
-        ///
-        /// \return Minimum of all elements in array.
-        T min() const;
-
-        /// Maximum of array.
-        ///
-        /// \return Maximum of all elements in array.
-        T max() const;
-
-        /// Sum of array.
-        ///
-        /// \return Sum of all elements in array.
-        T sum() const;
-
-        /// Euklidean norm.
-        ///
-        /// \return Euklidean ( \f$l^2\f$) norm of array.
-        T norm2() const;
-
-        /// Sum norm of array.
-        ///
-        /// \return Sum ( \f$l^1\f$) norm of array.
-        T norm1() const;
-
-        /// Maximum norm of array.
-        ///
-        /// \return Maximum ( \f$l^1\f$) norm of array.
-        T normi() const;
-
-        /// Set all elements of array to  given value.
-        ///
-        /// \param a Assignment value for each element
-        void fill(T a);
-
-        /// Fill array with elements form other array.
-        ///
-        /// \param A Array with given values.
-        void fill(const TArray<T> &A);
-
-        /// Fill array with function of elements form other array.
-        ///
-        /// \param f Function to be performed  on values of \p A.
-        /// \param A Array with given values.
-        void fill(std::function< T(const T)> f,const TArray<T> & A);
 
         /// Binary operation on arrays.
         ///
@@ -146,13 +97,6 @@ namespace numcxx
         /// \param B Second array argument.
         /// \param C Third array argument.
         static void operate(std::function< void ( T& a, T&b,T&c)> f, TArray<T> & A, TArray<T> & B,TArray<T> & C);
-
-        /// Dot product of two arrays.
-        ///
-        /// \param A First array argument.
-        /// \param B Second array argument.
-        /// \return  Dot product
-        static T dot(const TArray<T>& A,const TArray<T> &B);
 
 
     private:
@@ -266,6 +210,47 @@ namespace numcxx
         ~TArray();
 
     };
+
+    /// Maximum norm of array.
+    ///
+    /// \return Maximum ( \f$l^\infty\f$) norm.
+    template <typename A> double normi(const A& a);
+
+    /// Sum norm.
+    ///
+    /// \return Sum ( \f$l^1\f$) norm.
+    template <typename A> double norm1(const A& a);
+
+    /// Euklidean norm.
+    ///
+    /// \return Euklidean ( \f$l^2\f$) norm 
+    template <typename A> double norm2(const A& a);
+
+    /// Dot product.
+    ///
+    /// \param A First argument.
+    /// \param B Second argument.
+    /// \return  Dot product
+    template <typename A, typename B> double dot(const A& a, const B&b);
+
+    
+    /// Minimum of array.
+    ///
+    /// \return Minimum of all elements in array.
+    template <typename A> double min(const A&a);
+    
+    /// Maximum of array.
+    ///
+    /// \return Maximum of all elements in array.
+    template <typename A>  double max(const A&a);
+    
+    /// Sum of array.
+    ///
+    /// \return Sum of all elements in array.
+    template <typename A>  double sum(const A&a);
+    
+    
+    
 }
 
 
