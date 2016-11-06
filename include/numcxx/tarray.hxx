@@ -11,6 +11,13 @@ namespace numcxx
 {
     using index= unsigned int;
 
+    /// Base class for arrays used in expression templates
+    ///
+    /// All classes to be used with the numcxx expression templates
+    /// should be derived from this one. The rationale is the control
+    /// of expression template specialization with ``std::is_base_of``,
+    /// and the prevention of accidental invocation of the templates
+    /// in unexected situations.
     class ExpressionBase
     {
     };
@@ -252,7 +259,10 @@ namespace numcxx
     ///
     /// \return Sum of all elements in array.
     template <typename A>  double sum(const A&a);
-    
+
+
+
+    /// Base class for linear solvers and preconditioners
     template<typename T> class TLinSolver
     {
     public:
@@ -261,6 +271,7 @@ namespace numcxx
         virtual void update(void){};
     };
 
+    /// Base class for linear operators (matrices, sparse matrices)
     template<typename T> class TLinOperator
     {
     public:

@@ -5,6 +5,7 @@
 
 namespace numcxx
 {
+    /// Lapack LU factorization class
     template<typename T> 
     class TSolverLapackLU: public  TLinSolver<T>
     {
@@ -12,10 +13,14 @@ namespace numcxx
         const std::shared_ptr< TMatrix<T> >lu;
         const std::shared_ptr< TArray1<int>> ipiv;
     public:
+        /// Create LU factorization class
         TSolverLapackLU(const std::shared_ptr<TMatrix<T>> a);
-        void update();
-        void solve( TArray1<T> & sol,  const TArray1<T> & rhs);
+        /// Create LU factorization class
         static std::shared_ptr<TSolverLapackLU<T>> create(const std::shared_ptr<TMatrix<T>> a);
+        /// Perform actual computation of LU factorization
+        void update();
+        /// Solve LU factorized system
+        void solve( TArray1<T> & sol,  const TArray1<T> & rhs);
     };
 }
 #include "tsolverlapacklu-imp.hxx"

@@ -9,6 +9,7 @@
 #include "tsolverlapacklu.hxx"
 #include "expression.hxx"
 
+/// Namespace for all parts of numcxx library
 namespace numcxx
 {
     using DArray1=TArray1<double>;

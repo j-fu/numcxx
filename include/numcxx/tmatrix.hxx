@@ -9,7 +9,7 @@
 
 namespace numcxx
 {
-
+    /// Dense matrix class
     template<typename T> 
     class TMatrix: public TArray2<T>, TLinOperator<T>
     {

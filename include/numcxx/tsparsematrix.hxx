@@ -14,6 +14,7 @@ namespace numcxx
     template <typename T>
     class TSparseMatrixExtension;
 
+    /// Sparse matrix class (experimental)
     template<typename T> 
     class TSparseMatrix: TLinOperator<T>
     {
@@ -111,15 +112,9 @@ namespace numcxx
     };
 
 
-    template<typename T> 
-    class rowentry
-    {
-    public: 
-        int i;
-        T a;
-    };
         
 
+    /// Sparse matrix extension class (experimental)
     template<typename T> 
     class TSparseMatrixExtension
     {
@@ -139,6 +134,15 @@ namespace numcxx
   
         /// zero value
         const T zero=0;        
+        
+        
+        class rowentry
+        {
+        public: 
+            int i;
+            T a;
+        };
+
 
     public:        
         TSparseMatrixExtension(index n):
@@ -296,7 +300,7 @@ namespace numcxx
                 maxrow=std::max(lrow,maxrow);
             }
             
-            std::vector<rowentry<T>> row(matrix.maxrow+maxrow+10);
+            std::vector<rowentry> row(matrix.maxrow+maxrow+10);
             int new_maxrow=0;
             int j=0;
             int i;
@@ -315,7 +319,7 @@ namespace numcxx
 
                 
                 std::sort(row.begin(),row.begin()+lxrow, 
-                          [](const rowentry<T>&e1, const rowentry<T> &e2)-> bool
+                          [](const rowentry&e1, const rowentry &e2)-> bool
                           {
                               return  (e1.i<e2.i);
                           });

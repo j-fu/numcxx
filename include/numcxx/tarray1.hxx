@@ -21,8 +21,8 @@ namespace numcxx
     template<typename T>
     inline std::ostream & operator << (std::ostream & s, TArray1<T> &A);
         
- 
-
+    
+    /// One dimensional array class
     template<typename T> class TArray1: public TArray<T>
     {
     public:

@@ -13,6 +13,7 @@ namespace  numcxx
     template<typename T>
     inline std::ostream & operator << (std::ostream & s, TArray2<T> &A);
 
+    /// Two-dimensional array class
     template<typename T> 
     class TArray2: public TArray<T>
     {

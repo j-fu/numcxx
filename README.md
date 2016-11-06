@@ -6,7 +6,7 @@ numcxx - a collection of python compatible classes for linear algebra in C++ {#m
 
 - Keep the  code reasonably simple and transparent  for beginners in order  to be
   useful for teaching
-     - Straightforward implementation of expressio templates
+     - Straightforward implementation of expression templates
      - Study expressive capabilities of modern C++
 
 - Efficient, reference counted exchange of array data with other packages without copying
@@ -24,7 +24,7 @@ or even  inspired by Timo  Streckenbach from the WIAS  pdelib project,
 and   they   evolved   over   may   years.    C++11   allows   for   a
 standard-conforming and concise implementation.
 
-Anyone expecting more sophisticated worK
+Anyone expecting more sophisticated work
 may have a look at these projects:
 
 - eigen

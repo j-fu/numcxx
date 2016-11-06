@@ -3,6 +3,7 @@
 #include <ctime>
 #include <cmath>
 #include <vector>
+#include <iostream>
 #include "numcxx/numcxx.hxx"
 
 
