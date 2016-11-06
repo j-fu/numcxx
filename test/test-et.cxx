@@ -14,7 +14,6 @@ int main()
     numcxx::DArray1 B(N);
     numcxx::DArray1 C(N);
     numcxx::DArray1 D(N);
-    std::vector<double> E{33,44,55};
 
     numcxx::TMatrix<double> Mat{{1,2,3},{4,5,6},{7,8,9}};
     auto X=Mat.clone();
@@ -39,10 +38,11 @@ int main()
 
     std::cout<< C << std::endl;
 
-    B=A+E;
-    std::cout<< B << std::endl;
-    B=Mat*E;
-    std::cout<< B << std::endl;
-    B=E;
-    std::cout<< B << std::endl;
+    // std::vector<double> E{33,44,55};
+    // B=A+E;
+    // std::cout<< B << std::endl;
+    // B=Mat*E;
+    // std::cout<< B << std::endl;
+    // B=E;
+    // std::cout<< B << std::endl;
 }

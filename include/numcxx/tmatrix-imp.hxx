@@ -33,7 +33,7 @@ namespace numcxx
     inline  std::shared_ptr<TMatrix <T> > TMatrix<T>::copy() const
     {
         auto x=create(shape(0),shape(1));
-        x->fill(*this);
+        *x=*this;
         return x;
     }
 

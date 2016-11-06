@@ -9,22 +9,6 @@
 
 namespace numcxx
 {
-    template<typename T> class TLinSolver
-    {
-    public:
-        TLinSolver(){};
-        virtual void solve( TArray<T> & sol,  const TArray<T> & rhs) const {};
-        virtual void update(void){};
-    };
-
-    template<typename T> class TLinOperator
-    {
-    public:
-        TLinOperator(){};
-        virtual void apply( const TArray<T> & sol,   TArray<T> & rhs) const {};
-    };
-
-
 
     template<typename T> 
     class TMatrix: public TArray2<T>, TLinOperator<T>

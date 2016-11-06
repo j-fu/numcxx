@@ -6,9 +6,9 @@ namespace numcxx
     ////////////////////////////////////////////////////////////////////////////////////
     /// Expression template for   A+B
     template<typename A, typename B,
-             typename= typename std::enable_if<!std::is_fundamental<A>::value, A>::type,
-             typename= typename std::enable_if<!std::is_fundamental<B>::value, B>::type>
-    class AdditionExpression
+             typename= typename std::enable_if<std::is_base_of<ExpressionBase,A>::value, A>::type,
+             typename= typename std::enable_if<std::is_base_of<ExpressionBase,B>::value, B>::type>
+    class AdditionExpression: public ExpressionBase
     {
         const A& a;
         const B& b;
@@ -28,8 +28,8 @@ namespace numcxx
     };
         
     template<typename A, typename B, 
-             typename= typename std::enable_if<!std::is_fundamental<A>::value, A>::type,
-             typename= typename std::enable_if<!std::is_fundamental<B>::value, B>::type>
+             typename= typename std::enable_if<std::is_base_of<ExpressionBase,A>::value, A>::type,
+             typename= typename std::enable_if<std::is_base_of<ExpressionBase,B>::value, B>::type>
     const AdditionExpression<A,B> operator+(const A& a, const B& b)
     {
         return AdditionExpression<A,B>(a, b);
@@ -38,9 +38,9 @@ namespace numcxx
     ////////////////////////////////////////////////////////////////////////////////////
     /// Expression template for   A-B
     template<typename A, typename B,
-             typename= typename std::enable_if<!std::is_fundamental<A>::value, A>::type,
-             typename= typename std::enable_if<!std::is_fundamental<B>::value, B>::type>
-    class DiffExpression
+             typename= typename std::enable_if<std::is_base_of<ExpressionBase,A>::value, A>::type,
+             typename= typename std::enable_if<std::is_base_of<ExpressionBase,B>::value, B>::type>
+    class DiffExpression: public ExpressionBase
     {
         const A& a;
         const B& b;
@@ -60,8 +60,8 @@ namespace numcxx
     };
         
     template<typename A, typename B,
-             typename= typename std::enable_if<!std::is_fundamental<A>::value, A>::type,
-             typename= typename std::enable_if<!std::is_fundamental<B>::value, B>::type>
+             typename= typename std::enable_if<std::is_base_of<ExpressionBase,A>::value, A>::type,
+             typename= typename std::enable_if<std::is_base_of<ExpressionBase,B>::value, B>::type>
     const DiffExpression<A,B> operator-(const A& a, const B& b)
     {
         return DiffExpression<A,B>(a, b);
@@ -71,8 +71,8 @@ namespace numcxx
     /// Expression template for  a*B
     template<typename A, typename B, 
              typename= typename std::enable_if<std::is_fundamental<A>::value, A>::type,
-             typename= typename std::enable_if<!std::is_fundamental<B>::value, B>::type>
-    class LeftScalarMultiplicationExpression
+             typename= typename std::enable_if<std::is_base_of<ExpressionBase,B>::value, B>::type>
+    class LeftScalarMultiplicationExpression: public ExpressionBase
     {
         const A& a;
         const B& b;
@@ -93,7 +93,7 @@ namespace numcxx
         
     template<typename A, typename B,
              typename= typename std::enable_if<std::is_fundamental<A>::value, A>::type,
-             typename= typename std::enable_if<!std::is_fundamental<B>::value, B>::type>
+             typename= typename std::enable_if<std::is_base_of<ExpressionBase,B>::value, B>::type>
     const LeftScalarMultiplicationExpression<A,B> operator*(const A& a, const B& b)
     {
         return LeftScalarMultiplicationExpression<A,B>(a, b);
@@ -103,9 +103,9 @@ namespace numcxx
     ////////////////////////////////////////////////////////////////////////////////////
     /// Expression template for  A*b
     template<typename A, typename B, 
-             typename= typename std::enable_if<!std::is_fundamental<A>::value, A>::type,
+             typename= typename std::enable_if<std::is_base_of<ExpressionBase,A>::value, A>::type,
              typename= typename std::enable_if<std::is_fundamental<B>::value, B>::type>
-    class RightScalarMultiplicationExpression
+    class RightScalarMultiplicationExpression: public ExpressionBase
     {
         const A& a;
         const B& b;
@@ -124,7 +124,7 @@ namespace numcxx
     };
         
     template<typename A, typename B,
-             typename= typename std::enable_if<!std::is_fundamental<A>::value, A>::type,
+             typename= typename std::enable_if<std::is_base_of<ExpressionBase,A>::value, A>::type,
              typename= typename std::enable_if<std::is_fundamental<B>::value, B>::type>
     const RightScalarMultiplicationExpression<A,B> operator*(const A& a, const B& b)
     {
@@ -136,9 +136,9 @@ namespace numcxx
     ////////////////////////////////////////////////////////////////////////////////////
     /// Expression template for  A+b
     template<typename A, typename B,
-             typename= typename std::enable_if<!std::is_fundamental<A>::value, A>::type,
+             typename= typename std::enable_if<std::is_base_of<ExpressionBase,A>::value, A>::type,
              typename= typename std::enable_if<std::is_fundamental<B>::value, B>::type>
-    class RightScalarAdditionExpression
+    class RightScalarAdditionExpression: public ExpressionBase
     {
         const A& a;
         const B& b;
@@ -156,7 +156,7 @@ namespace numcxx
     };
         
     template<typename A, typename B,
-             typename= typename std::enable_if<!std::is_fundamental<A>::value, A>::type,
+             typename= typename std::enable_if<std::is_base_of<ExpressionBase,A>::value, A>::type,
              typename= typename std::enable_if<std::is_fundamental<B>::value, B>::type>
     const RightScalarAdditionExpression<A,B> operator+(const A& a, const B& b)
     {
@@ -167,8 +167,8 @@ namespace numcxx
     /// Expression template for  a+B
     template<typename A, typename B,
              typename= typename std::enable_if<std::is_fundamental<A>::value, A>::type,
-             typename= typename std::enable_if<!std::is_fundamental<B>::value, B>::type>
-    class LeftScalarAdditionExpression
+             typename= typename std::enable_if<std::is_base_of<ExpressionBase,B>::value, B>::type>
+    class LeftScalarAdditionExpression: public ExpressionBase
     {
         const A& a;
         const B& b;
@@ -187,7 +187,7 @@ namespace numcxx
 
     template<typename A, typename B,
              typename= typename std::enable_if<std::is_fundamental<A>::value, A>::type,
-             typename= typename std::enable_if<!std::is_fundamental<B>::value, B>::type>
+             typename= typename std::enable_if<std::is_base_of<ExpressionBase,B>::value, B>::type>
     const LeftScalarAdditionExpression<A,B> operator+(const A& a, const B& b)
     {
         return LeftScalarAdditionExpression<A,B>(a, b);
@@ -196,9 +196,9 @@ namespace numcxx
     ////////////////////////////////////////////////////////////////////////////////////
     /// Expression template for  A/b
     template<typename A, typename B,
-             typename= typename std::enable_if<!std::is_fundamental<A>::value, A>::type,
+             typename= typename std::enable_if<std::is_base_of<ExpressionBase,A>::value, A>::type,
              typename= typename std::enable_if<std::is_fundamental<B>::value, B>::type>
-    class RightScalarDivisionExpression
+    class RightScalarDivisionExpression: public ExpressionBase
     {
         const A& a;
         const B& b;
@@ -216,7 +216,7 @@ namespace numcxx
     };
 
     template<typename A, typename B,
-             typename= typename std::enable_if<!std::is_fundamental<A>::value, A>::type,
+             typename= typename std::enable_if<std::is_base_of<ExpressionBase,A>::value, A>::type,
              typename= typename std::enable_if<std::is_fundamental<B>::value, B>::type>
     const RightScalarDivisionExpression<A,B> operator/(const A& a, const B& b)
     {
@@ -227,8 +227,8 @@ namespace numcxx
     /// Expression template for  M*A
     template<typename A, typename B, 
              typename= typename std::enable_if<std::is_class<A>::value, A>::type,
-             typename= typename std::enable_if<!std::is_fundamental<B>::value, B>::type>
-    class LeftMatrixMultiplicationExpression
+             typename= typename std::enable_if<std::is_base_of<ExpressionBase,B>::value, B>::type>
+    class LeftMatrixMultiplicationExpression: public ExpressionBase
     {
         const A& a;
         const B& b;
@@ -252,7 +252,7 @@ namespace numcxx
 
     template<typename A, typename B, 
              typename= typename std::enable_if<std::is_class<A>::value, A>::type,
-             typename= typename std::enable_if<!std::is_fundamental<B>::value, B>::type>
+             typename= typename std::enable_if<std::is_base_of<ExpressionBase,B>::value, B>::type>
     const LeftMatrixMultiplicationExpression<A,B> operator*(const A& a, const B& b)
     {
         return LeftMatrixMultiplicationExpression<A,B>(a, b);

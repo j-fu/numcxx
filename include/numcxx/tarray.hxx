@@ -11,9 +11,13 @@ namespace numcxx
 {
     using index= unsigned int;
 
+    class ExpressionBase
+    {
+    };
+
     /// TArray is the common template base class for arrays and dense matrices
     /// of the numcxx project.
-    template<typename T> class TArray
+    template<typename T> class TArray: public ExpressionBase
     {
     public:
 
@@ -249,6 +253,21 @@ namespace numcxx
     /// \return Sum of all elements in array.
     template <typename A>  double sum(const A&a);
     
+    template<typename T> class TLinSolver
+    {
+    public:
+        TLinSolver(){};
+        virtual void solve( TArray<T> & sol,  const TArray<T> & rhs) const {};
+        virtual void update(void){};
+    };
+
+    template<typename T> class TLinOperator
+    {
+    public:
+        TLinOperator(){};
+        virtual void apply( const TArray<T> & sol,   TArray<T> & rhs) const {};
+    };
+
     
     
 }

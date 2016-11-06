@@ -228,7 +228,6 @@ namespace numcxx
     public:
         const index ndim();
         index size();
-        void fill(double x);
         int shape(int idim);
         
         static std::shared_ptr<DArray1> create(index n0);
@@ -245,7 +244,6 @@ namespace numcxx
     public:
         const index ndim();
         index size();
-        void fill(double x);
         int shape(int idim);
         
         static std::shared_ptr<DArray2> create(index n0, index n1);

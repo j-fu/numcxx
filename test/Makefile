@@ -1,6 +1,6 @@
 CXX=g++-5
 CXX=g++
-#CXX=clang++
+CXX=clang++
 #CXX=icpc
 NUMCXX=../include/numcxx
 
@@ -18,8 +18,7 @@ SHLDFLAGS= -shared
 	$(CXX) $(CXXFLAGS) -o $@  $< $(LALIBS)
 
 
-BINARIES=test-et  test-numcxx3  featuretest test-numcxx
-#_numcxx.so 
+BINARIES=test-sparse test-et  test-numcxx3  featuretest test-numcxx _numcxx.so 
 all: $(BINARIES)
 
 
@@ -30,6 +29,7 @@ test-numcxx3: $(NUMCXX_HEADERS)
 test-numcxx2: $(NUMCXX_HEADERS)
 featuretest: $(NUMCXX_HEADERS)
 test-et: $(NUMCXX_HEADERS)
+test-sparse: $(NUMCXX_HEADERS)
 
 swigwrap_numcxx.o: swigwrap_numcxx.cxx
 
@@ -43,5 +43,5 @@ _numcxx.so: swigwrap_numcxx.cxx
 	$(CXX) $(CXXFLAGS) $(PYTHONLIBS) $(SHLDFLAGS) $< -o $@
 
 clean:
-	-rm *.o  *wrap*  *.pyc numcxx.py $(BINARIES) *~
+	-rm *.o  swigwrap*.*  *.pyc numcxx.py $(BINARIES) *~
 

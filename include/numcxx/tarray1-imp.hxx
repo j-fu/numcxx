@@ -61,7 +61,7 @@ namespace numcxx
     inline std::shared_ptr<TArray1 <T> > TArray1<T>::copy() const
     {
         auto x=create(size());
-        x->fill(*this);
+        *x=*this;
         return x;
     }
 

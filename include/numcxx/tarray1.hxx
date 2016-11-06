@@ -30,10 +30,6 @@ namespace numcxx
         using TArray<T>::operator[];
         using TArray<T>::operator=;
 
-
-
-        
-
         // Default constructor.
         TArray1();
         

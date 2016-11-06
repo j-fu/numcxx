@@ -19,6 +19,8 @@ namespace  numcxx
     public:
         using TArray<T>::size;
         using TArray<T>::shape;
+        using TArray<T>::operator[];
+        using TArray<T>::operator=;
         
         // Default constructor.
         TArray2();
@@ -49,8 +51,8 @@ namespace  numcxx
         /// Construct 2D Array from std::initializer list.
         TArray2(const  std::initializer_list<std::initializer_list<T>> &il );
 
-        template <typename VAL>
-        TArray2<T>&  operator=(const VAL  &expr)  { assign(*this,expr); return *this;}
+        TArray2<T>&  operator=(const TArray2<T> &expr) { assign(*this,expr); return *this;}
+
 
         /// Construct empty 2D Array
         ///
