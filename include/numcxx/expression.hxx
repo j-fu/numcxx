@@ -3,6 +3,20 @@
 
 namespace numcxx
 {
+
+    /// Base class for arrays used in expression templates
+    ///
+    /// All classes to be used with the numcxx expression templates
+    /// should be derived from this one. The rationale is the control
+    /// of expression template specialization with ``std::is_base_of``,
+    /// and the prevention of accidental invocation of the templates
+    /// in unexected situations.
+
+    class ExpressionBase
+    {
+    };
+
+
     ////////////////////////////////////////////////////////////////////////////////////
     /// Expression template for   A+B
     template<typename A, typename B,
@@ -12,18 +26,11 @@ namespace numcxx
     {
         const A& a;
         const B& b;
-
     public:
-
         typedef typename A::value_type value_type;
-
         AdditionExpression(const A& a, const B& b):a(a), b(b){}
-        
         unsigned int size() const { return a.size(); }
-            
-        const value_type operator[](const unsigned int i) const
-        { 
-            return a[i] + b[i];
+        const value_type operator[](const unsigned int i) const {return a[i] + b[i];}
         }
     };
         
@@ -44,19 +51,11 @@ namespace numcxx
     {
         const A& a;
         const B& b;
-
     public:
-
         typedef typename A::value_type value_type;
-
         DiffExpression(const A& a, const B& b):a(a), b(b){}
-            
         unsigned int size() const { return a.size(); }
-            
-        const value_type operator[](const unsigned int i) const
-        { 
-            return a[i] - b[i];
-        }
+        const value_type operator[](const unsigned int i) const  {   return a[i] - b[i];}
     };
         
     template<typename A, typename B,
@@ -76,19 +75,11 @@ namespace numcxx
     {
         const A& a;
         const B& b;
-
     public:
-
         typedef typename B::value_type value_type;
-
         LeftScalarMultiplicationExpression(const A& a, const B& b):a(a), b(b){}
-
         unsigned int size() const { return b.size(); }
-            
-        const value_type operator[](const unsigned int i) const
-        { 
-            return a*b[i];
-        }
+        const value_type operator[](const unsigned int i) const {return a*b[i];}
     };
         
     template<typename A, typename B,
@@ -109,18 +100,11 @@ namespace numcxx
     {
         const A& a;
         const B& b;
-
     public:
         typedef typename A::value_type value_type;
-
         RightScalarMultiplicationExpression(const A& a, const B& b):a(a), b(b){}
-
         unsigned int size() const { return a.size(); }
-            
-        const value_type operator[](const unsigned int i) const
-        { 
-            return a[i]*b;
-        }
+        const value_type operator[](const unsigned int i) const   { return a[i]*b; }
     };
         
     template<typename A, typename B,
@@ -144,15 +128,9 @@ namespace numcxx
         const B& b;
     public:
         typedef typename A::value_type value_type;
-
         RightScalarAdditionExpression(const A& a, const B& b):a(a), b(b){}
-
         unsigned int size() const { return a.size(); }
-            
-        const value_type operator[](const unsigned int i) const
-        { 
-            return a[i]*b;
-        }
+        const value_type operator[](const unsigned int i) const   { return a[i]+b; }
     };
         
     template<typename A, typename B,
@@ -174,15 +152,9 @@ namespace numcxx
         const B& b;
     public:
         typedef typename B::value_type value_type;
-
         LeftScalarAdditionExpression(const A& a, const B& b):a(a), b(b){}
-
         unsigned int size() const { return b.size(); }
-            
-        const value_type operator[](const unsigned int i) const
-        { 
-            return b[i]*a;
-        }
+        const value_type operator[](const unsigned int i) const { return a+b[i];}
     };
 
     template<typename A, typename B,
@@ -204,15 +176,9 @@ namespace numcxx
         const B& b;
     public:
         typedef typename A::value_type value_type;
-
         RightScalarDivisionExpression(const A& a, const B& b):a(a), b(b){}
-
         unsigned int size() const { return b.size(); }
-            
-        const value_type operator[](const unsigned int i) const
-        { 
-            return a[i]/b;
-        }
+        const value_type operator[](const unsigned int i) const {  return a[i]/b;}
     };
 
     template<typename A, typename B,
@@ -232,15 +198,10 @@ namespace numcxx
     {
         const A& a;
         const B& b;
-
     public:
-
         typedef typename A::value_type value_type;
-
         LeftMatrixMultiplicationExpression(const A& a, const B& b):a(a), b(b){}
-
         unsigned int size() const { return b.size(); }
-            
         const value_type operator[](const unsigned int i) const
         { 
             value_type entry=0;  
