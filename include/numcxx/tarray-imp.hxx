@@ -13,6 +13,12 @@ namespace numcxx
         return _data[i];
     }
 
+    template <typename T>
+    inline T& TArray<T>::operator[](const index i)
+    {
+        return _data[i];
+    }
+
     template <typename T, typename EXPR,
               typename= typename std::enable_if<std::is_class<EXPR>::value, EXPR>::type>
     inline void assign(TArray<T>& A, const  EXPR& expr , const EXPR *x=0) 

@@ -10,18 +10,27 @@ int main(void)
 {
     int n=4;
     numcxx::TSparseMatrix<double> A(n);
-    numcxx::TArray1<double>x(n);
-    auto y=x.clone();
+    numcxx::TArray1<double>X(n);
+    numcxx::TArray1<double>Y(n);
+    numcxx::TArray1<double>Z(n);
 
-    x=2.0;
+
+    X=2.0;
 
     A(0,0)=10.0;
     A(1,1)=1.0;
     A(1,2)=100.0;
     A(2,2)=2;
     A(3,3)=3;
-//    A.flush();
+    A.flush();
 
-    A.apply(x,*y);
-    std::cout <<*y << std::endl;
+    A.apply(X,Y);
+    std::cout <<Y << std::endl;
+
+    auto pM=A.copy_as_dense();
+    pM->apply(X,Z);
+    std::cout <<*pM << std::endl;
+    std::cout <<Z << std::endl;
+
+  
 }

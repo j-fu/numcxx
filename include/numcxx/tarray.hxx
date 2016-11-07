@@ -60,7 +60,10 @@ namespace numcxx
         index shape(const index dim)  const;
 
         /// Const reference to entry for use in expression templates
-        const T & operator[](index i0) const;
+        const T & operator[](const index i0) const;
+        
+        /// Const reference to entry for use in expression templates
+        T & operator[](const index i0);
         
         template <typename VAL>
         TArray<T>&  operator=(const VAL  &expr)  { assign(*this,expr); return *this;}
@@ -155,7 +158,7 @@ namespace numcxx
     protected:
         /// Data pointer.
         T* _data=nullptr;
-        
+       
         /// Check if all shapes are the same.
         ///
         /// Throw an exception on error
