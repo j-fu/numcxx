@@ -32,9 +32,9 @@ namespace numcxx
     }
     
     template<> 
-    inline void TSolverLapackLU<double>::solve( TArray1<double> & sol,  const TArray1<double> & rhs)
+    inline void TSolverLapackLU<double>::solve( TArray<double> & sol,  const TArray<double> & rhs) const
     {
-        sol=rhs;
+        assign(sol,rhs);
         char trans[2]={'T','\0'};
         int n=lu->shape(0);
         int one=1;
@@ -53,9 +53,9 @@ namespace numcxx
     }
     
     template<> 
-    inline void TSolverLapackLU<float>::solve( TArray1<float> & sol,  const TArray1<float> & rhs)
+    inline void TSolverLapackLU<float>::solve( TArray<float> & sol,  const TArray<float> & rhs) const
     {
-        sol=rhs;
+        assign(sol,rhs);
         char trans[2]={'T','\0'};
         int n=lu->shape(0);
         int one=1;

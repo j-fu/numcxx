@@ -31,7 +31,6 @@ namespace numcxx
         AdditionExpression(const A& a, const B& b):a(a), b(b){}
         unsigned int size() const { return a.size(); }
         const value_type operator[](const unsigned int i) const {return a[i] + b[i];}
-        }
     };
         
     template<typename A, typename B, 

@@ -335,10 +335,16 @@ namespace numcxx
     
 
     template <typename T> 
-    inline void TArray<T>::operate(std::function< void ( T& a, T&b)> f, TArray<T> & A, TArray<T> & B)  { for(index i=0;i<A._size;i++) f(A._data[i],B._data[i]);}
+    inline void TArray<T>::operate(std::function< void ( T& a, T&b)> f, TArray<T> & A, TArray<T> & B)  
+    { 
+        for(index i=0;i<A._size;i++) f(A._data[i],B._data[i]);
+    }
 
     template <typename T> 
-    inline void TArray<T>::operate(std::function< void ( T& a, T&b,T&c)> f, TArray<T> & A, TArray<T> & B,TArray<T> & C)  { for(index i=0;i<A._size;i++) f(A._data[i],B._data[i],C._data[i]);}
+    inline void TArray<T>::operate(std::function< void ( T& a, T&b,T&c)> f, TArray<T> & A, TArray<T> & B,TArray<T> & C)  
+    {
+        for(index i=0;i<A._size;i++) f(A._data[i],B._data[i],C._data[i]);
+    }
 
 
 }

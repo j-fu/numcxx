@@ -36,7 +36,7 @@ namespace numcxx
     };
 }
 
-#include "tsolver-umfpack-imp.hxx"
+#include "tsolver-umfpack.ixx"
 
 #endif
 

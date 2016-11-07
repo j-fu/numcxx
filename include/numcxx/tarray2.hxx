@@ -23,14 +23,14 @@ namespace  numcxx
         using TArray<T>::operator[];
         using TArray<T>::operator=;
         
-        // Default constructor.
-        TArray2();
+        // Construct zero size array.
+        TArray2():TArray<T>(){};;
 
         /// Construct an empty 2D array.
         ///
         /// \param n0 Number of rows
         /// \param n1 Number of columns
-        TArray2(index n0, index n1);
+        TArray2(index n0, index n1):TArray<T>(n0,n1) {};
 
         /// Construct a 2D array from data pointer
         ///
@@ -38,7 +38,8 @@ namespace  numcxx
         /// \param n1 Number of columns
         /// \param data Pointer to data.
         /// \param deleter Deleter method, \see TArray<T>#_deleter
-        TArray2(index n0, index n1, T*data,std::function<void(T*p)> deleter);
+        TArray2(index n0, index n1, T*data,std::function<void(T*p)> deleter):TArray<T>(n0,n1,data,_deleter(deleter)){};
+
 
         /// Construct a 2D array from data pointer
         ///
@@ -47,16 +48,17 @@ namespace  numcxx
         /// \param data Pointer to data.
         /// \param deleter Deleter method.
         /// \see TArray<T>#_datamanager
-        TArray2(index n0, index n1, T*data,std::shared_ptr<void> datamanager);
+        TArray2(index n0, index n1, T*data,std::shared_ptr<void> datamanager):TArray<T>(n0,n1,data,datamanager) {};
+
 
         /// Construct 2D Array from std::initializer list.
         TArray2(const  std::initializer_list<std::initializer_list<T>> &il );
 
-        // copy constructor
+        /// Copy constructor
         TArray2(const TArray2<T>& A):TArray2<T>(A.shape(0),A.shape(1)){assign(*this,A);}
 
 
-
+        /// Assignment operator
         TArray2<T>&  operator=(const TArray2<T> &expr) { return static_cast<TArray2<T>&>(assign(*this,expr));}
 
 
@@ -64,29 +66,28 @@ namespace  numcxx
         /// Construct empty 2D Array
         ///
         /// Mainly for access from python
-        static std::shared_ptr<TArray2 <T> > create(index n0,index n1);
+        static std::shared_ptr<TArray2 <T> > create(index n0,index n1) { return std::make_shared<TArray2 <T> >(n0,n1);}
+
 
         /// Construct 2D Array from std::initializer list.
-        static std::shared_ptr<TArray2 <T> > create(const  std::initializer_list<std::initializer_list<T>> &il);
+        static std::shared_ptr<TArray2 <T> > create(const  std::initializer_list<std::initializer_list<T>> &il) { return std::make_shared<TArray2 <T> >(il);}
 
         /// Create a copy of the array.
         ///
         ///  \return Array of the same size with contents initialized to this
-        std::shared_ptr<TArray2 <T> > copy() const;
+        std::shared_ptr<TArray2 <T> > copy() const { return std::make_shared<TArray2 <T> >(*this);}
 
         /// Create a clone of the array.
         ///
         ///  \return Array of the same size with empty contents.
-        std::shared_ptr<TArray2 <T> > clone() const;
-
+        std::shared_ptr<TArray2 <T> > clone() const  { return create(shape(0),shape(1));}
 
         /// Access operator for 2D arrays.
         ///
         /// \param i0  Row index of element to be accessed.
         /// \param i0  Column index of element to be accessed.
         /// \return    Reference to element to be accessed.
-        T & operator()(index i0, index i1);
-
+        T & operator()(index i0, index i1)  { return _data[_idx(i0,i1)];};
 
 
         /// Element read access.
@@ -94,7 +95,7 @@ namespace  numcxx
         /// \param i0  Row index of element to be accessed.
         /// \param i1  Column index of element to be accessed.
         /// \return Value of element at (i0,i1)
-        T item(index i0,index i1);
+        T item(index i0,index i1)  { return _data[_idx(i0,i1)];};
 
 
         /// Element write access.
@@ -102,7 +103,7 @@ namespace  numcxx
         /// \param i0  Row index of element to be accessed.
         /// \param i1  Column index of element to be accessed.
         /// \param x value to be copied to element at index.
-        void itemset(index i0, index i1, T x);
+        void itemset(index i0, index i1, T x)  { _data[_idx(i0,i1)]=x;};
 
         /// Getter routine for access from python.
         /// 
@@ -110,7 +111,7 @@ namespace  numcxx
         /// a smart pointer to the row. 
         /// \param i0  row index of element to be accessed.
         /// \return Smart pointer to i0-th row. 
-        std::shared_ptr<TArray1 <T> > const __getitem__(index i0);
+        std::shared_ptr<TArray1 <T> > const __getitem__(index i0){ return std::shared_ptr<TArray1<T>>(new TArray1<T>(shape(1), &_data[_idx(i0,0)], [](T*p){;}));}
 
         /// Print contents of array.
         friend std::ostream & operator<< <T>(std::ostream & s, TArray2<T> &A);
@@ -121,6 +122,6 @@ namespace  numcxx
     };
 
 }
-#include "tarray2-imp.hxx"
+#include "tarray2.ixx"
 
 #endif

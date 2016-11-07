@@ -13,7 +13,7 @@ namespace numcxx
 
     /// Sparse matrix class using CRS storage scheme
     template<typename T> 
-    class TSparseMatrix: TLinOperator<T>
+    class TSparseMatrix: public TLinOperator<T>
     {
         friend class TSolverUMFPACK<T>;
     public:
@@ -47,10 +47,10 @@ namespace numcxx
         };
         
         /// Row pointers
-        std::shared_ptr<IArray1> pIA;
+        std::shared_ptr<TArray1<int>> pIA;
         
         /// Column indices
-        std::shared_ptr<IArray1> pJA;  
+        std::shared_ptr<TArray1<int>> pJA;  
         
         /// Entries
         std::shared_ptr<TArray1 <T> > pA; 
@@ -102,5 +102,5 @@ namespace numcxx
     
 }
 
-#include "tsparsematrix-imp.hxx"
+#include "tsparsematrix.ixx"
 #endif

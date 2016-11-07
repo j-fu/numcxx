@@ -11,42 +11,88 @@ namespace numcxx
 {
     /// Dense matrix class
     template<typename T> 
-    class TMatrix: public TArray2<T>, TLinOperator<T>
+    class TMatrix: public TArray2<T>, public TLinOperator<T>
     {
     public:
         using TArray2<T>::size;
         using TArray2<T>::shape;
         using TArray<T>::operator[];
+        
+        /// Construct zero size array.
+        TMatrix(): TArray2<T>(){};
+        
+        /// Construct an empty matrix
+        ///
+        /// \param n0 Number of rows
+        /// \param n1 Number of columns
+        TMatrix(index n): TArray2<T>(n,n){};
+        
 
-        TMatrix();
-        TMatrix(index n);
-        TMatrix(index n, T*data, std::function<void(T*p)> deleter);
-        TMatrix(index n, T*data, std::shared_ptr<void> datamanager);
-        TMatrix(const  std::initializer_list<std::initializer_list<T>> &il );
-        static std::shared_ptr<TMatrix <T> > create(index n);
-        static std::shared_ptr<TMatrix <T> > create(const  std::initializer_list<std::initializer_list<T>> &il);
-        std::shared_ptr<TMatrix <T> > copy() const;
-        std::shared_ptr<TMatrix <T> > clone() const;
+        /// Construct matrix from data pointer
+        ///
+        /// \param n0 Number of rows
+        /// \param n1 Number of columns
+        /// \param data Pointer to data.
+        /// \param deleter Deleter method, \see TArray<T>#_deleter
+        TMatrix(index n, T*data,std::function<void(T*p)> deleter):  TArray2<T>(n,n,data,deleter){};
+        
+        /// Construct matrix from data pointer
+        ///
+        /// \param n0 Number of rows
+        /// \param n1 Number of columns
+        /// \param data Pointer to data.
+        /// \param deleter Deleter method.
+        /// \see TArray<T>#_datamanager
+        TMatrix(index n, T*data, std::shared_ptr<void> datamanager): TArray2<T>(n,n,data,datamanager){};
+        
 
-        T xentry(const index i, const index j) const {return _data[_idx(i,j)];}
+        /// Construct 2D Array from std::initializer list.
+        TMatrix(const  std::initializer_list<std::initializer_list<T>> &il ): TArray2<T>(il){};
+        
+        /// Construct empty square matrix
+        ///
+        /// Mainly for access from python
+        static std::shared_ptr<TMatrix <T> > create(index n) {  return std::make_shared<TMatrix<T>> (n);  }
 
+        /// Construct matrix from std::initializer list.
+        static std::shared_ptr<TMatrix <T> > create(const  std::initializer_list<std::initializer_list<T>> &il) { return std::make_shared<TMatrix<T>> (il);  }
+        
+        /// Create a copy of the matrix
+        ///
+        ///  \return Matrix of the same size with contents initialized to this
+        std::shared_ptr<TMatrix <T> > copy() const  {  return std::make_shared<TMatrix<T>>(*this);  }
+        
+        /// Create a clone of the matrix
+        ///
+        ///  \return Matrix of the same size with empty contents.
+        std::shared_ptr<TMatrix <T> > clone() const  {  return create(shape(0)); } 
+        
 
-        template <typename VAL>
-        TMatrix<T>&  operator=(const VAL  &expr)  { assign(*this,expr); return *this;}
-
-        TMatrix<T>&  operator=(const TMatrix<T> &expr) { assign(*this,expr); return *this;}
-
-        void apply(const TArray1<T> &u, TArray1<T> &v) const;
-
-
+        /// Matrix entry access for use in expression templates
+        const T& xentry(const index i, const index j) const {return _data[_idx(i,j)];}
+        
+        /// Assignment operator
+        TMatrix<T>&  operator=(const TMatrix<T> &expr) {return static_cast<TMatrix<T>&>(assign(*this,expr));}
+        
+        /// Assignment operator
+        TMatrix<T>&  operator=(const T &expr) {return static_cast<TMatrix<T>&>(assign(*this,expr));}
+        
+        /// Apply matrix to vector
+        ///
+        /// \param u input
+        /// \param v output: v=A*u
+        void apply(const TArray<T> &u, TArray<T> &v) const;
+        
+        
     private:
         using TArray2<T>::_data;
         using TArray2<T>::_idx;
         using TArray<T>::_check_square;
-
+        
     };
     
 }
 
-#include "tmatrix-imp.hxx"
+#include "tmatrix.ixx"
 #endif
+        

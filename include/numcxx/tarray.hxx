@@ -4,7 +4,7 @@
 #include <typeinfo>
 #include <memory>
 #include <stdexcept> 
-#include "expression.hxx"
+#include "expression.ixx"
 
 
 namespace numcxx
@@ -103,7 +103,7 @@ namespace numcxx
         /// Resize array
         void resize(index n);
 
-        // copy constructor
+        /// Copy constructor is deleted
         TArray(const TArray<T>& A)=delete;
 
 
@@ -276,11 +276,10 @@ namespace numcxx
         TLinOperator(){};
         virtual void apply( const TArray<T> & sol,   TArray<T> & rhs) const {};
     };
-
     
     
 }
 
 
-#include "tarray-imp.hxx"
+#include "tarray.ixx"
 #endif
