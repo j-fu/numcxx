@@ -4,23 +4,23 @@ namespace numcxx
     inline TMatrix<T>::TMatrix(): TArray2<T>(){};
     
     template <typename T> 
-    inline TMatrix<T>::TMatrix(index n0, index n1): TArray2<T>(n0,n1){};
+    inline TMatrix<T>::TMatrix(index n): TArray2<T>(n,n){};
     
     template <typename T> 
-    inline TMatrix<T>::TMatrix(index n0, index n1, T*data,std::function<void(T*p)> deleter): 
-        TArray2<T>(n0,n1,data,deleter){};
+    inline TMatrix<T>::TMatrix(index n, T*data,std::function<void(T*p)> deleter): 
+        TArray2<T>(n,n,data,deleter){};
     
     template <typename T> 
-    inline TMatrix<T>::TMatrix(index n0,index n1, T*data, std::shared_ptr<void> datamanager): 
-        TArray2<T>(n0,n1,data,datamanager){};
+    inline TMatrix<T>::TMatrix(index n, T*data, std::shared_ptr<void> datamanager): 
+        TArray2<T>(n,n,data,datamanager){};
 
     template <typename T> 
     inline TMatrix<T>::TMatrix(const  std::initializer_list<std::initializer_list<T>> &il ): TArray2<T>(il){};
 
     template <typename T> 
-    inline std::shared_ptr<TMatrix <T> > TMatrix<T>::create(index n0,index n1)
+    inline std::shared_ptr<TMatrix <T> > TMatrix<T>::create(index n)
     {
-        return std::make_shared<TMatrix<T>> (n0,n1);
+        return std::make_shared<TMatrix<T>> (n);
     }
     
     template <typename T> 
@@ -40,7 +40,7 @@ namespace numcxx
     template <typename T> 
     inline   std::shared_ptr<TMatrix <T> > TMatrix<T>::clone() const
     { 
-        return create(shape(0),shape(1));
+        return create(shape(0));
     } 
 
 

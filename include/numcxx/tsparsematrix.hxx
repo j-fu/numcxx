@@ -8,18 +8,27 @@
 namespace numcxx
 {
     
+    template<typename T> 
+    class TSolverUMFPACK;
+
     /// Sparse matrix class using CRS storage scheme
     template<typename T> 
     class TSparseMatrix: TLinOperator<T>
     {
+        friend class TSolverUMFPACK<T>;
     public:
         TSparseMatrix(index n);
+        TSparseMatrix(const  std::initializer_list<std::initializer_list<T>> &il);
         void  flush();
-        void apply(const TArray<T> &u,TArray<T> &v );
+        void apply(const TArray<T> &U,TArray<T> &V );
         T& operator()(int i, int j);
         std::shared_ptr<TMatrix<T>> copy_as_dense();
+        static std::shared_ptr<TSparseMatrix <T> > create(const  std::initializer_list<std::initializer_list<T>> &il);
 
 
+        index shape(int idim) {return n;}
+        bool pattern_changed(){return _pattern_changed;}
+        void pattern_changed(bool chg) {_pattern_changed=chg;};
 
         // std::shared_ptr<TSparseMatrix <T> > copy() const;
         // std::shared_ptr<TSparseMatrix <T> > clone() const;
@@ -37,17 +46,16 @@ namespace numcxx
             T a;
         };
         
-        
         /// Row pointers
-        std::shared_ptr<IArray1> IA;
+        std::shared_ptr<IArray1> pIA;
         
         /// Column indices
-        std::shared_ptr<IArray1> JA;  
+        std::shared_ptr<IArray1> pJA;  
         
         /// Entries
-        std::shared_ptr<TArray1 <T> > A; 
+        std::shared_ptr<TArray1 <T> > pA; 
         
-        bool pattern_has_changed=false;
+        bool _pattern_changed=false;
         const int n;
         int maxrow=0;
 
@@ -60,13 +68,13 @@ namespace numcxx
             int next0=0;
             
             /// rowpointer list 
-            std::shared_ptr<std::vector<int>> IA;     
+            std::shared_ptr<std::vector<int>> pIA;     
             
             /// column indices 
-            std::shared_ptr<std::vector<int>> JA;     
+            std::shared_ptr<std::vector<int>> pJA;     
             
             /// values
-            std::shared_ptr<std::vector <T> > A; 
+            std::shared_ptr<std::vector <T> > pA; 
             
             /// zero value
             const T zero=0;        
@@ -74,15 +82,15 @@ namespace numcxx
             Extension(index n);
             
             T& entry(int i, int j);
-            void apply(const TArray<T>&u, TArray<T>&v);
+            void apply(const TArray<T>&U, TArray<T>&V);
             
             
-            T read_entry(int ipart, int i, int j);
+            T read_entry(int i, int j);
             
             bool empty();
         };
 
-        std::shared_ptr<Extension>  ext;
+        std::shared_ptr<Extension>  pExt;
         
     };
 

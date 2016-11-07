@@ -6,55 +6,76 @@ namespace numcxx
     template <typename T>
     inline TSparseMatrix<T>::TSparseMatrix(index n):
         n(n),
-        A(std::make_shared<TArray1<T>>(n)),
-        JA(std::make_shared<TArray1<int>>(n)),
-        IA(std::make_shared<TArray1<int>>(n+1)),
-        ext(std::make_shared<Extension>(n))
+        pA(std::make_shared<TArray1<T>>(n)),
+        pJA(std::make_shared<TArray1<int>>(n)),
+        pIA(std::make_shared<TArray1<int>>(n+1)),
+        pExt(std::make_shared<Extension>(n))
     {
-        auto &ia=*IA;
-        auto &ja=*JA;
-        auto &a=*A;
-        ia=0;
-        ja=0;
-        a=0.0;
+        auto &IA=*pIA;
+        auto &JA=*pJA;
+        auto &A=*pA;
+        IA=0;
+        JA=0;
+        A=0.0;
+    }
+    
+    template <typename T>
+    inline TSparseMatrix<T>::TSparseMatrix(const  std::initializer_list<std::initializer_list<T>> &il):
+        TSparseMatrix(il.size())
+    {
+        index i=0;
+        for (auto jl = il.begin() ; jl != il.end(); jl++,i++)
+        {
+            index j=0;
+            for (auto x = jl->begin() ; x != jl->end(); x++,j++) 
+                this->operator()(i,j)= *x;
+
+        }
+        flush();
+    }
+
+    template <typename T>
+    inline std::shared_ptr<TSparseMatrix <T> > TSparseMatrix<T>::create(const  std::initializer_list<std::initializer_list<T>> &il)
+    {
+        return std::make_shared<TSparseMatrix <T>>(il);
     }
 
     template <typename T>
     inline void TSparseMatrix<T>::flush()
     {
-        if (ext==0) return;
-        if (ext->empty()) return;
-        int nja_old=JA->size();
-        int next=ext->JA->size()-n;
-        int nja_new=nja_old+next+ext->next0;
+        if (pExt==0) return;
+        if (pExt->empty()) return;
+        int nJA_old=pJA->size();
+        int next=pExt->pJA->size()-n;
+        int nJA_new=nJA_old+next+pExt->next0;
     
-        auto new_IA=TArray1<int>::create(n+1);
-        auto new_JA=TArray1<int>::create(nja_new);
-        auto new_A=TArray1<T>::create(nja_new);
+        auto pNew_IA=TArray1<int>::create(n+1);
+        auto pNew_JA=TArray1<int>::create(nJA_new);
+        auto pNew_A=TArray1<T>::create(nJA_new);
     
-        auto &new_ia=*new_IA;
-        auto &new_ja=*new_JA;
-        auto &new_a=*new_A;
+        auto &New_IA=*pNew_IA;
+        auto &New_JA=*pNew_JA;
+        auto &New_A=*pNew_A;
     
-        auto &old_ia=*IA;
-        auto &old_ja=*JA;
-        auto &old_a=*A;
+        auto &Old_IA=*pIA;
+        auto &Old_JA=*pJA;
+        auto &Old_A=*pA;
     
-        auto &ext_ia=*ext->IA;
-        auto &ext_ja=*ext->JA;
-        auto &ext_a=*ext->A;
+        auto &Ext_IA=*pExt->pIA;
+        auto &Ext_JA=*pExt->pJA;
+        auto &Ext_A=*pExt->pA;
     
         int maxrow_ext=0;
         for (index i=0;i<n;i++)
         {
             int k0=i;
             int lrow=1;
-            for (int k=k0; k>=0;k0=k, k=ext_ia[k]) lrow++;
+            for (int k=k0; k>=0;k0=k, k=Ext_IA[k]) lrow++;
             maxrow_ext=std::max(lrow,maxrow_ext);
         }
     
         std::vector<RowEntry> row(maxrow+maxrow_ext+10);
-        int new_maxrow=0;
+        int New_maxrow=0;
         int j=0;
         int i;
         for(i=0;i<n;i++)
@@ -62,11 +83,11 @@ namespace numcxx
             // put extension entries into row and sort them
             int lxrow=0;
             int k0=i;
-            for (int k=k0; k>=0;k0=k, k=ext_ia[k])
-                if (ext_ja[k]>=0)
+            for (int k=k0; k>=0;k0=k, k=Ext_IA[k])
+                if (Ext_JA[k]>=0)
                 {
-                    row[lxrow].i=ext_ja[k];
-                    row[lxrow].a=ext_a[k];
+                    row[lxrow].i=Ext_JA[k];
+                    row[lxrow].a=Ext_A[k];
                     lxrow++;
                 }
         
@@ -77,19 +98,19 @@ namespace numcxx
                           return  (e1.i<e2.i);
                       });
         
-            // jointly sort old and new entries into new_ja
+            // jointly sort Old and New entries into New_JA
             int j0;
             j0=j;
-            new_ia[i]=j;
+            New_IA[i]=j;
             int irow=0;
-            int k=old_ia[i];
+            int k=Old_IA[i];
         
             for(;;)
             {
-                if (k<old_ia[i+1] && ((irow>lxrow) ||old_ja[k]<row[irow].i))
+                if (k<Old_IA[i+1] && ((irow>lxrow) ||Old_JA[k]<row[irow].i))
                 {
-                    new_ja[j]=old_ja[k];
-                    new_a[j]=old_a[k];
+                    New_JA[j]=Old_JA[k];
+                    New_A[j]=Old_A[k];
                     k++;
                     j++;
                     continue;
@@ -97,71 +118,71 @@ namespace numcxx
             
                 if (irow<lxrow)
                 {
-                    new_ja[j]=row[irow].i;
-                    new_a[j]=row[irow].a;
+                    New_JA[j]=row[irow].i;
+                    New_A[j]=row[irow].a;
                     irow++;
                     j++;
                     continue;
                 }
                 break;
             }	    
-            new_maxrow=std::max(new_maxrow,j-j0);
+            New_maxrow=std::max(New_maxrow,j-j0);
         }
-        new_ia[i]=j;
+        New_IA[i]=j;
     
-        IA=new_IA;
-        JA=new_JA;
-        A=new_A;
-        maxrow=new_maxrow;
-        pattern_has_changed=true;
-        ext=0;
-        ext=std::make_shared<Extension>(n);
+        pIA=pNew_IA;
+        pJA=pNew_JA;
+        pA=pNew_A;
+        maxrow=New_maxrow;
+        _pattern_changed=true;
+        pExt=0;
+        pExt=std::make_shared<Extension>(n);
     }
 
 
     template <typename T>
     inline void TSparseMatrix<T>::apply(const TArray<T> &u,TArray<T> &v )
     {
-        auto &ia=*IA;
-        auto &ja=*JA;
-        auto &a=*A;
+        auto &IA=*pIA;
+        auto &JA=*pJA;
+        auto &A=*pA;
         for (int i=0;i<n;i++)
         {
             v[i]=0;
-            for (int j=ia[i];j<ia[i+1];j++)
-                v[i]+=a[j]*u[ja[j]];
+            for (int j=IA[i];j<IA[i+1];j++)
+                v[i]+=A[j]*u[JA[j]];
         }
-        ext->apply(u,v);
+        pExt->apply(u,v);
     }
 
     template <typename T>
     inline T& TSparseMatrix<T>::operator()(int i, int j) 
     {
-        auto &ia=*IA;
-        auto &ja=*JA;
-        auto &a=*A;
+        auto &IA=*pIA;
+        auto &JA=*pJA;
+        auto &A=*pA;
     
-        for (int k=ia[i];k<ia[i+1];k++)
-            if (ja[k]==j) 
-                return a[k];
+        for (int k=IA[i];k<IA[i+1];k++)
+            if (JA[k]==j) 
+                return A[k];
 
-        return ext->entry(i,j);
+        return pExt->entry(i,j);
     }
 
     template <typename T>
     inline std::shared_ptr<TMatrix<T>> TSparseMatrix<T>::copy_as_dense()
     {
         flush();
-        auto pM=TMatrix<T>::create(n,n);
+        auto pM=TMatrix<T>::create(n);
     
         auto &M=*pM;
-        auto &ia=*IA;
-        auto &ja=*JA;
-        auto &a=*A;
+        auto &IA=*pIA;
+        auto &JA=*pJA;
+        auto &A=*pA;
         M=0.0;
         for (int i=0;i<n;i++)
-            for (int j=ia[i];j<ia[i+1];j++)
-                M(i,ja[j])=a[j];
+            for (int j=IA[i];j<IA[i+1];j++)
+                M(i,JA[j])=A[j];
         return pM;
     }
 
@@ -169,88 +190,85 @@ namespace numcxx
     template <typename T>
     inline TSparseMatrix<T>::Extension::Extension(index n):
         n(n),
-        A(std::make_shared<std::vector<T>>(n)),
-        JA(std::make_shared<std::vector<int>>(n)),
-        IA(std::make_shared<std::vector<int>>(n))
+        pA(std::make_shared<std::vector<T>>(n)),
+        pJA(std::make_shared<std::vector<int>>(n)),
+        pIA(std::make_shared<std::vector<int>>(n))
     {
-        auto &ia=*IA;
-        auto &ja=*JA;
-        auto &a=*A;
+        auto &IA=*pIA;
+        auto &JA=*pJA;
+        auto &A=*pA;
         
-        // initialization for zero main diagonal elements.
+        // initIAlization for zero main dIAgonal elements.
         for (int i=0;i<n;i++)
         {
-            ia[i]=-1;
-            ja[i]=-1;
-            a[i]=0;
+            IA[i]=-1;
+            JA[i]=-1;
+            A[i]=0;
         }
     }
     
     template <typename T>
     inline T& TSparseMatrix<T>::Extension::entry(int i, int j)
     {
-        auto &ia=*IA;
-        auto &ja=*JA;
-        auto &a=*A;
+        auto &IA=*pIA;
+        auto &JA=*pJA;
+        auto &A=*pA;
         
         // Assume "classical" extension scheme
-        // without main diagonal entries,
+        // without main dIAgonal entries,
         // and with index shift by -1
         
-        // Initial state
+        // InitIAl state
         
         // a    0 0 0 0
-        // xja  -1 -1 -1 -1
-        // xia |-1|-1|-1|-1|
+        // xJA  -1 -1 -1 -1
+        // xIA |-1|-1|-1|-1|
         
         
         
         // Insert 1,1 = 1
-        // xja[i]=-1/i triggert Existenz des Elements.
+        // xJA[i]=-1/i triggert Existenz des Elements.
         
         // erstes element der Zeile
         // a    0 1 0 0
-        // xja  -1 1 -1 -1
-        // xia |-1|-1|-1|-1|
+        // xJA  -1 1 -1 -1
+        // xIA |-1|-1|-1|-1|
         
         // naechstes Element der Zeile
         
         // a    0 1 0 0 1
-        // xja  -1 2 -1 -1 3
-        // xia |-1|4|-1|-1|-1
+        // xJA  -1 2 -1 -1 3
+        // xIA |-1|4|-1|-1|-1
         
         
         // do we access row i for the first time ?
-        // then we initialize this row
-        // std::cout<< i<< " " << j<< std::endl;
+        // then we initIAlize this row
         
-        if (ja[i]<0)
+        if (JA[i]<0)
         {
-            ja[i]=j;
-            a[i]=0.0;
+            JA[i]=j;
+            A[i]=0.0;
             next0++;
-//                std::cout<< "* "<< i<< std::endl;
-            return a[i];
+            return A[i];
         }
         
                 
-        // xja /xa entries valid only if xia entry >=0
+        // xJA /xa entries valid only if xIA entry >=0
         int k0=i;
-        for (int k=k0; k>=0;k0=k, k=ia[k])
-            if (ja[k]==j) // no need to add new entry 
-                // no need to check if xja>=0 as j>=0
-                return a[k]; 
-        
-        // Access failed  (ia[k0]<0)
+        for (int k=k0; k>=0;k0=k, k=IA[k])
+        {
+            if (JA[k]==j) // no need to add new entry 
+                return A[k]; 
+        }
+        // Access failed  (IA[k0]<0)
         // so we add next entry at end of matrix
-        // and put its index into ia[k0]
+        // and put its index into IA[k0]
         
-        a.push_back(0);
-        ja.push_back(j);
-        ia.push_back(0);
-        ia[k0]=a.size()-1;
-        a[k0]=0.0;
-        return a[k0];
+        A.push_back(0);
+        JA.push_back(j);
+        IA.push_back(-1);
+        IA[k0]=A.size()-1;
+        return A[IA[k0]];
     }
             
             
@@ -259,32 +277,32 @@ namespace numcxx
     {
         
         if (empty()) return;
-        auto &ia=*IA;
-        auto &ja=*JA;
-        auto &a=*A;
+        auto &IA=*pIA;
+        auto &JA=*pJA;
+        auto &A=*pA;
         
         for (int i=0;i<n; i++)
-            for (int k=i; k>=0;k=ia[k])
+            for (int k=i; k>=0;k=IA[k])
             {
-                int j=ja[k];
+                int j=JA[k];
                 if (j>=0)
-                    v[i]+=a[k]*u[j];
+                    v[i]+=A[k]*u[j];
             }
     }
     
     
     template <typename T>
-    inline T TSparseMatrix<T>::Extension::read_entry(int ipart, int i, int j)
+    inline T TSparseMatrix<T>::Extension::read_entry(int i, int j)
     {
-        auto &ia=*IA;
-        auto &ja=*JA;
-        auto &a=*A;
+        auto &IA=*pIA;
+        auto &JA=*pJA;
+        auto &A=*pA;
         
         
         int k0=i;
-        for (int k=k0; k>=0;k0=k, k=ia[k])
-            if (ja[k]==j) 
-                return a[k];
+        for (int k=k0; k>=0;k0=k, k=IA[k])
+            if (JA[k]==j) 
+                return A[k];
         
         return zero;
     }
@@ -292,7 +310,7 @@ namespace numcxx
     template <typename T>
     inline bool TSparseMatrix<T>::Extension::empty()
     {
-        int next=JA->size()-n;
+        int next=pJA->size()-n;
         if (next+next0==0) return true;
         return false;
     }

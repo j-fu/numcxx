@@ -19,11 +19,11 @@ namespace numcxx
         using TArray<T>::operator[];
 
         TMatrix();
-        TMatrix(index n0, index n1);
-        TMatrix(index n0, index n1, T*data, std::function<void(T*p)> deleter);
-        TMatrix(index n0,index n1, T*data, std::shared_ptr<void> datamanager);
+        TMatrix(index n);
+        TMatrix(index n, T*data, std::function<void(T*p)> deleter);
+        TMatrix(index n, T*data, std::shared_ptr<void> datamanager);
         TMatrix(const  std::initializer_list<std::initializer_list<T>> &il );
-        static std::shared_ptr<TMatrix <T> > create(index n0,index n1);
+        static std::shared_ptr<TMatrix <T> > create(index n);
         static std::shared_ptr<TMatrix <T> > create(const  std::initializer_list<std::initializer_list<T>> &il);
         std::shared_ptr<TMatrix <T> > copy() const;
         std::shared_ptr<TMatrix <T> > clone() const;

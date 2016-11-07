@@ -7,7 +7,9 @@ NUMCXX=../include/numcxx
 PYTHON=python
 CXXFLAGS=-fPIC -O3 -g  -DNUMCXX_CHECK_BOUNDS -I ../include -std=c++11 `$(PYTHON) $(NUMCXX)/find_python_paths.py --includes`
 PYTHONLIBS=`$(PYTHON) $(NUMCXX)/find_python_paths.py --libs`
-LALIBS=-llapack -lblas
+LALIBS=-llapack -lblas -lumfpack -lamd -lcolamd -lcholmod
+
+
 SHLDFLAGS= -shared 
 
 .SUFFIXES: .cxx
