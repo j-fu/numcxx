@@ -4,23 +4,11 @@
 #include <typeinfo>
 #include <memory>
 #include <stdexcept> 
-
+#include "expression.hxx"
 
 
 namespace numcxx
 {
-    using index= unsigned int;
-
-    /// Base class for arrays used in expression templates
-    ///
-    /// All classes to be used with the numcxx expression templates
-    /// should be derived from this one. The rationale is the control
-    /// of expression template specialization with ``std::is_base_of``,
-    /// and the prevention of accidental invocation of the templates
-    /// in unexected situations.
-    class ExpressionBase
-    {
-    };
 
     /// TArray is the common template base class for arrays and dense matrices
     /// of the numcxx project.
@@ -34,20 +22,19 @@ namespace numcxx
         /// 
         /// \return Address of C-Array managed by the class which holds
         ///         the data
-        T*data() const;
+        T*data() const { return _data;}
 
         /// Obtain tensor dimension of array.
         /// 
         /// Tensor dimension is 1 for vectors, 2 for matrices.
         /// \return Dimension.
-        index ndim() const;
-
+        index ndim() const {return _ndim;}
 
         /// Obtain size of array.
         /// 
         /// This ist the overall number of elements in the array
         /// \return Size.
-        index size() const;
+        index size() const { return _size;}
 
         /// Obtain shape of array for given dimension.
         ///
@@ -57,17 +44,7 @@ namespace numcxx
         /// to the "row major" storage format.
         /// \param dim Tensor dimension.
         /// \return Number of elements in given dimension.
-        index shape(const index dim)  const;
-
-        /// Const reference to entry for use in expression templates
-        const T & operator[](const index i0) const;
-        
-        /// Const reference to entry for use in expression templates
-        T & operator[](const index i0);
-        
-        template <typename VAL>
-        TArray<T>&  operator=(const VAL  &expr)  { assign(*this,expr); return *this;}
-
+        index shape(const index dim)  const {return _shape[dim];}
 
         /// Add value to all elements.
         ///
@@ -113,6 +90,23 @@ namespace numcxx
         static void operate(std::function< void ( T& a, T&b,T&c)> f, TArray<T> & A, TArray<T> & B,TArray<T> & C);
 
 
+        /// Reference to entry 
+        T & operator[](const index i) { return _data[i];}
+
+        /// Const reference to entry for use in expression templates
+        const T & operator[](const index i) const  { return _data[i];};
+        
+        /// Expression template compatible assignment operator
+        template <typename VAL>
+        TArray<T>&  operator=(const VAL  &expr)  {return assign(*this,expr);}
+
+        /// Resize array
+        void resize(index n);
+
+        // copy constructor
+        TArray(const TArray<T>& A)=delete;
+
+
     private:
 
         /// Tensor dimension.
@@ -130,7 +124,7 @@ namespace numcxx
         /// pointer in the array if data manager is null. Depending on
         /// the way  it was constructed,  it may do  nothing, ``free``
         /// the memory, ``delete[]`` the memory, or something else.
-        const std::function<void(T*p)> _deleter=nullptr;
+        std::function<void(T*p)> _deleter=nullptr;
 
         /// Data manager.
         /// 
@@ -173,9 +167,10 @@ namespace numcxx
         /// 3D Array index calculation with optional bounds check.
         index _idx(index i0,index i1,index i2)  const;
     
+        /// Construct an zero length 1D array.
+        TArray();
 
-        /// Construct an empty 1D array.
-        ///
+        /// Construct an empty 1D array of length n0
         /// \param n0 Size.
         TArray(index n0);
 
@@ -217,11 +212,11 @@ namespace numcxx
         /// \see TArray<T>#_datamanager
         TArray(index n0, index n1, T*data,std::shared_ptr<void> datamanager);
         
-        /// Default constructor.
-        TArray();
 
         /// Destructor.
         ~TArray();
+
+
 
     };
 

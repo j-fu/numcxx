@@ -5,42 +5,30 @@
 
 namespace numcxx
 {
-
-
-    template <typename T>
-    inline const T& TArray<T>::operator[](const index i) const
-    {
-        return _data[i];
-    }
-
-    template <typename T>
-    inline T& TArray<T>::operator[](const index i)
-    {
-        return _data[i];
-    }
-
     template <typename T, typename EXPR,
               typename= typename std::enable_if<std::is_class<EXPR>::value, EXPR>::type>
-    inline void assign(TArray<T>& A, const  EXPR& expr , const EXPR *x=0) 
+    inline TArray<T>& assign(TArray<T>& A, const  EXPR& expr , const EXPR *x=0) 
     {
-//            resize( expr.size() );
+        A.resize( expr.size() );
         T *data=A.data();
         for(index i=0; i<expr.size(); i++ ) data[i] = expr[i];
+        return A;
     }
 
     template <typename T, typename VAL,
               typename= typename std::enable_if<!std::is_class<VAL>::value, VAL>::type>
-    inline void assign(TArray<T>& A, const  VAL& a) 
+    inline TArray<T>& assign(TArray<T>& A, const  VAL& a) 
     {
         T *data=A.data();
         for(index i=0; i<A.size(); i++ ) data[i] = a;
+        return A;
     }
 
     template <typename T, typename EXPR,
               typename= typename std::enable_if<std::is_class<EXPR>::value, EXPR>::type>
     inline void xadd(TArray<T>& A, const  EXPR& expr , const EXPR *x=0) 
     {
-//            resize( expr.size() );
+        resize( expr.size() );
         T *data=A.data();
         for(index i=0; i<expr.size(); i++ ) data[i] += expr[i];
     }
@@ -59,7 +47,7 @@ namespace numcxx
               typename= typename std::enable_if<std::is_class<EXPR>::value, EXPR>::type>
     inline void xsub(TArray<T>& A, const  EXPR& expr , const EXPR *x=0) 
     {
-//            resize( expr.size() );
+        resize( expr.size() );
         T *data=A.data();
         for(index i=0; i<expr.size(); i++ ) data[i] -= expr[i];
     }
@@ -78,7 +66,7 @@ namespace numcxx
               typename= typename std::enable_if<std::is_class<EXPR>::value, EXPR>::type>
     inline void xmul(TArray<T>& A, const  EXPR& expr , const EXPR *x=0) 
     {
-//            resize( expr.size() );
+        resize( expr.size() );
         T *data=A.data();
         for(index i=0; i<expr.size(); i++ ) data[i] *= expr[i];
     }
@@ -97,7 +85,7 @@ namespace numcxx
               typename= typename std::enable_if<std::is_class<EXPR>::value, EXPR>::type>
     inline void xdiv(TArray<T>& A, const  EXPR& expr , const EXPR *x=0) 
     {
-//            resize( expr.size() );
+        resize( expr.size() );
         T *data=A.data();
         for(index i=0; i<expr.size(); i++ ) data[i] /= expr[i];
     }
@@ -187,18 +175,6 @@ namespace numcxx
         return dot;
     }
 
-    template <typename T> 
-    inline        T*TArray<T>::data() const { return _data;}
-
-    template <typename T> 
-    inline    index TArray<T>::ndim() const {return _ndim;}
-
-    template <typename T> 
-    inline    index TArray<T>::size() const {return _size;}
-
-    template <typename T> 
-    inline    index TArray<T>::shape(const index dim)  const {return _shape[dim];}
-    
     
     template <typename T> 
     inline void TArray<T>::_check_bounds(index acc_dim, index acc_ndim, index acc_idx) const
@@ -318,7 +294,44 @@ namespace numcxx
     };
     
     template <typename T> 
-    inline TArray<T>::TArray():_ndim(0),_deleter([](T*p){;}){};   
+    inline TArray<T>::TArray():
+        _data(0),
+        _size(0),
+        _ndim(1),
+        _shape{0,0},
+        _deleter([](T*p){;})
+    {};   
+
+
+    template <typename T> 
+    inline void TArray<T>::resize(index n)
+    {
+        if (_size==n) return;
+
+        if (_ndim>1)
+        {
+            char errormsg[80];
+            snprintf(errormsg,80,"numcxx::TArray::resize: unable to resize 2D Array to 1D.\n");
+            throw std::runtime_error(errormsg);
+        }
+        
+        if (_datamanager==nullptr)
+        {
+            _deleter(_data);
+            _data=(T*)malloc(sizeof(T)*n);
+            _deleter=[](T*p){free(p);};
+            _size=n;
+            _shape[0]=n;
+            _shape[1]=0;
+        }
+        else
+        {
+            char errormsg[80];
+            snprintf(errormsg,80,"numcxx::TArray::resize: unable to resize - data managed by different object.\n");
+            throw std::runtime_error(errormsg);
+        }
+    }
+
     
 
     template <typename T> 

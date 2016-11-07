@@ -257,6 +257,7 @@ namespace numcxx
         int k0=i;
         for (int k=k0; k>=0;k0=k, k=IA[k])
         {
+
             if (JA[k]==j) // no need to add new entry 
                 return A[k]; 
         }

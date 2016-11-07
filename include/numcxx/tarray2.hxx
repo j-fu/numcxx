@@ -52,7 +52,13 @@ namespace  numcxx
         /// Construct 2D Array from std::initializer list.
         TArray2(const  std::initializer_list<std::initializer_list<T>> &il );
 
-        TArray2<T>&  operator=(const TArray2<T> &expr) { assign(*this,expr); return *this;}
+        // copy constructor
+        TArray2(const TArray2<T>& A):TArray2<T>(A.shape(0),A.shape(1)){assign(*this,A);}
+
+
+
+        TArray2<T>&  operator=(const TArray2<T> &expr) { return static_cast<TArray2<T>&>(assign(*this,expr));}
+
 
 
         /// Construct empty 2D Array
@@ -81,11 +87,6 @@ namespace  numcxx
         /// \return    Reference to element to be accessed.
         T & operator()(index i0, index i1);
 
-
-        /// C++ style access operator
-        /// 
-        /// \return Plain pointer to i0-th  row of the array
-        T * operator[](index i0);
 
 
         /// Element read access.

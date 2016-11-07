@@ -29,8 +29,6 @@ namespace numcxx
     template <typename T> 
     inline T & TArray2<T>::operator()(index i0, index i1) { return _data[_idx(i0,i1)];};
     
-    template <typename T> 
-    inline T * TArray2<T>::operator[](index i0) { return &_data[_idx(i0,0)];};
 
     template <typename T> 
     inline T TArray2<T>::item(index i0,index i1) { return _data[_idx(i0,i1)];};

@@ -12,20 +12,27 @@ int main()
 {
     const int N=3;
     numcxx::DArray1 A(N);
-    numcxx::DArray1 B(N);
+    //numcxx::DArray1 B(N);
     numcxx::DArray1 C(N);
     numcxx::DArray1 D(N);
 
     numcxx::TMatrix<double> Mat{{1,2,3},{4,5,6},{7,8,9}};
-    auto X=Mat.clone();
-    auto &x=*X;
-    x=Mat;
+
+    auto x=Mat;
+    Mat(1,1)=100;
+    std::cout <<Mat<< std::endl;
+    std::cout <<x<< std::endl;
     A=0.0;
+    auto B=A;
     B=1.0;
+    std::cout<< B;
     C=2.0;
     D=3.25;
     A=B+3.1;
+    std::cout<< B;
+    std::cout<< A;
     A=3.1+B;
+    std::cout<< A;
     D=A*3.0;
     A=3*(B+C/3.0)-4.0*D/2.0;
 

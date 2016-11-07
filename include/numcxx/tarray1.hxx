@@ -26,8 +26,8 @@ namespace numcxx
     template<typename T> class TArray1: public TArray<T>
     {
     public:
-        using TArray<T>::size;
         using TArray<T>::operator[];
+        using TArray<T>::size;
         using TArray<T>::operator=;
 
         // Default constructor.
@@ -65,6 +65,7 @@ namespace numcxx
         /// Construct 1D Array from std::initializer list.
         TArray1(const std::initializer_list<T> &il );
 
+        
 
         /// Construct empty 1D Array
         ///
@@ -88,19 +89,17 @@ namespace numcxx
         std::shared_ptr<TArray1 <T> > clone() const;
 
 
-        TArray1<T>&  operator=(const TArray1<T> &expr) { assign(*this,expr); return *this;}
+        /// Assignment operator
+        TArray1<T>&  operator=(const TArray1<T> &expr) {return static_cast<TArray1<T>&>(assign(*this,expr));}
 
+        // copy constructor
+        TArray1(const TArray1<T>& A):TArray1<T>(A.shape(0)){assign(*this,A);}
 
         /// Access operator for 1D arrays.
         ///
         /// \param i0  Index of element to be accessed.
         /// \return    Reference to element to be accessed.
         T & operator()(index i0);
-
-        /// C++ style access operator
-        ///
-        /// \return Plain pointer to start of the array
-        T & operator[](index i0);
 
         /// Element read access.
         /// 

@@ -52,7 +52,6 @@ template <typename T > void arraytest(void)
         for (int j=0;j<A->shape(1);j++)
         {
             assert((*A)(i,j)==i*A->shape(1)+j+1);
-            assert((*A)[i][j]==i*A->shape(1)+j+1);
         }
 }
 

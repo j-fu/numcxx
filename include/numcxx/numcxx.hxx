@@ -1,13 +1,17 @@
 #ifndef NUMCXX_HXX
 #define NUMCXX_HXX
 
+namespace numcxx
+{
+    using index= unsigned int;
+}
 
+#include "expression.hxx"
 #include "tarray.hxx"
 #include "tarray1.hxx"
 #include "tarray2.hxx"
 #include "tmatrix.hxx"
 #include "tsolverlapacklu.hxx"
-#include "expression.hxx"
 
 /// Namespace for all parts of numcxx library
 namespace numcxx
