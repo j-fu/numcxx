@@ -1,5 +1,6 @@
 #ifndef NUMCXX_EXPRESSION_HXX
 #define NUMCXX_EXPRESSION_HXX
+#include <type_traits>
 
 namespace numcxx
 {
@@ -13,6 +14,14 @@ namespace numcxx
     /// in unexected situations.
 
     class ExpressionBase
+    {
+    };
+
+    class MatrixExpressionBase
+    {
+    };
+
+    class SparseMatrixExpressionBase
     {
     };
 
@@ -39,6 +48,31 @@ namespace numcxx
     const AdditionExpression<A,B> operator+(const A& a, const B& b)
     {
         return AdditionExpression<A,B>(a, b);
+    }
+
+
+    ////////////////////////////////////////////////////////////////////////////////////
+    /// Expression template for   A*B
+    template<typename A, typename B,
+             typename= typename std::enable_if<std::is_base_of<ExpressionBase,A>::value, A>::type,
+             typename= typename std::enable_if<std::is_base_of<ExpressionBase,B>::value, B>::type>
+    class MultiplicationExpression: public ExpressionBase
+    {
+        const A& a;
+        const B& b;
+    public:
+        typedef typename A::value_type value_type;
+        MultiplicationExpression(const A& a, const B& b):a(a), b(b){}
+        unsigned int size() const { return a.size(); }
+        const value_type operator[](const unsigned int i) const {return a[i] * b[i];}
+    };
+        
+    template<typename A, typename B, 
+             typename= typename std::enable_if<std::is_base_of<ExpressionBase,A>::value, A>::type,
+             typename= typename std::enable_if<std::is_base_of<ExpressionBase,B>::value, B>::type>
+    const MultiplicationExpression<A,B> operator*(const A& a, const B& b)
+    {
+        return MultiplicationExpression<A,B>(a, b);
     }
         
     ////////////////////////////////////////////////////////////////////////////////////
@@ -191,7 +225,7 @@ namespace numcxx
     ////////////////////////////////////////////////////////////////////////////////////
     /// Expression template for  M*A
     template<typename A, typename B, 
-             typename= typename std::enable_if<std::is_class<A>::value, A>::type,
+             typename= typename std::enable_if<std::is_base_of<MatrixExpressionBase,A>::value, A>::type,
              typename= typename std::enable_if<std::is_base_of<ExpressionBase,B>::value, B>::type>
     class LeftMatrixMultiplicationExpression: public ExpressionBase
     {
@@ -211,11 +245,45 @@ namespace numcxx
     };
 
     template<typename A, typename B, 
-             typename= typename std::enable_if<std::is_class<A>::value, A>::type,
+             typename= typename std::enable_if<std::is_base_of<MatrixExpressionBase,A>::value, A>::type,
              typename= typename std::enable_if<std::is_base_of<ExpressionBase,B>::value, B>::type>
     const LeftMatrixMultiplicationExpression<A,B> operator*(const A& a, const B& b)
     {
         return LeftMatrixMultiplicationExpression<A,B>(a, b);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////
+    /// Expression template for  M*A, M sparse
+    template<typename A, typename B, 
+             typename= typename std::enable_if<std::is_base_of<SparseMatrixExpressionBase,A>::value, A>::type,
+             typename= typename std::enable_if<std::is_base_of<ExpressionBase,B>::value, B>::type>
+    class LeftSparseMatrixMultiplicationExpression: public ExpressionBase
+    {
+        const A& a;
+        const B& b;
+    public:
+        typedef typename A::value_type value_type;
+        LeftSparseMatrixMultiplicationExpression(const A& a, const B& b):a(a), b(b){}
+        unsigned int size() const { return b.size(); }
+        const value_type operator[](const unsigned int i) const
+        { 
+            value_type entry=0;  
+            auto &IA=*(a.pIA);
+            auto &JA=*(a.pJA);
+            auto &AA=*(a.pA);
+
+            for (index j=IA[i];j<IA[i+1];j++)
+                entry+=AA[j]*b[JA[j]];
+            return entry;
+        }
+    };
+
+    template<typename A, typename B, 
+             typename= typename std::enable_if<std::is_base_of<SparseMatrixExpressionBase,A>::value, A>::type,
+             typename= typename std::enable_if<std::is_base_of<ExpressionBase,B>::value, B>::type>
+    const LeftSparseMatrixMultiplicationExpression<A,B> operator*(const A& a, const B& b)
+    {
+        return LeftSparseMatrixMultiplicationExpression<A,B>(a, b);
     }
 }
 #endif

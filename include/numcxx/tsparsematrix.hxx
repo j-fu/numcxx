@@ -8,27 +8,57 @@
 namespace numcxx
 {
     
-    template<typename T> 
-    class TSolverUMFPACK;
+    template<typename T>   class TSolverUMFPACK;
+    template<typename T>   class TPreconJacobi;
 
     /// Sparse matrix class using CRS storage scheme
     template<typename T> 
-    class TSparseMatrix: public TLinOperator<T>
+    class TSparseMatrix: public TLinOperator<T>, public SparseMatrixExpressionBase
     {
         friend class TSolverUMFPACK<T>;
+        friend class TPreconJacobi<T>;
     public:
+        typedef T value_type;
+        /// Create an empty sparse matrix representing
+        /// an  n x n system of linear equations
         TSparseMatrix(index n);
+
+
+        /// Static wrapper around corresponding constructor
+        static std::shared_ptr<TSparseMatrix <T> > create(const index n) {return std::make_shared<TSparseMatrix<T>>(n);}
+
+        /// Create an empty sparse matrix representing
+        /// an  n x n system of linear equations
         TSparseMatrix(const  std::initializer_list<std::initializer_list<T>> &il);
-        void  flush();
-        void apply(const TArray<T> &U,TArray<T> &V );
-        T& operator()(int i, int j);
-        std::shared_ptr<TMatrix<T>> copy_as_dense();
+
+        /// Static wrapper around corresponding constructor
         static std::shared_ptr<TSparseMatrix <T> > create(const  std::initializer_list<std::initializer_list<T>> &il);
 
 
+        /// Access operator. 
+        ///
+        /// This operator accesses the sparse matrix element at position
+        /// i,j. If it is not existent, it is created. All freshly created
+        /// elements are collected in an extension list which is joined with
+        /// the main data structure using the flush() method.
+        T& operator()(int i, int j);
+        
+        /// Re-create the internal data structure in order to
+        /// accomodated all newly created elements.
+        void  flush();
+
+        /// Apply sparse matrix to vector
+        void apply(const TArray<T> &U,TArray<T> &V ) const;
+
+        /// Create a dense matrix from the sparse matrix
+        std::shared_ptr<TMatrix<T>> copy_as_dense();
+
+        /// Return the shape od the matrix
         index shape(int idim) {return n;}
-        bool pattern_changed(){return _pattern_changed;}
-        void pattern_changed(bool chg) {_pattern_changed=chg;};
+        
+        /// Copy constructor is deleted
+        TSparseMatrix(const TSparseMatrix<T>& A)=delete;
+
 
         // std::shared_ptr<TSparseMatrix <T> > copy() const;
         // std::shared_ptr<TSparseMatrix <T> > clone() const;
@@ -38,14 +68,6 @@ namespace numcxx
         // TSparseMatrix<T>&  operator=(const TSparseMatrix<T> &expr) { assign(*this,expr); return *this;}
         // void apply(const TArray1<T> &u, TArray1<T> &v) const;
 
-    private:
-        class RowEntry
-        {
-        public: 
-            int i;
-            T a;
-        };
-        
         /// Row pointers
         std::shared_ptr<TArray1<int>> pIA;
         
@@ -54,51 +76,33 @@ namespace numcxx
         
         /// Entries
         std::shared_ptr<TArray1 <T> > pA; 
+
+    private:
+
+
+
+        /// Check if pattern has changed after last solver
+        /// update
+        bool pattern_changed(){return _pattern_changed;}
+
+        void pattern_changed(bool chg) {_pattern_changed=chg;};
+
         
         bool _pattern_changed=false;
-        const int n;
+        const index n;
         int maxrow=0;
 
-        class Extension
-        {
-        public:        
-            /// number of matrix rows
-            const index n;               
-            
-            int next0=0;
-            
-            /// rowpointer list 
-            std::shared_ptr<std::vector<int>> pIA;     
-            
-            /// column indices 
-            std::shared_ptr<std::vector<int>> pJA;     
-            
-            /// values
-            std::shared_ptr<std::vector <T> > pA; 
-            
-            /// zero value
-            const T zero=0;        
-            
-            Extension(index n);
-            
-            T& entry(int i, int j);
-            void apply(const TArray<T>&U, TArray<T>&V);
-            
-            
-            T read_entry(int i, int j);
-            
-            bool empty();
-        };
+        bool _first_flush_done=false;
+        bool empty() { return !_first_flush_done;}
+        /// Row entry for flush method
+        class RowEntry;
 
-        std::shared_ptr<Extension>  pExt;
+        /// Extension data
+        class Extension;
+
+        std::shared_ptr<Extension>  pExt=nullptr;
         
     };
-
-
-        
-
-    
-    
     
 }
 

@@ -1,6 +1,6 @@
 #ifndef NUMCXX_TARRAY_H
 #define NUMCXX_TARRAY_H
-
+#include <ostream>
 #include <typeinfo>
 #include <memory>
 #include <stdexcept> 
@@ -9,10 +9,16 @@
 
 namespace numcxx
 {
+    template<typename T> class TArray;
+
+
+
+    template<typename T>
+    inline std::ostream & operator << (std::ostream & s, TArray<T> &A);
 
     /// TArray is the common template base class for arrays and dense matrices
     /// of the numcxx project.
-    template<typename T> class TArray: public ExpressionBase
+    template<typename T> class TArray
     {
     public:
 
@@ -88,6 +94,22 @@ namespace numcxx
         /// \param B Second array argument.
         /// \param C Third array argument.
         static void operate(std::function< void ( T& a, T&b,T&c)> f, TArray<T> & A, TArray<T> & B,TArray<T> & C);
+
+
+        /// Access operator for 1D arrays.
+        ///
+        /// \param i0  Index of element to be accessed.
+        /// \return    Reference to element to be accessed.
+        T & operator()(const index i0)  { return _data[_idx(i0)];};
+        const T & operator()(const index i0) const  { return _data[_idx(i0)];};
+
+        /// Access operator for 2D arrays.
+        ///
+        /// \param i0  Row index of element to be accessed.
+        /// \param i0  Column index of element to be accessed.
+        /// \return    Reference to element to be accessed.
+        T & operator()(const index i0, const index i1)  { return _data[_idx(i0,i1)];};
+        const T & operator()(const index i0, const index i1) const { return _data[_idx(i0,i1)];};
 
 
         /// Reference to entry 
@@ -174,6 +196,10 @@ namespace numcxx
         /// \param n0 Size.
         TArray(index n0);
 
+        /// Construct 1D Array from std::initializer list.
+        TArray(const std::initializer_list<T> &il );
+
+
         /// Construct an 1D array from data pointer
         ///
         /// \param n0 Size.
@@ -194,6 +220,10 @@ namespace numcxx
         /// \param n0 Number of rows
         /// \param n1 Number of columns
         TArray(index n0, index n1);
+
+        /// Construct 2D Array from std::initializer list.
+        TArray(const  std::initializer_list<std::initializer_list<T>> &il );
+
 
         /// Construct a 2D array from data pointer
         ///
@@ -216,47 +246,11 @@ namespace numcxx
         /// Destructor.
         ~TArray();
 
+        /// Print contents of array.
+        friend std::ostream & operator<< <T>(std::ostream & s, TArray<T> &A);
 
 
     };
-
-    /// Maximum norm of array.
-    ///
-    /// \return Maximum ( \f$l^\infty\f$) norm.
-    template <typename A> double normi(const A& a);
-
-    /// Sum norm.
-    ///
-    /// \return Sum ( \f$l^1\f$) norm.
-    template <typename A> double norm1(const A& a);
-
-    /// Euklidean norm.
-    ///
-    /// \return Euklidean ( \f$l^2\f$) norm 
-    template <typename A> double norm2(const A& a);
-
-    /// Dot product.
-    ///
-    /// \param A First argument.
-    /// \param B Second argument.
-    /// \return  Dot product
-    template <typename A, typename B> double dot(const A& a, const B&b);
-
-    
-    /// Minimum of array.
-    ///
-    /// \return Minimum of all elements in array.
-    template <typename A> double min(const A&a);
-    
-    /// Maximum of array.
-    ///
-    /// \return Maximum of all elements in array.
-    template <typename A>  double max(const A&a);
-    
-    /// Sum of array.
-    ///
-    /// \return Sum of all elements in array.
-    template <typename A>  double sum(const A&a);
 
 
 

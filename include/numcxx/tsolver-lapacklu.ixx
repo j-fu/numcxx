@@ -6,7 +6,7 @@ namespace numcxx
         a(a),
         lu(a->clone()),
         ipiv(TArray1<int>::create(a->shape(0)))
-    {;}
+    { update();;}
     
     template<typename T> 
     inline std::shared_ptr<TSolverLapackLU<T>> TSolverLapackLU<T>::create(const std::shared_ptr<TMatrix<T>> a)
@@ -29,6 +29,12 @@ namespace numcxx
         int info;
         *lu=*a;
         dgetrf_(&n,&n,lu->data(),&n,ipiv->data(),&info);
+        if (info!=0)
+        {
+            char errormsg[80];
+            snprintf(errormsg,80,"numcxx::TSolverLapackLU::update: dgetrf error %d\n",info);
+            throw std::runtime_error(errormsg);
+        }
     }
     
     template<> 
@@ -40,6 +46,12 @@ namespace numcxx
         int one=1;
         int info;
         dgetrs_(trans,&n,&one,lu->data(),&n,ipiv->data(),sol.data(),&n,&info);
+        if (info!=0)
+        {
+            char errormsg[80];
+            snprintf(errormsg,80,"numcxx::TSolverLapackLU::update: dgetrs error %d\n",info);
+            throw std::runtime_error(errormsg);
+        }
     }
 
 
@@ -50,6 +62,13 @@ namespace numcxx
         int info;
         *lu=*a;
         sgetrf_(&n,&n,lu->data(),&n,ipiv->data(),&info);
+        if (info!=0)
+        {
+            char errormsg[80];
+            snprintf(errormsg,80,"numcxx::TSolverLapackLU::update: sgetrf error %d\n",info);
+            throw std::runtime_error(errormsg);
+        }
+
     }
     
     template<> 
@@ -61,6 +80,13 @@ namespace numcxx
         int one=1;
         int info;
         sgetrs_(trans,&n,&one,lu->data(),&n,ipiv->data(),sol.data(),&n,&info);
+        if (info!=0)
+        {
+            char errormsg[80];
+            snprintf(errormsg,80,"numcxx::TSolverLapackLU::update: sgetrs error %d\n",info);
+            throw std::runtime_error(errormsg);
+        }
+
     }
 
 }

@@ -3,13 +3,62 @@
 
 namespace numcxx
 {
+
+
+    template <typename T>
+    class TSparseMatrix<T>::RowEntry
+    {
+    public: 
+        index i;
+        T a;
+    };
+    
+    template <typename T>
+    class TSparseMatrix<T>::Extension
+    {
+    public:        
+        /// number of matrix rows
+        const index n;               
+        
+        
+        /// rowpointer list 
+        std::shared_ptr<std::vector<int>> pIA;     
+        
+        /// column indices 
+        std::shared_ptr<std::vector<int>> pJA;     
+        
+        /// values
+        std::shared_ptr<std::vector <T> > pA; 
+        
+        /// zero value
+        const T zero=0;        
+        
+        /// Constructor
+        Extension(index n);
+        
+        /// Return refrence to  entry, if not existent, create
+        T& entry(int i, int j);
+        
+        void apply(const TArray<T>&U, TArray<T>&V);
+        
+        int next;
+        
+        T read_entry(int i, int j);
+        
+        bool empty();
+    };
+    
+
+
+
+
+
     template <typename T>
     inline TSparseMatrix<T>::TSparseMatrix(index n):
         n(n),
         pA(std::make_shared<TArray1<T>>(n)),
         pJA(std::make_shared<TArray1<int>>(n)),
-        pIA(std::make_shared<TArray1<int>>(n+1)),
-        pExt(std::make_shared<Extension>(n))
+        pIA(std::make_shared<TArray1<int>>(n+1))
     {
         auto &IA=*pIA;
         auto &JA=*pJA;
@@ -43,11 +92,13 @@ namespace numcxx
     template <typename T>
     inline void TSparseMatrix<T>::flush()
     {
-        if (pExt==0) return;
+        if (pExt==nullptr) return;
         if (pExt->empty()) return;
-        int nJA_old=pJA->size();
-        int next=pExt->pJA->size()-n;
-        int nJA_new=nJA_old+next+pExt->next0;
+        int nJA_old=0;
+        if (!empty())
+            nJA_old=pJA->size();
+        int next=pExt->next;
+        int nJA_new=nJA_old+next;
     
         auto pNew_IA=TArray1<int>::create(n+1);
         auto pNew_JA=TArray1<int>::create(nJA_new);
@@ -135,14 +186,15 @@ namespace numcxx
         pA=pNew_A;
         maxrow=New_maxrow;
         _pattern_changed=true;
-        pExt=0;
-        pExt=std::make_shared<Extension>(n);
+        _first_flush_done=true;
+        pExt=nullptr;
     }
 
 
     template <typename T>
-    inline void TSparseMatrix<T>::apply(const TArray<T> &u,TArray<T> &v )
+    inline void TSparseMatrix<T>::apply(const TArray<T> &u,TArray<T> &v ) const
     {
+        v.resize(u.size());
         auto &IA=*pIA;
         auto &JA=*pJA;
         auto &A=*pA;
@@ -152,7 +204,8 @@ namespace numcxx
             for (int j=IA[i];j<IA[i+1];j++)
                 v[i]+=A[j]*u[JA[j]];
         }
-        pExt->apply(u,v);
+        if (pExt!=nullptr)
+            pExt->apply(u,v);
     }
 
     template <typename T>
@@ -165,7 +218,8 @@ namespace numcxx
         for (int k=IA[i];k<IA[i+1];k++)
             if (JA[k]==j) 
                 return A[k];
-
+        
+        if (pExt==nullptr) pExt=std::make_shared<Extension>(n);
         return pExt->entry(i,j);
     }
 
@@ -185,6 +239,11 @@ namespace numcxx
                 M(i,JA[j])=A[j];
         return pM;
     }
+
+
+        /// Row entry for flush method: we need to sort
+        /// both i and a values at the same time.
+
 
 
     template <typename T>
@@ -248,7 +307,7 @@ namespace numcxx
         {
             JA[i]=j;
             A[i]=0.0;
-            next0++;
+            next++;
             return A[i];
         }
         
@@ -265,6 +324,7 @@ namespace numcxx
         // so we add next entry at end of matrix
         // and put its index into IA[k0]
         
+        next++;
         A.push_back(0);
         JA.push_back(j);
         IA.push_back(-1);
@@ -311,8 +371,7 @@ namespace numcxx
     template <typename T>
     inline bool TSparseMatrix<T>::Extension::empty()
     {
-        int next=pJA->size()-n;
-        if (next+next0==0) return true;
+        if (next==0) return true;
         return false;
     }
     

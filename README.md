@@ -6,26 +6,26 @@ numcxx - a collection of python compatible classes for linear algebra in C++ {#m
 
 - Keep the  code reasonably simple and transparent  for beginners in order  to be
   useful for teaching
-     - Straightforward implementation of expression templates
-     - Study expressive capabilities of modern C++
+   - Study expressive capabilities of modern C++
+  - Straightforward implementation of expression templates
 
 - Efficient, reference counted exchange of array data with other packages without copying
   data
-     - python/numpy
-     - triangle, TetGen etc.
-     - LAPACK
-     - UMFPACK
+  - LAPACK
+  - UMFPACK
+  - python/numpy
+  - triangle, TetGen etc.
 
 - SWIG based interface to python/numpy
 
 
 Many ideas used behind this  library have been developed together with
-or even  inspired by Timo  Streckenbach from the WIAS  pdelib project,
-and   they   evolved   over   may   years.    C++11   allows   for   a
-standard-conforming and concise implementation.
+or   even    inspired   by    Timo   Streckenbach   from    the   WIAS
+[pdelib](http://pdelib.org) project, and they  evolved over may years.
+C++11 allows for a standard-conforming and concise implementation.
 
-Anyone expecting more sophisticated work
-may have a look at these projects:
+Anyone  expecting more  sophisticated work  may have  a look  at these
+projects:
 
 - eigen
 - armadillo

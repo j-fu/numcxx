@@ -1,5 +1,5 @@
-#ifndef TSOLVER_UMFPACK_HXX
-#define TSOLVER_UMFPACK_HXX
+#ifndef TPRECON_JACOBI_HXX
+#define TPRECON_JACOBI_HXX
 
 #include "tsparsematrix.hxx"
 
@@ -12,34 +12,31 @@ namespace numcxx
     /// A&M university,  see [wikipedia](http://en.wikipedia.org/wiki/UMFPACK)
     /// and its [homepage](http://faculty.cse.tamu.edu/davis/suitesparse.html)
     template<typename T> 
-    class TSolverUMFPACK: public  TLinSolver<T>
+    class TPreconJacobi: public  TLinSolver<T>
     {
         /// The corresponding matrix
         const std::shared_ptr< TSparseMatrix<T> > pMatrix;
         
-        /// Pointer to symbolic factorization data
-        void * Symbolic;
-        
-        /// Pointer to numeric factorization data
-        void * Numeric;
+
     public:
+        std::shared_ptr< TArray1<T> > pInvDiag;
 
         /// Create LU factorization class
-        TSolverUMFPACK(const std::shared_ptr<TSparseMatrix<T>> pA);
+        TPreconJacobi(const std::shared_ptr<TSparseMatrix<T>> pA);
 
-        ~TSolverUMFPACK();
+        ~TPreconJacobi(){};
         /// Create LU factorization class
 
-        static std::shared_ptr<TSolverUMFPACK<T>> create(const std::shared_ptr<TSparseMatrix<T>> pA);
+        static std::shared_ptr<TPreconJacobi<T>> create(const std::shared_ptr<TSparseMatrix<T>> pA);
         /// Perform actual computation of LU factorization
         void update();
 
         /// Solve LU factorized system
-        void solve( TArray<T> & Sol,  const TArray<T> & Rhs);
+        void solve( TArray<T> & Sol,  const TArray<T> & Rhs) const;
     };
 }
 
-#include "tsolver-umfpack.ixx"
+#include "tprecon-jacobi.ixx"
 
 #endif
 

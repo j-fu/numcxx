@@ -11,6 +11,7 @@ namespace numcxx
     template <> 
     inline   void TMatrix<double>::apply(const TArray<double> &u, TArray<double> &v) const
     {
+        v.resize(u.size());
         char transmat[2]={'T','\0'};
         char transvec[2]={'N','\0'};
         int n=shape(0);
@@ -31,6 +32,7 @@ namespace numcxx
     template <> 
     inline   void TMatrix<float>::apply(const TArray<float> &u, TArray<float> &v) const
     {
+        v.resize(u.size());
         char transmat[2]={'T','\0'};
         char transvec[2]={'N','\0'};
         int n=shape(0);

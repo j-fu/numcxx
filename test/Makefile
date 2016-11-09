@@ -1,5 +1,5 @@
 CXX=g++-5
-CXX=g++
+#CXX=g++
 #CXX=clang++
 #CXX=icpc
 NUMCXX=../include/numcxx
@@ -24,11 +24,11 @@ BINARIES=test-sparse test-et  test-numcxx3  featuretest test-numcxx _numcxx.so
 all: $(BINARIES)
 
 
-NUMCXX_HEADERS=$(wildcard $(NUMCXX)/*.hxx)
+NUMCXX_HEADERS=$(wildcard $(NUMCXX)/*.hxx $(NUMCXX)/*.ixx)
 
 
 test-numcxx3: $(NUMCXX_HEADERS)
-test-numcxx2: $(NUMCXX_HEADERS)
+test-numcxx2.o: $(NUMCXX_HEADERS)
 featuretest: $(NUMCXX_HEADERS)
 test-et: $(NUMCXX_HEADERS)
 test-sparse: $(NUMCXX_HEADERS)

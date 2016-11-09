@@ -1,11 +1,6 @@
 #ifndef NUMCXX_TARRAY1_H
 #define NUMCXX_TARRAY1_H
-
 #include <vector>
-#include <ostream>
-#include <iostream>
-#include <type_traits>
-
 #include "tarray.hxx"
 
 
@@ -14,20 +9,14 @@
 namespace numcxx
 {
 
-    template<typename T>
-    class TArray1;
-
-
-    template<typename T>
-    inline std::ostream & operator << (std::ostream & s, TArray1<T> &A);
-        
     
     /// One dimensional array class
-    template<typename T> class TArray1: public TArray<T>
+    template<typename T> class TArray1: public TArray<T>, public ExpressionBase
     {
     public:
         using TArray<T>::operator[];
         using TArray<T>::size;
+        using TArray<T>::resize;
         using TArray<T>::operator=;
 
 
@@ -56,6 +45,8 @@ namespace numcxx
         TArray1(index n0, T*data, std::shared_ptr<void> datamanager):TArray<T>(n0,data,datamanager){}; 
 
 
+        /// Construct 1D Array from std::initializer list.
+        TArray1(const std::initializer_list<T> &il ):TArray<T>(il){};
 
 
         /// Construct 1D Array from std::vector.
@@ -64,9 +55,6 @@ namespace numcxx
         /// is stored as datamanager in created object.
         TArray1(std::shared_ptr<std::vector<T>> v):TArray<T>(v->size(),v->data(),v){};
 
-
-        /// Construct 1D Array from std::initializer list.
-        TArray1(const std::initializer_list<T> &il );
 
         
 
@@ -98,12 +86,10 @@ namespace numcxx
 
         // Copy constructor
         TArray1(const TArray1<T>& A):TArray1<T>(A.shape(0)){assign(*this,A);}
-
-        /// Access operator for 1D arrays.
-        ///
-        /// \param i0  Index of element to be accessed.
-        /// \return    Reference to element to be accessed.
-        T & operator()(index i0)  { return _data[_idx(i0)];};
+        
+        // Copy constructor from expression
+        template <typename EXPR, typename= typename std::enable_if<std::is_class<EXPR>::value, EXPR>::type>
+        TArray1(const EXPR& A):TArray1<T>(A.size()){assign(*this,A);}
 
         /// Element read access.
         /// 
@@ -134,8 +120,6 @@ namespace numcxx
         /// \param x value to be copied to element at index.
         void __setitem__(index i0,T x)  { _data[_idx(i0)]=x; };
 
-        /// Print contents of array.
-        friend std::ostream & operator<< <T>(std::ostream & s, TArray1<T> &A);
 
         
     private:

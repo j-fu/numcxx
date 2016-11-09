@@ -3,6 +3,7 @@
 #include <ctime>
 #include <cmath>
 #include "numcxx/numcxx.hxx"
+#include "numcxx/util.hxx"
 
 
 void xsolve(numcxx::TLinSolver<double> &solver, numcxx::TArray<double>& u,const numcxx::TArray<double>& f)
@@ -23,6 +24,10 @@ int main()
     auto g=numcxx::TArray1<double>::create({1,2,3});
     auto u=g->clone();
     xsolve(*LU,*u,*g);
-    std::cout<< u << std::endl;
+    std::cout<< *u << std::endl;
+
+    auto pX=numcxx::linspace<double>(0,1,101);
+    std::cout << *pX;
+
 }
 

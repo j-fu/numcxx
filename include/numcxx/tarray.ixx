@@ -5,6 +5,29 @@
 
 namespace numcxx
 {
+
+    template<typename T> 
+    inline TArray<T>::TArray(const std::initializer_list<T> &il ):TArray(il.size())
+    {
+        index i=0;
+        for (auto x = il.begin() ; x != il.end(); x++,i++) _data[i]= *x;
+    }
+
+
+    template <typename T> 
+    inline TArray<T>::TArray(const  std::initializer_list<std::initializer_list<T>> &il):
+        TArray(il.size(), il.begin()->size())
+    {
+        index i=0;
+        
+        for (auto jl = il.begin() ; jl != il.end(); jl++,i++)
+        {
+            index j=0;
+            for (auto x = jl->begin() ; x != jl->end(); x++,j++) 
+                _data[_idx(i,j)]= *x;
+        }
+    }
+
     template <typename T, typename EXPR,
               typename= typename std::enable_if<std::is_class<EXPR>::value, EXPR>::type>
     inline TArray<T>& assign(TArray<T>& A, const  EXPR& expr , const EXPR *x=0) 
@@ -28,7 +51,7 @@ namespace numcxx
               typename= typename std::enable_if<std::is_class<EXPR>::value, EXPR>::type>
     inline void xadd(TArray<T>& A, const  EXPR& expr , const EXPR *x=0) 
     {
-        resize( expr.size() );
+        A.resize( expr.size() );
         T *data=A.data();
         for(index i=0; i<expr.size(); i++ ) data[i] += expr[i];
     }
@@ -47,7 +70,7 @@ namespace numcxx
               typename= typename std::enable_if<std::is_class<EXPR>::value, EXPR>::type>
     inline void xsub(TArray<T>& A, const  EXPR& expr , const EXPR *x=0) 
     {
-        resize( expr.size() );
+        A.resize( expr.size() );
         T *data=A.data();
         for(index i=0; i<expr.size(); i++ ) data[i] -= expr[i];
     }
@@ -66,7 +89,7 @@ namespace numcxx
               typename= typename std::enable_if<std::is_class<EXPR>::value, EXPR>::type>
     inline void xmul(TArray<T>& A, const  EXPR& expr , const EXPR *x=0) 
     {
-        resize( expr.size() );
+        A.resize( expr.size() );
         T *data=A.data();
         for(index i=0; i<expr.size(); i++ ) data[i] *= expr[i];
     }
@@ -85,7 +108,7 @@ namespace numcxx
               typename= typename std::enable_if<std::is_class<EXPR>::value, EXPR>::type>
     inline void xdiv(TArray<T>& A, const  EXPR& expr , const EXPR *x=0) 
     {
-        resize( expr.size() );
+        A.resize( expr.size() );
         T *data=A.data();
         for(index i=0; i<expr.size(); i++ ) data[i] /= expr[i];
     }
@@ -99,83 +122,6 @@ namespace numcxx
         for(index i=0; i<A.size(); i++ )data[i] /= a;
     }
 
-
-    template <typename A> double normi(const A& a)
-    {
-        double norm=std::abs(a[0]);
-        for(index i=1; i<a.size(); i++ )
-        {
-            double x=std::abs(a[i]);
-            if (x>norm) norm=x;
-        }
-        return norm;
-    }
-
-    template <typename A> double norm1(const A& a)
-    {
-        double norm=std::abs(a[0]);
-        for(index i=1; i<a.size(); i++ )
-        {
-           norm+=std::abs(a[i]);
-        }
-        return norm;
-    }
-
-    template <typename A> double norm2(const A& a)
-    {
-        double norm=0.0;
-        for(index i=0; i<a.size(); i++ )
-        {
-            double x=a[i];
-            norm+=x*x;
-        }
-        return sqrt(norm);
-    }
-
-
-    template <typename A> double min(const A&a)
-    {
-        double m=a[0];
-        for(index i=1; i<a.size(); i++ )
-        {
-            double x=a[i];
-            if (x<m) m=x;
-        }
-        return m;
-    }
-
-    template <typename A> double max(const A&a)
-    {
-        double m=a[0];
-        for(index i=1; i<a.size(); i++ )
-        {
-            double x=a[i];
-            if (x>m) m=x;
-        }
-        return m;
-    }
-
-    template <typename A>  double sum(const A&a)
-    {
-        double s=a[0];
-        for(index i=1; i<a.size(); i++ )
-        {
-           s+=a[i];
-        }
-        return s;
-    }
-
-    template <typename A, typename B> double dot(const A& a, const B&b)
-    {
-        double dot=0.0;
-        for(index i=0; i<a.size(); i++ )
-        {
-            dot+=a[i]*b[i];
-        }
-        return dot;
-    }
-
-    
     template <typename T> 
     inline void TArray<T>::_check_bounds(index acc_dim, index acc_ndim, index acc_idx) const
     {
@@ -344,6 +290,31 @@ namespace numcxx
     inline void TArray<T>::operate(std::function< void ( T& a, T&b,T&c)> f, TArray<T> & A, TArray<T> & B,TArray<T> & C)  
     {
         for(index i=0;i<A._size;i++) f(A._data[i],B._data[i],C._data[i]);
+    }
+
+    
+    
+    template<typename T> 
+    inline std::ostream & operator << (std::ostream & s, TArray<T> &A)
+    {
+        if (A.ndim()==1)
+            for (index i=0;i<A.size();i++) s <<"[" << i << "]: " <<A(i) << std::endl << std::flush;
+        else
+        {
+            s << "    ";
+            for (index j=0;j<A.shape(1);j++) 
+                s << "[" << j << "]     ";
+            s<< std::endl;
+            for (index i=0;i<A.shape(0);i++) 
+            {
+                s << "[" << i << "]: ";
+                for (index j=0;j<A.shape(1);j++) 
+                    s << A(i,j) << "   ";
+                s<< std::endl;
+            }
+            s << std::flush;
+        }
+        return s;
     }
 
 

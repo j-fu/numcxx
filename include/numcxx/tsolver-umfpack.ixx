@@ -1,3 +1,4 @@
+#include <cstdio>
 #include <suitesparse/umfpack.h>
 namespace numcxx
 {
@@ -8,7 +9,10 @@ namespace numcxx
         pMatrix(pMatrix),
         Symbolic(nullptr),
         Numeric(nullptr)
-    {}
+    {
+        update();
+    }
+
     template<typename T> 
     inline TSolverUMFPACK<T>::~TSolverUMFPACK()
     {
@@ -20,7 +24,7 @@ namespace numcxx
     template<typename T> 
     inline std::shared_ptr<TSolverUMFPACK<T>> TSolverUMFPACK<T>::create(const std::shared_ptr<TSparseMatrix<T>> pA)
     {
-        return std::make_shared<TSolverUMFPACK<T>>;
+        return std::make_shared<TSolverUMFPACK<T>>(pA);
     }
     
     /// Perform actual computation of LU factorization
@@ -28,6 +32,7 @@ namespace numcxx
     inline void TSolverUMFPACK<T>::update()
     {
         pMatrix->flush();
+        if (pMatrix->empty()) return;
         int n=pMatrix->shape(0);
         int nia=pMatrix->pIA->size();
         int nja=pMatrix->pJA->size();
@@ -48,7 +53,13 @@ namespace numcxx
             if (Symbolic) umfpack_di_free_symbolic(&Symbolic),Symbolic=0;
             if (Numeric) umfpack_di_free_numeric(&Numeric),Numeric=0;
             status=umfpack_di_symbolic (n, n, pMatrix->pIA->data(), pMatrix->pJA->data(), pMatrix->pA->data(), &Symbolic, 0, 0);
-            //      if (status>1) printf("Umfpack error %d\n",status);
+            if (status>1)
+            {
+                char errormsg[80];
+                snprintf(errormsg,80,"numcxx::TSolverUMFPACK::update: umfpack_di_symbolic error %d\n",status);
+                throw std::runtime_error(errormsg);
+            }
+
         }
         if (Numeric!=nullptr) 
         {
@@ -56,18 +67,29 @@ namespace numcxx
             Numeric=0;
         }
         status =umfpack_di_numeric (pMatrix->pIA->data(), pMatrix->pJA->data(), pMatrix->pA->data(), Symbolic, &Numeric, control, 0) ;
-        //  if (status>1) printf("Umfpack error %d\n",status);
+        if (status>1)
+        {
+            char errormsg[80];
+            snprintf(errormsg,80,"numcxx::TSolverUMFPACK::update: umfpack_di_numeric error %d\n",status);
+            throw std::runtime_error(errormsg);
+        }
+        pMatrix->pattern_changed(false);
     }
     
     /// Solve LU factorized system
     template<typename T> 
     inline void TSolverUMFPACK<T>::solve( TArray<T> & Sol,  const TArray<T> & Rhs)
     {
+        Sol.resize(Rhs.size());
         double *control=nullptr;
         int status;
         status=umfpack_di_solve (UMFPACK_At,pMatrix->pIA->data(), pMatrix->pJA->data(), pMatrix->pA->data(), Sol.data(), Rhs.data(), Numeric, control, 0 ) ;
-//        if (status>1) printf("Umfpack error %d\n",status);
-        
+        if (status>1)
+        {
+            char errormsg[80];
+            snprintf(errormsg,80,"numcxx::TSolverUMFPACK::update: umfpack_di_solve error %d\n",status);
+            throw std::runtime_error(errormsg);
+        }
     }
 
 

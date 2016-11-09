@@ -14,6 +14,7 @@ namespace numcxx
 #include "tsparsematrix.hxx"
 #include "tsolver-lapacklu.hxx"
 #include "tsolver-umfpack.hxx"
+#include "util.hxx"
 
 /// Namespace for all parts of numcxx library
 namespace numcxx

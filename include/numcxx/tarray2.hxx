@@ -1,21 +1,14 @@
 #ifndef NUMCXX_TARRAY2_H
 #define NUMCXX_TARRAY2_H
 
-#include <ostream>
 #include "tarray.hxx"
 
 
 namespace  numcxx
 {
-    template<typename T>
-    class TArray2;
-
-    template<typename T>
-    inline std::ostream & operator << (std::ostream & s, TArray2<T> &A);
-
     /// Two-dimensional array class
     template<typename T> 
-    class TArray2: public TArray<T>
+    class TArray2: public TArray<T>, public ExpressionBase
     {
     public:
         using TArray<T>::size;
@@ -52,7 +45,8 @@ namespace  numcxx
 
 
         /// Construct 2D Array from std::initializer list.
-        TArray2(const  std::initializer_list<std::initializer_list<T>> &il );
+        TArray2(const  std::initializer_list<std::initializer_list<T>> &il ):TArray<T>(il){};
+
 
         /// Copy constructor
         TArray2(const TArray2<T>& A):TArray2<T>(A.shape(0),A.shape(1)){assign(*this,A);}
@@ -82,12 +76,6 @@ namespace  numcxx
         ///  \return Array of the same size with empty contents.
         std::shared_ptr<TArray2 <T> > clone() const  { return create(shape(0),shape(1));}
 
-        /// Access operator for 2D arrays.
-        ///
-        /// \param i0  Row index of element to be accessed.
-        /// \param i0  Column index of element to be accessed.
-        /// \return    Reference to element to be accessed.
-        T & operator()(index i0, index i1)  { return _data[_idx(i0,i1)];};
 
 
         /// Element read access.
@@ -113,8 +101,6 @@ namespace  numcxx
         /// \return Smart pointer to i0-th row. 
         std::shared_ptr<TArray1 <T> > const __getitem__(index i0){ return std::shared_ptr<TArray1<T>>(new TArray1<T>(shape(1), &_data[_idx(i0,0)], [](T*p){;}));}
 
-        /// Print contents of array.
-        friend std::ostream & operator<< <T>(std::ostream & s, TArray2<T> &A);
 
     protected:
         using TArray<T>::_data;

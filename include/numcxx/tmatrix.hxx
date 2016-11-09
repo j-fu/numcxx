@@ -11,21 +11,21 @@ namespace numcxx
 {
     /// Dense matrix class
     template<typename T> 
-    class TMatrix: public TArray2<T>, public TLinOperator<T>
+    class TMatrix: public TArray<T>, public TLinOperator<T>, public MatrixExpressionBase
     {
     public:
-        using TArray2<T>::size;
-        using TArray2<T>::shape;
+        using TArray<T>::size;
+        using TArray<T>::shape;
         using TArray<T>::operator[];
         
         /// Construct zero size array.
-        TMatrix(): TArray2<T>(){};
+        TMatrix(): TArray<T>(){};
         
         /// Construct an empty matrix
         ///
         /// \param n0 Number of rows
         /// \param n1 Number of columns
-        TMatrix(index n): TArray2<T>(n,n){};
+        TMatrix(index n): TArray<T>(n,n){};
         
 
         /// Construct matrix from data pointer
@@ -34,7 +34,7 @@ namespace numcxx
         /// \param n1 Number of columns
         /// \param data Pointer to data.
         /// \param deleter Deleter method, \see TArray<T>#_deleter
-        TMatrix(index n, T*data,std::function<void(T*p)> deleter):  TArray2<T>(n,n,data,deleter){};
+        TMatrix(index n, T*data,std::function<void(T*p)> deleter):  TArray<T>(n,n,data,deleter){};
         
         /// Construct matrix from data pointer
         ///
@@ -43,11 +43,16 @@ namespace numcxx
         /// \param data Pointer to data.
         /// \param deleter Deleter method.
         /// \see TArray<T>#_datamanager
-        TMatrix(index n, T*data, std::shared_ptr<void> datamanager): TArray2<T>(n,n,data,datamanager){};
+        TMatrix(index n, T*data, std::shared_ptr<void> datamanager): TArray<T>(n,n,data,datamanager){};
         
 
         /// Construct 2D Array from std::initializer list.
-        TMatrix(const  std::initializer_list<std::initializer_list<T>> &il ): TArray2<T>(il){};
+        TMatrix(const  std::initializer_list<std::initializer_list<T>> &il ): TArray<T>(il){};
+
+        /// Copy constructor
+        TMatrix(const TMatrix<T>& A):TArray<T>(A.shape(0),A.shape(1)){assign(*this,A);}
+
+
         
         /// Construct empty square matrix
         ///
@@ -85,8 +90,8 @@ namespace numcxx
         
         
     private:
-        using TArray2<T>::_data;
-        using TArray2<T>::_idx;
+        using TArray<T>::_data;
+        using TArray<T>::_idx;
         using TArray<T>::_check_square;
         
     };
