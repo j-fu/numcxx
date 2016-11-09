@@ -1,6 +1,6 @@
 CXX=g++-5
 #CXX=g++
-#CXX=clang++
+CXX=clang++
 #CXX=icpc
 PYTHON=python
 

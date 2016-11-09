@@ -178,7 +178,7 @@ namespace numcxx
         /// Check if all shapes are the same.
         ///
         /// Throw an exception on error
-        void _check_square() const;
+        void _assert_square() const;
         
         /// 1D Array index calculation with optional bounds check.
         index _idx(index i0) const;

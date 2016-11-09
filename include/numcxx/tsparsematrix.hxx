@@ -20,12 +20,13 @@ namespace numcxx
     public:
         typedef T value_type;
         /// Create an empty sparse matrix representing
-        /// an  n x n system of linear equations
-        TSparseMatrix(index n);
+        /// an  n1 x n2 system of linear equations
+        /// (currently, n1 must be equal to n2)
+        TSparseMatrix(index n1, index n2);
 
 
         /// Static wrapper around corresponding constructor
-        static std::shared_ptr<TSparseMatrix <T> > create(const index n) {return std::make_shared<TSparseMatrix<T>>(n);}
+        static std::shared_ptr<TSparseMatrix <T> > create(index n1, index n2) {return std::make_shared<TSparseMatrix<T>>(n1,n2);}
 
         /// Create an empty sparse matrix representing
         /// an  n x n system of linear equations

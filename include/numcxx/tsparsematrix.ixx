@@ -55,12 +55,20 @@ namespace numcxx
 
 
     template <typename T>
-    inline TSparseMatrix<T>::TSparseMatrix(index n):
-        n(n),
-        pA(std::make_shared<TArray1<T>>(n)),
-        pJA(std::make_shared<TArray1<int>>(n)),
-        pIA(std::make_shared<TArray1<int>>(n+1))
+    inline TSparseMatrix<T>::TSparseMatrix(index n1, index n2):
+        n(n1),
+        pA(std::make_shared<TArray1<T>>(n1)),
+        pJA(std::make_shared<TArray1<int>>(n1)),
+        pIA(std::make_shared<TArray1<int>>(n1+1))
     {
+        if (n1!=n2)
+        {
+            char errormsg[80];
+            snprintf(errormsg,80,"numcxx::TSparseMatrix::TSparseMatrix unexpected non-equal matrix dimensions\n");
+            throw std::length_error(errormsg);
+        }
+
+        
         auto &IA=*pIA;
         auto &JA=*pJA;
         auto &A=*pA;
@@ -71,7 +79,7 @@ namespace numcxx
     
     template <typename T>
     inline TSparseMatrix<T>::TSparseMatrix(const  std::initializer_list<std::initializer_list<T>> &il):
-        TSparseMatrix(il.size())
+        TSparseMatrix(il.size(), il.begin()->size())
     {
         index i=0;
         for (auto jl = il.begin() ; jl != il.end(); jl++,i++)
@@ -228,7 +236,7 @@ namespace numcxx
     inline std::shared_ptr<TMatrix<T>> TSparseMatrix<T>::copy_as_dense()
     {
         flush();
-        auto pM=TMatrix<T>::create(n);
+        auto pM=TMatrix<T>::create(n,n);
     
         auto &M=*pM;
         auto &IA=*pIA;

@@ -119,7 +119,8 @@ namespace numcxx
         void __setitem__(index i0,T x)  { _data[_idx(i0)]=x; };
 
 
-        
+        bool is_matrix(){return false;}
+
     private:
         using TArray<T>::_data;
         using TArray<T>::_idx;

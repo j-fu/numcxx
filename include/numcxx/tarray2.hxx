@@ -102,6 +102,8 @@ namespace  numcxx
         std::shared_ptr<TArray1 <T> > const __getitem__(index i0){ return std::shared_ptr<TArray1<T>>(new TArray1<T>(shape(1), &_data[_idx(i0,0)], [](T*p){;}));}
 
 
+        bool is_matrix(){return false;}
+
     protected:
         using TArray<T>::_data;
         using TArray<T>::_idx;

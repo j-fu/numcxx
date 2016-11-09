@@ -45,7 +45,7 @@ void tsparse()
 
     int n=10;
 
-    auto pM=std::make_shared<numcxx::DSparseMatrix>(n);
+    auto pM=std::make_shared<numcxx::DSparseMatrix>(n,n);
     auto &M=*pM;
     auto F=numcxx::DArray1(n);
     F=1.0;
@@ -92,7 +92,7 @@ void titer()
 {
     int n=100;
 
-    auto pM=std::make_shared<numcxx::DSparseMatrix>(n);
+    auto pM=std::make_shared<numcxx::DSparseMatrix>(n,n);
     auto &M=*pM;
     auto F=numcxx::DArray1(n);
     F=1.0;
@@ -135,7 +135,7 @@ void titer()
 int main(void)
 {
     int n=4;
-    numcxx::TSparseMatrix<double> A(n);
+    numcxx::TSparseMatrix<double> A(n,n);
     numcxx::TArray1<double>X(n);
     numcxx::TArray1<double>Y(n);
     numcxx::TArray1<double>Z(n);

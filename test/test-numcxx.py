@@ -47,3 +47,18 @@ for i in range(4):
     for j in range(5):
         print("%d %d %8.2g"%(i,j,a2x[i][j]))
 
+
+M0=numpy.array(
+        [   [2,3,5],
+            [3,2,3],
+            [9,5,7.0]]);
+print(M0)
+
+M1=numcxx.asnumcxx_matrix(M0)
+MI=M1.calculate_inverse();
+M2=numcxx.asnumpy(MI)
+print(M2)
+
+
+
+

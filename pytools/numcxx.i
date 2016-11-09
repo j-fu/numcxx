@@ -20,18 +20,33 @@
             auto proxy=std::make_shared<NumpyProxy>(o);
             return std::make_shared<DArray1 >(n1,v,proxy);
         }
-        std::shared_ptr<DArray2 > NumpyAsDArray2(PyObject *o,double* v, int n1, int n2)
-        {
-            auto proxy=std::make_shared<NumpyProxy>(o);
-            return std::make_shared<DArray2>(n1, n2, v,proxy);
-        }
         
         void DArray1AsNumpy(std::shared_ptr<DArray1 > a,PyObject *o,double** ARGOUTVIEW_ARRAY1, int* DIM1)
         {
             *DIM1=a->size();
             *ARGOUTVIEW_ARRAY1=a->data();
         }
+
+        std::shared_ptr<DArray2 > NumpyAsDArray2(PyObject *o,double* v, int n1, int n2)
+        {
+            auto proxy=std::make_shared<NumpyProxy>(o);
+            return std::make_shared<DArray2>(n1, n2, v,proxy);
+        }
+
         void DArray2AsNumpy(std::shared_ptr<DArray2 > a,PyObject *o,double** ARGOUTVIEW_ARRAY2, int* DIM1,int* DIM2)
+        {
+            *DIM1=a->shape(0);
+            *DIM2=a->shape(1);
+            *ARGOUTVIEW_ARRAY2=a->data();
+        }
+
+        std::shared_ptr<DMatrix> NumpyAsDMatrix(PyObject *o,double* v, int n1, int n2)
+        {
+            auto proxy=std::make_shared<NumpyProxy>(o);
+            return std::make_shared<DMatrix>(n1,n2, v,proxy);
+        }
+
+        void DMatrixAsNumpy(std::shared_ptr<DMatrix > a,PyObject *o,double** ARGOUTVIEW_ARRAY2, int* DIM1,int* DIM2)
         {
             *DIM1=a->shape(0);
             *DIM2=a->shape(1);
@@ -237,6 +252,7 @@ namespace numcxx
         std::shared_ptr<DArray1> copy();
         double __getitem__(index i) const;
         void __setitem__(index i,double);
+        bool is_matrix();
     };
     
     class DArray2
@@ -252,20 +268,41 @@ namespace numcxx
         
         std::shared_ptr<DArray2> copy();
         std::shared_ptr<DArray1>   __getitem__(int i);
+        bool is_matrix();
+    };
+
+    class DMatrix
+    {
+    public:
+        const index ndim();
+        index size();
+        int shape(int idim);
+        
+        static std::shared_ptr<DMatrix> create(index n1, index n2);
+        double item(index i0,index i1);
+        void itemset(index i0,index i1, double x);
+        
+        std::shared_ptr<DMatrix> copy();
+        std::shared_ptr<DArray1>   __getitem__(int i);
+        bool is_matrix();
+        std::shared_ptr<DMatrix> calculate_inverse();
     };
     
     
     std::shared_ptr<DArray1> NumpyAsDArray1(PyObject *O, double* INPLACE_ARRAY1, int DIM1);
     std::shared_ptr<DArray2> NumpyAsDArray2(PyObject *O, double* INPLACE_ARRAY2, int DIM1, int DIM2);
+    std::shared_ptr<DMatrix> NumpyAsDMatrix(PyObject *O, double* INPLACE_ARRAY2, int DIM1, int DIM2);
     
     void DArray1AsNumpy(std::shared_ptr<DArray1> a,PyObject *O,double** ARGOUTVIEW_ARRAY1, int* DIM1);
     void DArray2AsNumpy(std::shared_ptr<DArray2> a,PyObject *O,double** ARGOUTVIEW_ARRAY2, int* DIM1,  int* DIM2);
+    void DMatrixAsNumpy(std::shared_ptr<DMatrix> a,PyObject *O,double** ARGOUTVIEW_ARRAY2, int* DIM1,  int* DIM2);
     
     
 }
 
 %template(shared_ptrDArray1) std::shared_ptr<numcxx::DArray1 >;
 %template(shared_ptrDArray2) std::shared_ptr<numcxx::DArray2 >;
+%template(shared_ptrDMatrix) std::shared_ptr<numcxx::DMatrix >;
 
 
 
@@ -286,13 +323,29 @@ def asnumcxx(proto):
 
     raise TypeError("asnumcxx: error")
 
+def asnumcxx_matrix(proto):
+    if type(proto)==ndarray:
+        a=proto
+    elif type(proto)==list:
+        a=array(proto)
+    else:
+        raise TypeError("asnumcxx: wrong type of input -- must be numpy.ndarray or list.")
+
+    if a.dtype==float64 and a.ndim==2:
+        return NumpyAsDMatrix(a)           
+
+    raise TypeError("asnumcxx: error")
+
 
 def asnumpy(a):
     if a.ndim()==1:
         return DArray1AsNumpy(a)
     elif a.ndim()==2:
-        return DArray2AsNumpy(a)
-
+        if a.is_matrix():
+             return DMatrixAsNumpy(a)
+        else:
+             return DArray2AsNumpy(a)
+ 
     raise RuntimeError("asnumpy: error")
 
 

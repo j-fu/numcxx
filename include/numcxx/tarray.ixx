@@ -140,12 +140,12 @@ namespace numcxx
     }  
     
     template <typename T> 
-    inline void TArray<T>::_check_square() const
+    inline void TArray<T>::_assert_square() const
     {
         if (_ndim!=2 || _shape[0]!=_shape[1])
         {
             char errormsg[80];
-            snprintf(errormsg,80,"numcxx::TArray::_check_square: unexpected non-equal array dimensions\n");
+            snprintf(errormsg,80,"numcxx::TArray::_assert_square: unexpected non-equal array dimensions\n");
             throw std::length_error(errormsg);
         }
     }
