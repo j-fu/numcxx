@@ -52,6 +52,8 @@ void tsparse()
     auto U=F;
     auto V=F;
 
+
+
     for (int i=0;i<n;i++)
     {
         M(i,i)=3.0;
@@ -60,6 +62,11 @@ void tsparse()
         if (i<n-1)
             M(i,i+1)=-1;
     }
+
+
+    auto pMInv=M.calculate_inverse();
+    std::cout << *pMInv << std::endl;
+    
 
     auto pDM=M.copy_as_dense();
 
@@ -152,6 +159,6 @@ int main(void)
 
     tdense();
     tsparse();
-    titer();
+//    titer();
 //    std::cout << x->Matrix.shape(0) << std::endl;
 }

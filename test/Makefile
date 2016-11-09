@@ -27,7 +27,7 @@ BINARIES=test-sparse test-et  test-numcxx3  featuretest test-numcxx _numcxx.so
 all: $(BINARIES)
 
 
-NUMCXX_HEADERS=$(wildcard $(NUMCXX_INCLUDE)/*/*.hxx $(NUMCX_INCLUDE)/*/*.ixx)
+NUMCXX_HEADERS=$(wildcard $(NUMCXX_INCLUDE)/*/*.hxx $(NUMCXX_INCLUDE)/*/*.ixx)
 
 
 test-numcxx3: $(NUMCXX_HEADERS)

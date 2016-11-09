@@ -1,3 +1,4 @@
+#include "tsolver-lapacklu.hxx"
 namespace numcxx
 {
 
@@ -59,6 +60,15 @@ namespace numcxx
                 v[i]+=_data[_idx(i,j)]*u[j];
         }
     }
+
+    template <typename T>
+    inline std::shared_ptr<TMatrix<T>> TMatrix<T>::calculate_inverse()
+    {
+        auto pA=copy();  // essentially superfluous, but we seldomly use this
+        auto pLU=TSolverLapackLU<T>::create(pA);
+        return pLU->calculate_inverse();
+    }
+  
     
 }
 

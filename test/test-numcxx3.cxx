@@ -14,20 +14,22 @@ void xsolve(numcxx::TLinSolver<double> &solver, numcxx::TArray<double>& u,const 
 int main()
 {
 
-    auto A=numcxx::TMatrix<double>::create(
+    auto pA=numcxx::TMatrix<double>::create(
         {   {2,3,5},
             {3,2,3},
             {9,5,7}});
     
-    auto LU=std::make_shared<numcxx::TSolverLapackLU<double>>(A);
-    LU->update();
-    auto g=numcxx::TArray1<double>::create({1,2,3});
-    auto u=g->clone();
-    xsolve(*LU,*u,*g);
-    std::cout<< *u << std::endl;
+    auto pLU=std::make_shared<numcxx::TSolverLapackLU<double>>(pA);
+    pLU->update();
+    auto pG=numcxx::TArray1<double>::create({1,2,3});
+    auto pU=pG->clone();
+    xsolve(*pLU,*pU,*pG);
+    std::cout<< *pU << std::endl;
 
-    auto pX=numcxx::linspace<double>(0,1,101);
-    std::cout << *pX;
+    auto pInv=pA->calculate_inverse();
+    std::cout << *pInv << std::endl;
+    // auto pX=numcxx::linspace<double>(0,1,101);
+    // std::cout << *pX;
 
 }
 

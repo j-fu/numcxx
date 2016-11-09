@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <functional>
+#include "tsolver-lapacklu.hxx"
 
 namespace numcxx
 {
@@ -375,5 +376,13 @@ namespace numcxx
         return false;
     }
     
+    
+    template <typename T>
+    inline std::shared_ptr<TMatrix<T>> TSparseMatrix<T>::calculate_inverse()
+    {
+        auto pA=copy_as_dense();  // essentially superfluous, but we seldomly use this
+        auto pLU=TSolverLapackLU<T>::create(pA);
+        return pLU->calculate_inverse();
+    }
 
 }

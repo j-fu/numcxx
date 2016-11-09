@@ -1,11 +1,11 @@
 namespace numcxx
 {
     template<typename T> 
-    inline TSolverLapackLU<T>::TSolverLapackLU(const std::shared_ptr<TMatrix<T>> a):
+    inline TSolverLapackLU<T>::TSolverLapackLU(const std::shared_ptr<TMatrix<T>> pMatrix):
         TLinSolver<T>(),
-        a(a),
-        lu(a->clone()),
-        ipiv(TArray1<int>::create(a->shape(0)))
+        pMatrix(pMatrix),
+        pLU(pMatrix->clone()),
+        pIPiv(TArray1<int>::create(pMatrix->shape(0)))
     { update();;}
     
     template<typename T> 
@@ -18,17 +18,19 @@ namespace numcxx
     {
         void sgetrf_(int *n, int *m, float *a, int *lda, int* ipiv, int *info);
         void sgetrs_(char *trans,int *n, const int *nrhs, float*a, int* lda, int *ipiv , float *b, int *ldb, int *info );
+        void sgetri_(int *n, float*a, int* lda, int *ipiv , float *work, int *lwork, int *info );
         void dgetrf_(int *n, int *m, double *a, int *lda, int* ipiv, int *info);
         void dgetrs_(char *trans,int *n, const int *nrhs, double*a, int* lda, int *ipiv , double *b, int *ldb, int *info );
+        void dgetri_(int *n, double*a, int* lda, int *ipiv , double *work, int *lwork, int *info );
      }
 
     template<> 
     inline void TSolverLapackLU<double>::update()
     {
-        int n=lu->shape(0);
+        int n=pLU->shape(0);
         int info;
-        *lu=*a;
-        dgetrf_(&n,&n,lu->data(),&n,ipiv->data(),&info);
+        *pLU=*pMatrix;
+        dgetrf_(&n,&n,pLU->data(),&n,pIPiv->data(),&info);
         if (info!=0)
         {
             char errormsg[80];
@@ -42,10 +44,10 @@ namespace numcxx
     {
         assign(sol,rhs);
         char trans[2]={'T','\0'};
-        int n=lu->shape(0);
+        int n=pLU->shape(0);
         int one=1;
         int info;
-        dgetrs_(trans,&n,&one,lu->data(),&n,ipiv->data(),sol.data(),&n,&info);
+        dgetrs_(trans,&n,&one,pLU->data(),&n,pIPiv->data(),sol.data(),&n,&info);
         if (info!=0)
         {
             char errormsg[80];
@@ -58,10 +60,10 @@ namespace numcxx
     template<> 
     inline void TSolverLapackLU<float>::update()
     {
-        int n=lu->shape(0);
+        int n=pLU->shape(0);
         int info;
-        *lu=*a;
-        sgetrf_(&n,&n,lu->data(),&n,ipiv->data(),&info);
+        *pLU=*pMatrix;
+        sgetrf_(&n,&n,pLU->data(),&n,pIPiv->data(),&info);
         if (info!=0)
         {
             char errormsg[80];
@@ -76,10 +78,10 @@ namespace numcxx
     {
         assign(sol,rhs);
         char trans[2]={'T','\0'};
-        int n=lu->shape(0);
+        int n=pLU->shape(0);
         int one=1;
         int info;
-        sgetrs_(trans,&n,&one,lu->data(),&n,ipiv->data(),sol.data(),&n,&info);
+        sgetrs_(trans,&n,&one,pLU->data(),&n,pIPiv->data(),sol.data(),&n,&info);
         if (info!=0)
         {
             char errormsg[80];
@@ -88,6 +90,55 @@ namespace numcxx
         }
 
     }
+
+
+
+    template<> 
+    inline std::shared_ptr<TMatrix<double>> TSolverLapackLU<double>::calculate_inverse()
+    {
+        int n=pLU->shape(0);
+        auto pInverse=std::make_shared<TMatrix<double>>(*pLU);
+        int info;
+        TArray1<double> Work(n);
+        dgetri_(&n, 
+                pInverse->data(), 
+                &n, 
+                pIPiv->data(),
+                Work.data(),
+                &n,
+                &info);
+        if (info!=0)
+        {
+            char errormsg[80];
+            snprintf(errormsg,80,"numcxx::TSolverLapackLU::calculate_inverse: dgetri error %d\n",info);
+            throw std::runtime_error(errormsg);
+        }
+        return pInverse;
+    }
+
+    template<> 
+    inline std::shared_ptr<TMatrix<float>> TSolverLapackLU<float>::calculate_inverse()
+    {
+        int n=pLU->shape(0);
+        auto pInverse=std::make_shared<TMatrix<float>>(*pLU);
+        int info;
+        TArray1<float> Work(n);
+        sgetri_(&n, 
+                pInverse->data(), 
+                &n, 
+                pIPiv->data(),
+                Work.data(),
+                &n,
+                &info);
+        if (info!=0)
+        {
+            char errormsg[80];
+            snprintf(errormsg,80,"numcxx::TSolverLapackLU::calculate_inverse: sgetri error %d\n",info);
+            throw std::runtime_error(errormsg);
+        }
+        return pInverse;
+    }
+
 
 }
 

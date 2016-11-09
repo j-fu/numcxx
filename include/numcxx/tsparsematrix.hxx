@@ -77,6 +77,9 @@ namespace numcxx
         /// Entries
         std::shared_ptr<TArray1 <T> > pA; 
 
+        /// Calculate inverse of sparse matrix whuch is dense
+        std::shared_ptr<TMatrix<T>> calculate_inverse();
+
     private:
 
 

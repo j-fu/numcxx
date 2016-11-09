@@ -88,6 +88,8 @@ namespace numcxx
         /// \param v output: v=A*u
         void apply(const TArray<T> &u, TArray<T> &v) const;
         
+        /// Calculate inverse of matrix
+        std::shared_ptr<TMatrix<T>> calculate_inverse();
         
     private:
         using TArray<T>::_data;
