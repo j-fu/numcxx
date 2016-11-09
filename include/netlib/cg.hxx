@@ -4,8 +4,8 @@ namespace netlib
 /// Iterative template routine -- CG
 ///
 /// Original version from [netlib](http://www.netlib.org/templates/cpp) 
-/// as of 2016-11-08 (file date: 1998-07-21), modified
-/// for numcxx.
+/// as of 2016-11-08 (file date: 1998-07-21), slightly modified
+/// for numcxx (see corresponding comment).
 ///
 /// CG solves the symmetric positive definite linear
 /// system Ax=b using the Conjugate Gradient method.

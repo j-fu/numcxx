@@ -56,8 +56,6 @@ namespace numcxx
         TArray1(std::shared_ptr<std::vector<T>> v):TArray<T>(v->size(),v->data(),v){};
 
 
-        
-
         /// Construct empty 1D Array
         ///
         /// Mainly for access from python
@@ -127,10 +125,5 @@ namespace numcxx
         using TArray<T>::_idx;
        
     };
-
-
-
 }
-
-#include "tarray1.ixx"
 #endif

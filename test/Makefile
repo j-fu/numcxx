@@ -2,12 +2,15 @@ CXX=g++-5
 #CXX=g++
 #CXX=clang++
 #CXX=icpc
-NUMCXX=../include/numcxx
-
 PYTHON=python
-CXXFLAGS=-fPIC -O3 -g  -DNUMCXX_CHECK_BOUNDS -I ../include -std=c++11 `$(PYTHON) $(NUMCXX)/find_python_paths.py --includes`
-PYTHONLIBS=`$(PYTHON) $(NUMCXX)/find_python_paths.py --libs`
-LALIBS=-llapack -lblas -lumfpack -lamd -lcolamd -lcholmod
+
+NUMCXX=../
+NUMCXX_INCLUDE=$(NUMCXX)/include
+NUMCXX_PYTOOLS=$(NUMCXX)/pytools
+
+CXXFLAGS=-fPIC -O3 -g  -DNUMCXX_CHECK_BOUNDS -I ../include -std=c++11 `$(PYTHON) $(NUMCXX_PYTOOLS)/find_python_paths.py --includes`
+PYTHON_LIBS=`$(PYTHON) $(NUMCXX_PYTOOLS)/find_python_paths.py --libs`
+LINALG_LIBS=-llapack -lblas -lumfpack -lamd -lcolamd -lcholmod
 
 
 SHLDFLAGS= -shared 
@@ -17,14 +20,14 @@ SHLDFLAGS= -shared
 .cxx.o:
 	$(CXX) $(CXXFLAGS) -c  $< -o $@
 .cxx:
-	$(CXX) $(CXXFLAGS) -o $@  $< $(LALIBS)
+	$(CXX) $(CXXFLAGS) -o $@  $< $(LINALG_LIBS)
 
 
 BINARIES=test-sparse test-et  test-numcxx3  featuretest test-numcxx _numcxx.so 
 all: $(BINARIES)
 
 
-NUMCXX_HEADERS=$(wildcard $(NUMCXX)/*.hxx $(NUMCXX)/*.ixx)
+NUMCXX_HEADERS=$(wildcard $(NUMCXX_INCLUDE)/*/*.hxx $(NUMCX_INCLUDE)/*/*.ixx)
 
 
 test-numcxx3: $(NUMCXX_HEADERS)
@@ -36,14 +39,15 @@ test-sparse: $(NUMCXX_HEADERS)
 swigwrap_numcxx.o: swigwrap_numcxx.cxx
 
 test-numcxx: test-numcxx.cxx $(NUMCXX_HEADERS) test-numcxx2.o
-	$(CXX) $(CXXFLAGS) -o $@  $< test-numcxx2.o $(LALIBS)
+	$(CXX) $(CXXFLAGS) -o $@  $< test-numcxx2.o $(LINALG_LIBS)
 
-swigwrap_numcxx.cxx: $(NUMCXX)/numcxx.i $(NUMCXX_HEADERS)
-	swig  -c++ -python  -o swigwrap_numcxx.cxx $(NUMCXX)/numcxx.i 
+swigwrap_numcxx.cxx: $(NUMCXX_PYTOOLS)/numcxx.i $(NUMCXX_HEADERS)
+	swig  -c++ -python  -o swigwrap_numcxx.cxx $(NUMCXX_PYTOOLS)/numcxx.i 
 
 _numcxx.so: swigwrap_numcxx.cxx
-	$(CXX) $(CXXFLAGS) $(PYTHONLIBS) $(SHLDFLAGS) $< -o $@
+	$(CXX) $(CXXFLAGS) $(PYTHON_LIBS) $(LINALG_LIBS) $(SHLDFLAGS) $< -o $@
 
 clean:
 	-rm *.o  swigwrap*.*  *.pyc numcxx.py $(BINARIES) *~
+
 

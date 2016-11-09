@@ -3,9 +3,7 @@
 #include <ctime>
 #include <cmath>
 #include "numcxx/numcxx.hxx"
-#include "numcxx/tprecon-jacobi.hxx"
-#include "netlib/bicgstab.hxx"
-#include "netlib/cg.hxx"
+#include "netlib/netlib.hxx"
 
 void tdense(void)
 {

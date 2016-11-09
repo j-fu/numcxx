@@ -1,6 +1,7 @@
 #ifndef NUMCXX_HXX
 #define NUMCXX_HXX
 
+/// Numcxx template library.
 namespace numcxx
 {
     using index= unsigned int;
@@ -14,9 +15,9 @@ namespace numcxx
 #include "tsparsematrix.hxx"
 #include "tsolver-lapacklu.hxx"
 #include "tsolver-umfpack.hxx"
+#include "tprecon-jacobi.hxx"
 #include "util.hxx"
 
-/// Namespace for all parts of numcxx library
 namespace numcxx
 {
     using DArray1=TArray1<double>;
@@ -28,5 +29,7 @@ namespace numcxx
     using IArray1=TArray1<int>;
     using IArray2=TArray2<int>;
 }
+
+
 #endif
 

@@ -4,14 +4,14 @@ namespace netlib
 /// Iterative template routine -- BiCGSTAB
 ///
 /// Original version from [netlib](http://www.netlib.org/templates/cpp) 
-/// as of 2016-11-08 (file date: 1998-07-21), modified
-/// for numcxx.
+/// as of 2016-11-08 (file date: 1998-07-21), slightly modified
+/// for numcxx (see corresponding comment).
 ///
 /// BiCGSTAB solves the unsymmetric linear system Ax = b 
 /// using the Preconditioned BiConjugate Gradient Stabilized method
 ///
 /// BiCGSTAB follows the algorithm described on p. 27 of the 
-/// SIAM Templates book.
+/// (SIAM Templates book)[http://www.netlib.org/templates/templates.pdf].
 ///
 /// The return value indicates convergence within max_iter (input)
 /// iterations (0), or no convergence within max_iter iterations (1).

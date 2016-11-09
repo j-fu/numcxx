@@ -108,6 +108,5 @@ namespace  numcxx
     };
 
 }
-#include "tarray2.ixx"
 
 #endif
