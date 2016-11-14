@@ -9,7 +9,7 @@ WIR=/net/wir
 CXX=g++
 CXX=clang++
 CXXFLAGS=-g -std=c++11 -I../../include -I$(WIR)/numcxx/include
-LIBS=-llapack -lblas -L$(WIR)/lib -lumfpack -lamd -lcolamd -lcholmod
+LIBS=-llapack -lblas -lumfpack -lamd -lcolamd -lcholmod
 
 
 # implicit rules how to compile cxx files
