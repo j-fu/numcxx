@@ -4,7 +4,6 @@
 
 #Which compiler to uses
 CXX=g++
-CXX=clang++
 CXXFLAGS=-g -std=c++11
 
 # implcit rules how to compile cxx files
