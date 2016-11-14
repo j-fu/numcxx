@@ -8,7 +8,7 @@ WIR=/net/wir
 #Which compiler to uses
 CXX=g++
 CXX=clang++
-CXXFLAGS=-g -std=c++11 -I$(WIR)/include
+CXXFLAGS=-g -std=c++11  -I../../include -I$(WIR)/include/numcxx
 LIBS=-llapack -lblas
 
 # implicit rules how to compile cxx files
