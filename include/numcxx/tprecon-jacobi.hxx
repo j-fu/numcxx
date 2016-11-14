@@ -6,11 +6,7 @@
 namespace numcxx
 {
 
-    /// Bridge class for using umfpack as solver for vmatrix
-    ///    
-    /// UMFPACK is a GPL licensed sparse  matrix package by Tim Davis of Texas
-    /// A&M university,  see [wikipedia](http://en.wikipedia.org/wiki/UMFPACK)
-    /// and its [homepage](http://faculty.cse.tamu.edu/davis/suitesparse.html)
+    /// Jacobi preconditioner class
     template<typename T> 
     class TPreconJacobi: public  TLinSolver<T>
     {
@@ -21,17 +17,18 @@ namespace numcxx
     public:
         std::shared_ptr< TArray1<T> > pInvDiag;
 
-        /// Create LU factorization class
+        /// Create Preconditioner
         TPreconJacobi(const std::shared_ptr<TSparseMatrix<T>> pA);
 
         ~TPreconJacobi(){};
-        /// Create LU factorization class
 
+        /// Create preconditioner
         static std::shared_ptr<TPreconJacobi<T>> create(const std::shared_ptr<TSparseMatrix<T>> pA);
-        /// Perform actual computation of LU factorization
+
+        /// Perform actual computation preconditioner
         void update();
 
-        /// Solve LU factorized system
+        /// Solve preconditioning system
         void solve( TArray<T> & Sol,  const TArray<T> & Rhs) const;
     };
 }

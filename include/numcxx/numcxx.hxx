@@ -26,6 +26,7 @@ namespace numcxx
     using DSparseMatrix=TSparseMatrix<double>;
     using DSolverLapackLU=TSolverLapackLU<double>;
     using DSolverUMFPACK=TSolverUMFPACK<double>;
+    using DPreconJacobi=TPreconJacobi<double>;
     using IArray1=TArray1<int>;
     using IArray2=TArray2<int>;
 }

@@ -22,9 +22,13 @@ SHLDFLAGS= -shared
 .cxx:
 	$(CXX) $(CXXFLAGS) -o $@  $< $(LINALG_LIBS)
 
+PROGRAMS=test-sparse test-et  test-numcxx3  featuretest test-numcxx
 
-BINARIES=test-sparse test-et  test-numcxx3  featuretest test-numcxx _numcxx.so 
+BINARIES= $(PROGRAMS) _numcxx.so 
 all: $(BINARIES)
+
+test:
+	for f in $(PROGRAMS); do echo $$f:; ./$$f; done
 
 
 NUMCXX_HEADERS=$(wildcard $(NUMCXX_INCLUDE)/*/*.hxx $(NUMCXX_INCLUDE)/*/*.ixx)

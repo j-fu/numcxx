@@ -37,23 +37,23 @@ void tsparse()
     auto pSolver=std::make_shared<numcxx::TSolverUMFPACK<double>>(pA);
     pSolver->update();
     auto pG=numcxx::TArray1<double>::create({1,2,3});
-    auto pU=pG->clone();
-    pSolver->solve(*pU,*pG);
-    std::cout<< *pU << std::endl;
+    auto pX=pG->clone();
+    pSolver->solve(*pX,*pG);
+    std::cout<< *pX << std::endl;
 
 
 
     int n=10;
 
-    auto pM=std::make_shared<numcxx::DSparseMatrix>(n,n);
+    auto pM=numcxx::DSparseMatrix::create(n,n);
+    auto pF=numcxx::DArray1::create(n);
+    auto pU=numcxx::DArray1::create(n);
+    auto pV=numcxx::DArray1::create(n);
     auto &M=*pM;
-    auto F=numcxx::DArray1(n);
+    auto &F=*pF;
+    auto &U=*pU;
+    auto &V=*pV;
     F=1.0;
-    auto U=F;
-    auto V=F;
-
-
-
     for (int i=0;i<n;i++)
     {
         M(i,i)=3.0;
@@ -73,13 +73,13 @@ void tsparse()
     double tic,toc;
     tic=numcxx::cpu_clock();
     auto pLapack=numcxx::DSolverLapackLU::create(pDM);
-    pLapack->solve(U,F);
+    pLapack->solve(V,F);
     toc=numcxx::cpu_clock();
     std::cout << "seconds for dense:" << toc-tic << std::endl;
     
     tic=numcxx::cpu_clock();
-    auto pUmfpack=std::make_shared<numcxx::DSolverUMFPACK>(pM);
-    pUmfpack->solve(V,F);
+    auto pUmfpack=numcxx::DSolverUMFPACK::create(pM);
+    pUmfpack->solve(U,F);
     toc=numcxx::cpu_clock();
     std::cout << "seconds for sparse:" << toc-tic << std::endl;
     std::cout << "difference sparse-dense: "<< normi(U-V) << std::endl;
