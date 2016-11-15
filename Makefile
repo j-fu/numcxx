@@ -1,6 +1,9 @@
 NOW=`date  +%Y-%m-%d`
 PWD=`pwd`
 
+default:
+	echo Please have a look  at the Makefiles in examples/part1-n
+
 release: clean doxygen
 	-rm -r ~/scratch/numcxx/numcxx-$(NOW)
 	cd ..; rsync -avu --exclude=QUARRY --exclude=.hg  numcxx/* ~/scratch/numcxx/numcxx-$(NOW)
