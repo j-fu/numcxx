@@ -1,5 +1,5 @@
 #include <cstdio>
-#include <suitesparse/umfpack.h>
+#include <umfpack.h>
 namespace numcxx
 {
     

@@ -8,10 +8,12 @@ NUMCXX=../
 NUMCXX_INCLUDE=$(NUMCXX)/include
 NUMCXX_PYTOOLS=$(NUMCXX)/pytools
 
-CXXFLAGS=-fPIC -O3 -g  -DNUMCXX_CHECK_BOUNDS -I ../include -std=c++11 `$(PYTHON) $(NUMCXX_PYTOOLS)/find_python_paths.py --includes`
+CXXFLAGS=-fPIC -O3 -g  -DNUMCXX_CHECK_BOUNDS -I$(NUMCXX)/include -I/usr/include/suitesparse -I/usr/local/include -std=c++11 `$(PYTHON) $(NUMCXX_PYTOOLS)/find_python_paths.py --includes`
 PYTHON_LIBS=`$(PYTHON) $(NUMCXX_PYTOOLS)/find_python_paths.py --libs`
-LINALG_LIBS=-llapack -lblas -lumfpack -lamd -lcolamd -lcholmod
+LINALG_LIBS=-L/usr/local/lib -llapack -lblas -lumfpack -lamd -lcolamd -lcholmod -lsuitesparseconfig
 
+SWIG=/Users/fuhrmann/Wias/work/pdelib2/external/lib.gnu_hb/swig-3.0.5-2/bin/swig
+SWIG=swig
 
 SHLDFLAGS= -shared 
 
@@ -46,12 +48,12 @@ test-numcxx: test-numcxx.cxx $(NUMCXX_HEADERS) test-numcxx2.o
 	$(CXX) $(CXXFLAGS) -o $@  $< test-numcxx2.o $(LINALG_LIBS)
 
 swigwrap_numcxx.cxx: $(NUMCXX_PYTOOLS)/numcxx.i $(NUMCXX_HEADERS)
-	swig  -c++ -python  -o swigwrap_numcxx.cxx $(NUMCXX_PYTOOLS)/numcxx.i 
+	$(SWIG)  -c++ -python  -o swigwrap_numcxx.cxx $(NUMCXX_PYTOOLS)/numcxx.i 
 
 _numcxx.so: swigwrap_numcxx.cxx
 	$(CXX) $(CXXFLAGS) $(PYTHON_LIBS) $(LINALG_LIBS) $(SHLDFLAGS) $< -o $@
 
 clean:
-	-rm *.o  swigwrap*.*  *.pyc numcxx.py $(BINARIES) *~
+	-rm *.o  swigwrap*.* *.dSYM *.pyc numcxx.py $(BINARIES) *~
 
 
