@@ -12,8 +12,25 @@ CXXFLAGS=-fPIC -O3 -g  -DNUMCXX_CHECK_BOUNDS -I$(NUMCXX)/include -I/usr/include/
 PYTHON_LIBS=`$(PYTHON) $(NUMCXX_PYTOOLS)/find_python_paths.py --libs`
 LINALG_LIBS=-L/usr/local/lib -llapack -lblas -lumfpack -lamd -lcolamd -lcholmod -lsuitesparseconfig
 
-SWIG=/Users/fuhrmann/Wias/work/pdelib2/external/lib.gnu_hb/swig-3.0.5-2/bin/swig
-SWIG=swig
+
+# try for swig
+_SWIG1=/usr/bin/swig
+_SWIG2=/usr/bin/swig3.0
+_SWIG3=/Users/fuhrmann/Wias/work/pdelib2/external/lib.gnu_hb/swig-3.0.5-2/bin/swig
+
+
+ifneq ($(wildcard $(_SWIG1)),)
+SWIG=$(_SWIG1)
+endif
+
+ifneq ($(wildcard $(_SWIG2)),)
+SWIG=$(_SWIG2)
+endif
+
+ifneq ($(wildcard $(_SWIG3)),)
+SWIG=$(_SWIG3)
+endif
+
 
 SHLDFLAGS= -shared 
 
@@ -54,6 +71,6 @@ _numcxx.so: swigwrap_numcxx.cxx
 	$(CXX) $(CXXFLAGS) $(PYTHON_LIBS) $(LINALG_LIBS) $(SHLDFLAGS) $< -o $@
 
 clean:
-	-rm *.o  swigwrap*.* *.dSYM *.pyc numcxx.py $(BINARIES) *~
+	-rm -r *.o  swigwrap*.* *.dSYM *.pyc numcxx.py $(BINARIES) *~
 
 
