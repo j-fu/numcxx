@@ -2,7 +2,11 @@ NOW=`date  +%Y-%m-%d`
 PWD=`pwd`
 
 default:
-	echo Please have a look  at the Makefiles in examples/part1-n
+	-cd devel; $(MAKE) 
+	-cd examples/part1; $(MAKE)
+	-cd examples/part2; $(MAKE)
+	-cd examples/part3; $(MAKE)
+
 
 release: clean doxygen
 	-rm -r ~/scratch/numcxx/numcxx-$(NOW)
