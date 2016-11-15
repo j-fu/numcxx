@@ -8,19 +8,19 @@ default:
 	-cd examples/part3; $(MAKE)
 
 
-release: clean doxygen
+release: clean doxygen changelog
 	-rm -r ~/scratch/numcxx/numcxx-$(NOW)
 	cd ..; rsync -avu --exclude=QUARRY --exclude=.hg  numcxx/* ~/scratch/numcxx/numcxx-$(NOW)
 	cd ~/scratch/numcxx/numcxx-$(NOW); $(MAKE) test; $(MAKE) clean
 	cd ~/scratch/numcxx; tar czvf numcxx-$(NOW).tgz numcxx-$(NOW)
 	cp -p ~/scratch/numcxx/numcxx-$(NOW).tgz $(HOME)/Wias/www/fuhrmann/sitesrc/blobs
 	cp -p ~/scratch/numcxx/numcxx-$(NOW).tgz $(HOME)/Wias/www/fuhrmann/sitesrc/blobs/numcxx-latest.tgz
-	hg tag RELEASE_$(NOW)
+	hg tag -f RELEASE_$(NOW)
 
 doxygen: 
 	doxygen
 
-clean: 
+clean:  
 	-cd devel; $(MAKE) clean
 	-cd examples/part1; $(MAKE) clean
 	-cd examples/part2; $(MAKE) clean
@@ -33,3 +33,5 @@ test:
 	cd examples/part2; WIR=$(PWD) $(MAKE) -e; $(MAKE) test; echo part2 ok
 	cd examples/part3; WIR=$(PWD) $(MAKE) -e; $(MAKE) test; echo part3 ok
 
+changelog:
+	hg log --template "{date(date, '%Y-%m-%d-%H%M')}:\n {fill(desc,60,'                ','                 ')}\n\n" > CHANGELOG.txt
