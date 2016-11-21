@@ -18,15 +18,16 @@ CXX=g++
 #g++-5
 
 # Include directories for numcxx library
-NUMCXX_INCLUDES=-I$(NUMCXX)/include -I$(WIR)/numcxx/include
+NUMCXX_INCLUDES=-I$(NUMCXX)/include -I$(WIR)/numcxx/include 
 #                ^ numcxx distribution
 #                                ^ UNIX pool
 
 # Include directories for suitesparse library
-SUITESPARSE_INCLUDES=-I/usr/include/suitesparse -I/usr/local/include
+# (in fact, we would need only one of them, depending on the installation)
+SUITESPARSE_INCLUDES=-I/usr/include/suitesparse -I$(WIR)/include/suitesparse -I/usr/local/include
 
 # Additional library directories
-ADDITIONAL_LIBDIRS=-L/usr/local/lib
+ADDITIONAL_LIBDIRS=-L/usr/local/lib -L/net/wir/lib
 #                  ^ typical for unix, used on mac for homebrew
 
 #Flags to be used during compilation
