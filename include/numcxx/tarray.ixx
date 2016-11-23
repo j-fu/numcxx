@@ -184,10 +184,10 @@ namespace numcxx
     inline TArray<T>::TArray(index n0, index n1):
         _ndim(2),
         _shape{n0,n1},
-        _size(n0*n1),
+        _size((size_t)n0*(size_t)n1),
         _data((T*)malloc(sizeof(T)*_size)),
         _deleter([](T*p){free(p);})
-        {};
+        {if (_data==nullptr)  throw std::runtime_error("numcxx: TArray::TArray(): Memory allocation failed"); };
     
     template <typename T> 
         inline TArray<T>::TArray(index n0):
@@ -196,7 +196,7 @@ namespace numcxx
         _size(n0),
         _data((T*)malloc(sizeof(T)*_size)),
         _deleter([](T*p){free(p);})
-        {};
+        {if (_data==nullptr)  throw std::runtime_error("numcxx: TArray::TArray(): Memory allocation failed"); };
     
     template <typename T> 
     inline TArray<T>::TArray(index n0, T*data,std::function<void(T*p)> deleter):
@@ -250,7 +250,7 @@ namespace numcxx
 
 
     template <typename T> 
-    inline void TArray<T>::resize(index n)
+    inline void TArray<T>::resize(size_t n)
     {
         if (_size==n) return;
 
@@ -265,6 +265,7 @@ namespace numcxx
         {
             _deleter(_data);
             _data=(T*)malloc(sizeof(T)*n);
+            if (_data==nullptr)  throw std::runtime_error("numcxx: TArray::resize(): Memory allocation failed"); 
             _deleter=[](T*p){free(p);};
             _size=n;
             _shape[0]=n;

@@ -40,7 +40,7 @@ namespace numcxx
         /// 
         /// This ist the overall number of elements in the array
         /// \return Size.
-        index size() const { return _size;}
+        size_t size() const { return _size;}
 
         /// Obtain shape of array for given dimension.
         ///
@@ -123,7 +123,7 @@ namespace numcxx
         TArray<T>&  operator=(const VAL  &expr)  {return assign(*this,expr);}
 
         /// Resize array
-        void resize(index n);
+        void resize(size_t n);
 
         /// Copy constructor is deleted
         TArray(const TArray<T>& A)=delete;
@@ -135,7 +135,7 @@ namespace numcxx
         const index _ndim;
 
         /// Size of array.
-        index _size;
+        size_t _size;
         
         /// Shape vector
         index _shape[3]={0,0,0};
