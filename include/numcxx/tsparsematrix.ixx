@@ -258,6 +258,7 @@ namespace numcxx
     template <typename T>
     inline TSparseMatrix<T>::Extension::Extension(index n):
         n(n),
+	next(0),
         pA(std::make_shared<std::vector<T>>(n)),
         pJA(std::make_shared<std::vector<int>>(n)),
         pIA(std::make_shared<std::vector<int>>(n))
