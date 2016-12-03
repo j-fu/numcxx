@@ -28,7 +28,7 @@ namespace numcxx
     inline void TSolverLapackLU<double>::update()
     {
         int n=pLU->shape(0);
-        int info;
+        int info=0;
         *pLU=*pMatrix;
         dgetrf_(&n,&n,pLU->data(),&n,pIPiv->data(),&info);
         if (info!=0)
@@ -46,7 +46,7 @@ namespace numcxx
         char trans[2]={'T','\0'};
         int n=pLU->shape(0);
         int one=1;
-        int info;
+        int info=0;
         dgetrs_(trans,&n,&one,pLU->data(),&n,pIPiv->data(),sol.data(),&n,&info);
         if (info!=0)
         {

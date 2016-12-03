@@ -31,7 +31,7 @@ namespace  numcxx
         /// \param n1 Number of columns
         /// \param data Pointer to data.
         /// \param deleter Deleter method, \see TArray<T>#_deleter
-        TArray2(index n0, index n1, T*data,std::function<void(T*p)> deleter):TArray<T>(n0,n1,data,_deleter(deleter)){};
+        TArray2(index n0, index n1, T*data,std::function<void(T*p)> deleter):TArray<T>(n0,n1,data,deleter){};
 
 
         /// Construct a 2D array from data pointer

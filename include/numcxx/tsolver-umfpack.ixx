@@ -16,8 +16,16 @@ namespace numcxx
     template<typename T> 
     inline TSolverUMFPACK<T>::~TSolverUMFPACK()
     {
-        if (Symbolic!=nullptr) umfpack_di_free_symbolic(&Symbolic);
-        if (Numeric!=nullptr) umfpack_di_free_numeric(&Numeric);
+        if (Symbolic!=nullptr) 
+        {
+            umfpack_di_free_symbolic(&Symbolic);
+            Symbolic=nullptr;
+        }
+        if (Numeric!=nullptr)
+        {
+            umfpack_di_free_numeric(&Numeric);
+            Numeric=nullptr;
+        }
     }
     
     /// Create LU factorization class
@@ -50,8 +58,8 @@ namespace numcxx
         int status;
         if (pMatrix->pattern_changed() || Symbolic==nullptr)
         {
-            if (Symbolic) umfpack_di_free_symbolic(&Symbolic),Symbolic=0;
-            if (Numeric) umfpack_di_free_numeric(&Numeric),Numeric=0;
+            if (Symbolic) umfpack_di_free_symbolic(&Symbolic),Symbolic=nullptr;
+            if (Numeric) umfpack_di_free_numeric(&Numeric),Numeric=nullptr;
             status=umfpack_di_symbolic (n, n, pMatrix->pIA->data(), pMatrix->pJA->data(), pMatrix->pA->data(), &Symbolic, 0, 0);
             if (status>1)
             {
@@ -64,7 +72,7 @@ namespace numcxx
         if (Numeric!=nullptr) 
         {
             umfpack_di_free_numeric(&Numeric);
-            Numeric=0;
+            Numeric=nullptr;
         }
         status =umfpack_di_numeric (pMatrix->pIA->data(), pMatrix->pJA->data(), pMatrix->pA->data(), Symbolic, &Numeric, control, 0) ;
         if (status>1)

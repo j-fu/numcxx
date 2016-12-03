@@ -27,6 +27,8 @@ namespace numcxx
         /// Create LU factorization class
         TSolverUMFPACK(const std::shared_ptr<TSparseMatrix<T>> pA);
 
+        TSolverUMFPACK(const TSolverUMFPACK<T>& A)=delete;
+
         ~TSolverUMFPACK();
         /// Create LU factorization class
 
