@@ -41,8 +41,11 @@ SHLDFLAGS= -shared
 
 .SUFFIXES: .cxx
 
+
 .cxx.o:
 	$(CXX) $(CXXFLAGS) -c  $< -o $@
+.c.o:
+	$(CC) $(CFLAGS) -c  $< -o $@
 .cxx:
 	$(CXX) $(CXXFLAGS) -o $@  $< $(LINALG_LIBS)
 
@@ -64,6 +67,7 @@ featuretest: $(NUMCXX_HEADERS)
 test-et: $(NUMCXX_HEADERS)
 test-sparse: $(NUMCXX_HEADERS)
 triangle.o: $(NUMCXX)/triangle/triangle.c
+	$(CC) $(CFLAGS) -c  $< -o $@
 
 swigwrap_numcxx.o: swigwrap_numcxx.cxx
 
