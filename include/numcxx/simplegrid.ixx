@@ -1,4 +1,3 @@
-#include "triangle.ixx"
 #include <cstring>
 #include <iostream>
 
