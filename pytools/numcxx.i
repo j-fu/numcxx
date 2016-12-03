@@ -40,6 +40,33 @@
             *ARGOUTVIEW_ARRAY2=a->data();
         }
 
+
+        std::shared_ptr<IArray1 > NumpyAsIArray1(PyObject *o,int* v, int n1)
+        {
+            auto proxy=std::make_shared<NumpyProxy>(o);
+            return std::make_shared<IArray1 >(n1,v,proxy);
+        }
+        
+        void IArray1AsNumpy(std::shared_ptr<IArray1 > a,PyObject *o,int** ARGOUTVIEW_ARRAY1, int* DIM1)
+        {
+            *DIM1=a->size();
+            *ARGOUTVIEW_ARRAY1=a->data();
+        }
+
+        std::shared_ptr<IArray2 > NumpyAsIArray2(PyObject *o,int* v, int n1, int n2)
+        {
+            auto proxy=std::make_shared<NumpyProxy>(o);
+            return std::make_shared<IArray2>(n1, n2, v,proxy);
+        }
+
+        void IArray2AsNumpy(std::shared_ptr<IArray2 > a,PyObject *o,int** ARGOUTVIEW_ARRAY2, int* DIM1,int* DIM2)
+        {
+            *DIM1=a->shape(0);
+            *DIM2=a->shape(1);
+            *ARGOUTVIEW_ARRAY2=a->data();
+        }
+
+
         std::shared_ptr<DMatrix> NumpyAsDMatrix(PyObject *o,double* v, int n1, int n2)
         {
             auto proxy=std::make_shared<NumpyProxy>(o);
@@ -232,6 +259,7 @@ template<class A> struct std::shared_ptr
     A* operator->() const;
 };
   
+/* numcxx class wrappers */
 
 namespace numcxx
 {
@@ -271,6 +299,41 @@ namespace numcxx
         bool is_matrix();
     };
 
+
+    class IArray1
+    {
+    public:
+        const index ndim();
+        index size();
+        int shape(int idim);
+        
+        static std::shared_ptr<IArray1> create(index n0);
+        int  item(index i0);
+        void itemset(index i0,int x);
+        
+        std::shared_ptr<IArray1> copy();
+        int __getitem__(index i) const;
+        void __setitem__(index i,int);
+        bool is_matrix();
+    };
+    
+    class IArray2
+    {
+    public:
+        const index ndim();
+        index size();
+        int shape(int idim);
+        
+        static std::shared_ptr<IArray2> create(index n0, index n1);
+        double item(index i0,index i1);
+        void itemset(index i0,index i1, int x);
+        
+        std::shared_ptr<IArray2> copy();
+        std::shared_ptr<IArray1>   __getitem__(int i);
+        bool is_matrix();
+    };
+
+
     class DMatrix
     {
     public:
@@ -288,65 +351,196 @@ namespace numcxx
         std::shared_ptr<DMatrix> calculate_inverse();
     };
     
+
+    class Geometry
+    {
+        
+    public:
+        
+        std::shared_ptr<DArray2> points;
+        std::shared_ptr<IArray2>    bfaces;
+        std::shared_ptr<IArray1>    bfaceregions;
+        std::shared_ptr<DArray2> regionpoints;
+        std::shared_ptr<IArray1>    regionnumbers;
+        std::shared_ptr<DArray1> regionvolumes;
+        static std::shared_ptr<Geometry> create();
+    };
+
+
+    class SimpleGrid
+    {
+    public:
+        static std::shared_ptr<SimpleGrid> create(std::shared_ptr<Geometry> geometry, const char *triangle_flags);
+        std::shared_ptr<DArray2> points;
+        std::shared_ptr<IArray2> cells;
+        std::shared_ptr<IArray1> cellregions;
+        std::shared_ptr<IArray2> bfaces;
+        std::shared_ptr<IArray1> bfaceregions;
+
+        int spacedim();
+        int griddim();
+        int ncells();  
+        int npoints(); 
+        int nbfaces();
+        
+    };
+
     
     std::shared_ptr<DArray1> NumpyAsDArray1(PyObject *O, double* INPLACE_ARRAY1, int DIM1);
     std::shared_ptr<DArray2> NumpyAsDArray2(PyObject *O, double* INPLACE_ARRAY2, int DIM1, int DIM2);
+    std::shared_ptr<IArray1> NumpyAsIArray1(PyObject *O, int* INPLACE_ARRAY1, int DIM1);
+    std::shared_ptr<IArray2> NumpyAsIArray2(PyObject *O, int* INPLACE_ARRAY2, int DIM1, int DIM2);
     std::shared_ptr<DMatrix> NumpyAsDMatrix(PyObject *O, double* INPLACE_ARRAY2, int DIM1, int DIM2);
     
     void DArray1AsNumpy(std::shared_ptr<DArray1> a,PyObject *O,double** ARGOUTVIEW_ARRAY1, int* DIM1);
     void DArray2AsNumpy(std::shared_ptr<DArray2> a,PyObject *O,double** ARGOUTVIEW_ARRAY2, int* DIM1,  int* DIM2);
+    void IArray1AsNumpy(std::shared_ptr<IArray1> a,PyObject *O,int** ARGOUTVIEW_ARRAY1, int* DIM1);
+    void IArray2AsNumpy(std::shared_ptr<IArray2> a,PyObject *O,int** ARGOUTVIEW_ARRAY2, int* DIM1,  int* DIM2);
     void DMatrixAsNumpy(std::shared_ptr<DMatrix> a,PyObject *O,double** ARGOUTVIEW_ARRAY2, int* DIM1,  int* DIM2);
-    
     
 }
 
 %template(shared_ptrDArray1) std::shared_ptr<numcxx::DArray1 >;
 %template(shared_ptrDArray2) std::shared_ptr<numcxx::DArray2 >;
+%template(shared_ptrIArray1) std::shared_ptr<numcxx::IArray1 >;
+%template(shared_ptrIArray2) std::shared_ptr<numcxx::IArray2 >;
 %template(shared_ptrDMatrix) std::shared_ptr<numcxx::DMatrix >;
+%template(shared_ptrSimpleGrid) std::shared_ptr<numcxx::SimpleGrid >;
+%template(shared_ptrGeometry) std::shared_ptr<numcxx::Geometry >;
 
 
 
 %pythoncode{
-from  numpy import ndarray,array,float64
-def asnumcxx(proto):
-    if type(proto)==ndarray:
+import numpy
+def asnumcxx_darray(proto):
+    if type(proto)==numpy.ndarray:
         a=proto
     elif type(proto)==list:
-        a=array(proto)
+        a=numpy.array(proto,dtype=numpy.float64)
+
     else:
         raise TypeError("asnumcxx: wrong type of input -- must be numpy.ndarray or list.")
 
-    if a.dtype==float64 and a.ndim==1:
+    if a.dtype== numpy.float64 and a.ndim==1:
         return NumpyAsDArray1(a)          
-    elif a.dtype==float64 and a.ndim==2:
+    elif a.dtype== numpy.float64 and a.ndim==2:
         return NumpyAsDArray2(a)           
 
-    raise TypeError("asnumcxx: error")
+    raise TypeError("asnumcxx: dtype %s not supported"%a.dtype)
 
-def asnumcxx_matrix(proto):
-    if type(proto)==ndarray:
+def asnumcxx_iarray(proto):
+    if type(proto)==numpy.ndarray:
         a=proto
     elif type(proto)==list:
-        a=array(proto)
+        a= numpy.array(proto,dtype=numpy.intc)
     else:
         raise TypeError("asnumcxx: wrong type of input -- must be numpy.ndarray or list.")
 
-    if a.dtype==float64 and a.ndim==2:
+    if a.dtype==numpy.intc and a.ndim==1:
+        return NumpyAsIArray1(a)          
+    elif a.dtype==numpy.intc and a.ndim==2:
+        return NumpyAsIArray2(a)           
+
+    raise TypeError("asnumcxx: dtype %s not supported"%a.dtype)
+
+def asnumcxx_matrix(proto):
+    if type(proto)==numpy.ndarray:
+        a=proto
+    elif type(proto)==list:
+        a=numpy.array(proto,dtype=numpy.float64)
+    else:
+        raise TypeError("asnumcxx: wrong type of input -- must be numpy.ndarray or list.")
+
+    if a.dtype==numpy.float64 and a.ndim==2:
         return NumpyAsDMatrix(a)           
 
     raise TypeError("asnumcxx: error")
 
-
+    
 def asnumpy(a):
-    if a.ndim()==1:
+    if isinstance(a,shared_ptrDArray1):
         return DArray1AsNumpy(a)
-    elif a.ndim()==2:
-        if a.is_matrix():
-             return DMatrixAsNumpy(a)
-        else:
-             return DArray2AsNumpy(a)
- 
+    elif isinstance(a,shared_ptrDArray2):
+        return DArray2AsNumpy(a)
+    elif isinstance(a,shared_ptrIArray1):
+        return IArray1AsNumpy(a)
+    elif isinstance(a,shared_ptrIArray2):
+        return IArray2AsNumpy(a)
+    elif isinstance(a,shared_ptrDMatrix):
+        return DMatrixAsNumpy(a)
+
     raise RuntimeError("asnumpy: error")
+
+def Geometry_set_points(self,proto):
+    self.points=asnumcxx_darray(proto)
+
+def Geometry_set_bfaces(self,proto):
+    self.bfaces=asnumcxx_iarray(proto)
+
+def Geometry_set_bfaceregions(self,proto):
+    self.bfaceregions=asnumcxx_iarray(proto)
+
+def Geometry_set_regionpoints(self,proto):
+    self.regionpoints=asnumcxx_darray(proto)
+
+def Geometry_set_regionnumbers(self,proto):
+    self.regionnumbers=asnumcxx_iarray(proto)
+
+def Geometry_set_regionvolumes(self,proto):
+    self.regionvolumes=asnumcxx_darray(proto)
+
+
+def Geometry_get_points(self):
+    return asnumpy(self.points)
+
+def Geometry_get_bfaces(self):
+    return asnumpy(self.bfaces)
+
+def Geometry_get_bfaceregions(self):
+    return asnumpy(self.bfaceregions)
+
+def Geometry_get_regionpoints(self):
+    return asnumpy(self.regionpoints)
+
+def Geometry_get_regionnumbers(self):
+    return asnumpy(self.regionnumbers)
+
+def Geometry_get_regionvolumes(self):
+    return asnumpy(self.regionvolumes)
+
+
+shared_ptrGeometry.set_points=Geometry_set_points
+shared_ptrGeometry.set_bfaces=Geometry_set_bfaces
+shared_ptrGeometry.set_bfaceregions=Geometry_set_bfaceregions
+shared_ptrGeometry.set_regionpoints=Geometry_set_regionpoints
+shared_ptrGeometry.set_regionnumbers=Geometry_set_regionnumbers
+shared_ptrGeometry.set_regionvolumes=Geometry_set_regionvolumes
+
+shared_ptrGeometry.get_points=Geometry_get_points
+shared_ptrGeometry.get_bfaces=Geometry_get_bfaces
+shared_ptrGeometry.get_bfaceregions=Geometry_get_bfaceregions
+shared_ptrGeometry.get_regionpoints=Geometry_get_regionpoints
+shared_ptrGeometry.get_regionnumbers=Geometry_get_regionnumbers
+shared_ptrGeometry.get_regionvolumes=Geometry_get_regionvolumes
+
+
+
+def SimpleGrid_get_points(self):
+    return asnumpy(self.points)
+def SimpleGrid_get_cells(self):
+    return asnumpy(self.cells)
+def SimpleGrid_get_cellregions(self):
+    return asnumpy(self.cellregions)
+def SimpleGrid_get_bfaces(self):
+    return asnumpy(self.bfaces)
+def SimpleGrid_get_bfaceregions(self):
+    return asnumpy(self.bfaceregions)
+
+shared_ptrSimpleGrid.get_points=SimpleGrid_get_points
+shared_ptrSimpleGrid.get_cells=SimpleGrid_get_cells
+shared_ptrSimpleGrid.get_cellregions=SimpleGrid_get_cellregions
+shared_ptrSimpleGrid.get_bfaces=SimpleGrid_get_bfaces
+shared_ptrSimpleGrid.get_bfaceregions=SimpleGrid_get_bfaceregions
 
 
  }

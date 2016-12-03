@@ -17,6 +17,8 @@ namespace numcxx
 #include "tsolver-umfpack.hxx"
 #include "tprecon-jacobi.hxx"
 #include "util.hxx"
+#include "geometry.hxx"
+#include "simplegrid.hxx"
 
 namespace numcxx
 {
