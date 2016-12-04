@@ -1,5 +1,5 @@
 /* -*- C -*-  (not really, but good for syntax highlighting) */
-%module numcxx
+%module numcxxwrap
 
 %{
 #define SWIG_FILE_WITH_INIT
@@ -334,6 +334,15 @@ namespace numcxx
     };
 
 
+    class DSolverLapackLU
+    {
+    public:
+        static std::shared_ptr<DSolverLapackLU> create(const std::shared_ptr<numcxx::DMatrix> pMatrix);
+        void update();
+        void solve( std::shared_ptr<DArray1> & Sol,  const std::shared_ptr<DArray1> & Rhs) const;
+    };
+
+
     class DMatrix
     {
     public:
@@ -405,6 +414,7 @@ namespace numcxx
 %template(shared_ptrIArray1) std::shared_ptr<numcxx::IArray1 >;
 %template(shared_ptrIArray2) std::shared_ptr<numcxx::IArray2 >;
 %template(shared_ptrDMatrix) std::shared_ptr<numcxx::DMatrix >;
+%template(shared_ptrDSolverLapackLU) std::shared_ptr<numcxx::DSolverLapackLU >;
 %template(shared_ptrSimpleGrid) std::shared_ptr<numcxx::SimpleGrid >;
 %template(shared_ptrGeometry) std::shared_ptr<numcxx::Geometry >;
 
@@ -412,7 +422,7 @@ namespace numcxx
 
 %pythoncode{
 import numpy
-def asnumcxx_darray(proto):
+def asdarray(proto):
     if type(proto)==numpy.ndarray:
         a=proto
     elif type(proto)==list:
@@ -428,7 +438,7 @@ def asnumcxx_darray(proto):
 
     raise TypeError("asnumcxx: dtype %s not supported"%a.dtype)
 
-def asnumcxx_iarray(proto):
+def asiarray(proto):
     if type(proto)==numpy.ndarray:
         a=proto
     elif type(proto)==list:
@@ -443,7 +453,7 @@ def asnumcxx_iarray(proto):
 
     raise TypeError("asnumcxx: dtype %s not supported"%a.dtype)
 
-def asnumcxx_matrix(proto):
+def asdmatrix(proto):
     if type(proto)==numpy.ndarray:
         a=proto
     elif type(proto)==list:
@@ -472,22 +482,22 @@ def asnumpy(a):
     raise RuntimeError("asnumpy: error")
 
 def Geometry_set_points(self,proto):
-    self.points=asnumcxx_darray(proto)
+    self.points=asdarray(proto)
 
 def Geometry_set_bfaces(self,proto):
-    self.bfaces=asnumcxx_iarray(proto)
+    self.bfaces=asiarray(proto)
 
 def Geometry_set_bfaceregions(self,proto):
-    self.bfaceregions=asnumcxx_iarray(proto)
+    self.bfaceregions=asiarray(proto)
 
 def Geometry_set_regionpoints(self,proto):
-    self.regionpoints=asnumcxx_darray(proto)
+    self.regionpoints=asdarray(proto)
 
 def Geometry_set_regionnumbers(self,proto):
-    self.regionnumbers=asnumcxx_iarray(proto)
+    self.regionnumbers=asiarray(proto)
 
 def Geometry_set_regionvolumes(self,proto):
-    self.regionvolumes=asnumcxx_darray(proto)
+    self.regionvolumes=asdarray(proto)
 
 
 def Geometry_get_points(self):

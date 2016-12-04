@@ -7,7 +7,6 @@ namespace numcxx
 {
     /// Lapack LU factorization class
     /// 
-    /// Th
     template<typename T> 
     class TSolverLapackLU: public  TLinSolver<T>
     {
@@ -35,8 +34,13 @@ namespace numcxx
         /// from the LAPACK library  (for T=double)
         void solve( TArray<T> & Sol,  const TArray<T> & Rhs) const;
 
+        void solve( std::shared_ptr<TArray1<T>> Sol,  const std::shared_ptr<TArray1<T>> Rhs) const {solve(*Sol,*Rhs);};
+
         /// Calculate inverse of matrix A from its LU factors
         std::shared_ptr<TMatrix<T>> calculate_inverse();
+
+        /// Default constructor for swig
+        TSolverLapackLU() {};
     };
 }
 #include "tsolver-lapacklu.ixx"
