@@ -1,36 +1,66 @@
 #!/usr/bin/env python
+#  Python script to test triangle mesh generator via numcxx
+
 import numcxx
+from numcxx import numcxxplot
 import numpy
 import matplotlib
 from matplotlib import pyplot as plt
 
 
-
+# Create a geometry object
 geom=numcxx.Geometry.create()
-geom.set_points([[0,0.1],[1,0],[1.1,1]])
-geom.set_bfaces([[0,1],[1,2],[2,0]])
+
+# Give initial list of points
+geom.set_points(
+    [
+        [0,0.1],
+        [1,0],
+        [1.1,1]
+    ])
+
+# Give initial list of boundary faces.
+# Indices refer to position in point list
+geom.set_bfaces(
+    [
+        [0,1],
+        [1,2],
+        [2,0]
+    ])
+
+# Give region numbers for boundary faces
+# These should be larger than 0
 geom.set_bfaceregions([1,2,3])
+
+# Give interior region points to mark
+# region
 geom.set_regionpoints([[0.5,0.25]])
+
+# Give maximal area of triangles
+# in region corresponding to region volumes
 geom.set_regionvolumes([0.001])
+
+# Give region numbers for regions corresponding
+# to region point
 geom.set_regionnumbers([1])
 
-print(numcxx.asnumpy(geom.bfaceregions))
+# plot geometry (to check input)
+numcxxplot.plotGeometry(plt,geom)
 
-
-
-numcxx.plot.plotGeometry(plt,geom)
+print("Close window to continue!");
 plt.show()
-grid=numcxx.SimpleGrid.create(geom,"zpaAq")
 
+# Create triangulation
+# Flags:
+# -z  Numbers all items starting from zero (rather than one).
+# -p  Triangulates a Planar Straight Line Graph
+# -a  Applies a maximum triangle area constraint.
+# -A  Applies attributes to identify triangles in certain regions.
+# -q  Quality mesh generation.  A minimum angle may be specified.
+# -D  Conforming Delaunay:  all triangles are truly Delaunay.
+grid=numcxx.SimpleGrid.create(geom,"zpaAqD")
 
-
-
-
-
-
-
-
-
-numcxx.plot.plotGrid(plt,grid)
+# plot grid 
+numcxxplot.plotGrid(plt,grid)
+print("Close window to finish!");
 plt.show()
-print(matplotlib.get_backend())

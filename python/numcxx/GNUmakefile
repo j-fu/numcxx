@@ -1,6 +1,6 @@
 CXX=g++
 CC=gcc
-PYTHON=python
+PYTHON=python3
 
 NUMCXX=../../
 NUMCXX_INCLUDE=$(NUMCXX)/include

@@ -1,6 +1,8 @@
 #!/usr/bin/env python
+#  Python script to test features of numcxx from within python
 import numcxx
 import numpy
+
 
 n=4
 
