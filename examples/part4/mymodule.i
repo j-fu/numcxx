@@ -1,19 +1,18 @@
+
+/* Set the module name to be seen in python*/
 %module mymodule
 
+/* Add headers to be included from within the wrapped code*/
 %{
-#define SWIG_FILE_WITH_INIT
 
 #include "numcxx/numcxx.hxx"
 #include "numcxx/simplegrid.hxx"
-#include "mymodule.h"
+#include "mymodule.hxx"
 
 %}
 
-template<class A> struct std::shared_ptr
-{
-    A* operator->() const;
-};
 
+/* These are the actual declarations to be wrapped */
 namespace mymodule
 {
    inline std::shared_ptr<numcxx::DArray1>  myfunction(std::shared_ptr<numcxx::SimpleGrid> g);
