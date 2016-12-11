@@ -11,6 +11,8 @@ namespace numcxx
     {
     public:
         SimpleGrid(){};
+        SimpleGrid(const SimpleGrid& g)=delete;
+
         SimpleGrid(const Geometry &geometry, const char *triangle_flags);
         static std::shared_ptr<SimpleGrid> create(const Geometry &geometry, const std::string triangle_flags) { return std::make_shared<SimpleGrid>(geometry,triangle_flags.c_str());}
         static std::shared_ptr<SimpleGrid> create(std::shared_ptr<Geometry> geometry, const char * triangle_flags) { return std::make_shared<SimpleGrid>(*geometry,triangle_flags);}

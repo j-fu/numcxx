@@ -21,11 +21,16 @@ def plotGeometry(plt,geom):
         plt.plot([regionpoints[ipoint][0]],[regionpoints[ipoint][1]],
                  'o-',color=colortable[regionnumbers[ipoint]%len(colortable)])
 
+    for ipoint in range(points.shape[0]):
+        plt.plot([points[ipoint][0]],[points[ipoint][1]],
+                 'o-',color=colortable[0])
+
+
     for ibface in range(bfaces.shape[0]):
         p=[bfaces[ibface][0],bfaces[ibface][1]]
         plt.plot([points[p[0]][0],points[p[1]][0]],
                  [points[p[0]][1],points[p[1]][1]],
-                 'o-',color=colortable[bfaceregions[ibface]%len(colortable)])
+                 '-',color=colortable[bfaceregions[ibface]%len(colortable)])
 
 def plotGrid(plt,grid):
     points=grid.get_points()
@@ -63,5 +68,3 @@ def triangulation(grid):
     y=xy[:,[1]].squeeze()
     triangles=grid.get_cells()
     return matplotlib.tri.Triangulation(x,y,triangles)
-
-#plt.triplot(triangulation(grid), 'bo-')

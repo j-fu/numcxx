@@ -4,7 +4,6 @@
 #include "tarray1.hxx"
 #include "tarray2.hxx"
 
-
 namespace numcxx
 {
     class Geometry

@@ -1,12 +1,17 @@
 /* -*- C -*-  (not really, but good for syntax highlighting) */
 %module numcxxwrap
 
+/*
+Section 1: Helper functions to convert data between C++/numpy
+*/
 %{
 #define SWIG_FILE_WITH_INIT
 #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
 #include "numcxx/numcxx.hxx"
+#include "numcxx/simplegrid.hxx"
     namespace numcxx
     {
+        // Proxy class for numpy object to be stored 
         class NumpyProxy
         {
             PyObject *o;
@@ -15,12 +20,14 @@
             ~NumpyProxy() {Py_DECREF(o);};
         };
         
+        // Convert numpy object with data to numcxx
         std::shared_ptr<DArray1 > NumpyAsDArray1(PyObject *o,double* v, int n1)
         {
             auto proxy=std::make_shared<NumpyProxy>(o);
             return std::make_shared<DArray1 >(n1,v,proxy);
         }
         
+        // Convert numcxx data to numpy
         void DArray1AsNumpy(std::shared_ptr<DArray1 > a,PyObject *o,double** ARGOUTVIEW_ARRAY1, int* DIM1)
         {
             *DIM1=a->size();
@@ -84,7 +91,9 @@
 %}
 
 
-
+/*
+  Section 2: include standard typemap files
+ */
 %include <std_vector.i>
 %include <numpy.i>
 %clear(double** ARGOUTVIEW_ARRAY1, int* DIM1);
@@ -94,7 +103,7 @@
 
 
 
-/* Typemaps for pdelib <-> numpy array communication.
+/* Section 3: Typemaps for numcxx <-> numpy array communication.
    
    This typemap  file needs to be included after the original,
    unmodified numpy.i.
@@ -104,18 +113,18 @@
    
 */
 
-%define %pdelib_numpy_typemaps(DATA_TYPE, DATA_TYPECODE, DIM_TYPE)
+%define %numcxx_numpy_typemaps(DATA_TYPE, DATA_TYPECODE, DIM_TYPE)
 
  /***************************************************************/
  /***************************************************************/
  /***************************************************************/
  /*  
-     Numpy array as pdelib array.
+     Numpy array as numcxx array.
  */
 
  /***************************************************************
    Typemap suite for (PyObject *O, DATA_TYPE* INPLACE_ARRAY1, int DIM1)
-   for numpy arrays as pdelib arrays
+   for numpy arrays as numcxx arrays
  */
 
 
@@ -142,7 +151,7 @@
 
 /***************************************************************
    Typemap suite for (PyObject *O, DATA_TYPE* INPLACE_ARRAY1, int DIM1, int DIM2)
-   for numpy arrays as pdelib arrays
+   for numpy arrays as numcxx arrays
 */
 %typecheck(SWIG_TYPECHECK_DOUBLE_ARRAY, fragment="NumPy_Macros")
 (PyObject* O, DATA_TYPE* INPLACE_ARRAY2, int DIM1, int DIM2)
@@ -171,18 +180,18 @@
 /***************************************************************/
 /***************************************************************/
 /*  
-    pdelib array as  numpy: 
+    numcxx array as  numpy: 
     
     Concerning PyArray_New  instead of PyArray_SimpleNewFromData, see the source on
     https://github.com/numpy/numpy/blob/master/numpy/core/src/multiarray/ctors.c:
 
     The obj (last) parameter is increfed and stored, so we pass the python proxy
-    of the pdelib array.
+    of the numcxx array.
 */
 
 /***************************************************************
    Typemap suite for (PyObject *O, DATA_TYPE** ARGOUTVIEW_ARRAY1, int* DIM1)
-   for pdelib array as  numpy.
+   for numcxx array as  numpy.
    
    We use obj0 for the python obj passed after observation of the generated
    code. This should be fixed and declared properly in the parameter list.
@@ -210,7 +219,7 @@
 
 /***************************************************************
    Typemap suite for (PyObject *O, DATA_TYPE** ARGOUTVIEW_ARRAY2, int* DIM1, int *DIM2)
-   for pdelib array as  numpy.
+   for numcxx array as  numpy.
    
    We use obj0 for the python obj passed after observation of the generated
    code. This should be fixed and declared properly in the parameter list.
@@ -236,10 +245,10 @@
   $result = SWIG_Python_AppendOutput($result,obj);
 }
 
-%enddef    /* %pdelib_numpy_typemaps() macro */
+%enddef    /* %numcxx_numpy_typemaps() macro */
 
-%pdelib_numpy_typemaps(double, NPY_DOUBLE, int)
-%pdelib_numpy_typemaps(int,NPY_INT, int)
+%numcxx_numpy_typemaps(double, NPY_DOUBLE, int)
+%numcxx_numpy_typemaps(int,NPY_INT, int)
 
 
 
@@ -247,12 +256,10 @@
   import_array();
 %}
 
-
-/* template <class A> class std::shared_ptr */
-/* { */
-/*     friend A; */
-/* //    aptr(){}; */
-/* }; */
+/*
+Section 4: decription of classes to be wrapped.
+Essentially a subset of C++ header file.
+ */
 
 template<class A> struct std::shared_ptr
 {
@@ -409,6 +416,10 @@ namespace numcxx
     
 }
 
+/*
+Section 5: template expansions
+ */
+
 %template(shared_ptrDArray1) std::shared_ptr<numcxx::DArray1 >;
 %template(shared_ptrDArray2) std::shared_ptr<numcxx::DArray2 >;
 %template(shared_ptrIArray1) std::shared_ptr<numcxx::IArray1 >;
@@ -419,9 +430,14 @@ namespace numcxx
 %template(shared_ptrGeometry) std::shared_ptr<numcxx::Geometry >;
 
 
-
+/*
+Section 6: Python code to extend functionality
+ */
 %pythoncode{
 import numpy
+
+"Shortcuts to numpy <-> numcxx array conversions"
+
 def asdarray(proto):
     if type(proto)==numpy.ndarray:
         a=proto
@@ -481,6 +497,8 @@ def asnumpy(a):
 
     raise RuntimeError("asnumpy: error")
 
+"Extension of geometry class"
+
 def Geometry_set_points(self,proto):
     self.points=asdarray(proto)
 
@@ -534,6 +552,7 @@ shared_ptrGeometry.get_regionnumbers=Geometry_get_regionnumbers
 shared_ptrGeometry.get_regionvolumes=Geometry_get_regionvolumes
 
 
+"Extension of SimpleGrid class"
 
 def SimpleGrid_get_points(self):
     return asnumpy(self.points)
@@ -553,4 +572,4 @@ shared_ptrSimpleGrid.get_bfaces=SimpleGrid_get_bfaces
 shared_ptrSimpleGrid.get_bfaceregions=SimpleGrid_get_bfaceregions
 
 
- }
+}

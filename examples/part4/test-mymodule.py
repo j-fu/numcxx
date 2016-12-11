@@ -3,6 +3,7 @@
 import numcxx
 from numcxx import numcxxplot
 import numpy
+import mymodule
 import matplotlib
 from matplotlib import pyplot as plt
 
@@ -37,17 +38,12 @@ geom.set_regionpoints([[0.5,0.25]])
 
 # Give maximal area of triangles
 # in region corresponding to region volumes
-geom.set_regionvolumes([1])
+geom.set_regionvolumes([0.001])
 
 # Give region numbers for regions corresponding
 # to region point
 geom.set_regionnumbers([1])
 
-# plot geometry (to check input)
-numcxxplot.plotGeometry(plt,geom)
-
-print("Close window to continue!");
-plt.show()
 
 # Create triangulation
 # Flags:
@@ -59,7 +55,18 @@ plt.show()
 # -D  Conforming Delaunay:  all triangles are truly Delaunay.
 grid=numcxx.SimpleGrid.create(geom,"zpaAqD")
 
-# plot grid 
-numcxxplot.plotGrid(plt,grid)
-print("Close window to finish!");
+
+
+
+f=mymodule.myfunction(grid)
+
+nf=numcxx.asnumpy(f)
+
+
+triang=numcxxplot.triangulation(grid)
+plt.tricontourf(triang, nf,20,cmap='gnuplot')
+plt.colorbar()
+plt.tricontour(triang, nf,20,colors="black",linestyles="solid",colorbar='none')
+
 plt.show()
+
