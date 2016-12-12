@@ -6,6 +6,7 @@ import argparse
 parser = argparse.ArgumentParser(description=
         """
         Python script to find libs + includes for python along with numpy.
+        Works with python2.7 + python3
         """
         )
 parser.add_argument('--libs',  action='store_true', default=False,    dest='libs',help='Print out python libs')

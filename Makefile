@@ -1,12 +1,16 @@
 NOW=`date  +%Y-%m-%d`
 PWD=`pwd`
 
-default:
+
+
+default: build
 	-cd devel; $(MAKE) 
 	-cd examples/part1; $(MAKE)
 	-cd examples/part2; $(MAKE)
 	-cd examples/part3; $(MAKE)
 
+build:
+	-cd src; $(MAKE) 
 
 release: clean doxygen changelog
 	-rm -r ~/scratch/numcxx/numcxx-$(NOW)
@@ -21,10 +25,13 @@ doxygen:
 	doxygen
 
 clean:  
+	-rm -r lib
+	-cd src; $(MAKE) clean
 	-cd devel; $(MAKE) clean
 	-cd examples/part1; $(MAKE) clean
 	-cd examples/part2; $(MAKE) clean
 	-cd examples/part3; $(MAKE) clean
+	-cd examples/part4; $(MAKE) clean
 	-cd html; rm -r *
 
 test:
@@ -32,6 +39,7 @@ test:
 	cd examples/part1; WIR=$(PWD) $(MAKE) -e; $(MAKE) test; echo part1 ok
 	cd examples/part2; WIR=$(PWD) $(MAKE) -e; $(MAKE) test; echo part2 ok
 	cd examples/part3; WIR=$(PWD) $(MAKE) -e; $(MAKE) test; echo part3 ok
+	cd examples/part4; WIR=$(PWD) $(MAKE) -e; $(MAKE) test; echo part4 ok
 
 changelog:
 	hg log --template "{date(date, '%Y-%m-%d-%H%M')}:\n {fill(desc,60,'                ','                 ')}\n\n" > CHANGELOG.txt

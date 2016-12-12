@@ -1,6 +1,7 @@
 #ifndef NUMCXX_SIMPLEGRID_HXX
 #define NUMCXX_SIMPLEGRID_HXX
 
+
 #include "tarray1.hxx"
 #include "tarray2.hxx"
 #include "geometry.hxx"
@@ -38,6 +39,5 @@ namespace numcxx
     };
 }
 
-#include "simplegrid.ixx"
 
 #endif

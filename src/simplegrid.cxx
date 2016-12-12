@@ -1,11 +1,16 @@
 #include <cstring>
 #include <iostream>
+#include <numcxx/numcxx.hxx>
+#include <numcxx/simplegrid.hxx>
 
 namespace triangle
 {
     extern "C" { 
 #define VOID void
-#include "../../triangle/triangle.h"
+#define REAL double 
+#define ANSI_DECLARATORS
+#define TRILIBRARY
+#include "../triangle/triangle.h"
     }
 }
 
@@ -38,7 +43,7 @@ namespace numcxx
         std::printf("numberofedges=%d\n",in->numberofedges);
     }
     
-    inline SimpleGrid::SimpleGrid(const Geometry & geometry, const char * flags)
+    SimpleGrid::SimpleGrid(const Geometry & geometry, const char * flags)
     {
         if (strchr(flags,'z')==nullptr)
         {
