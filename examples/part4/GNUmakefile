@@ -11,7 +11,7 @@ swigwrap_mymodule.cxx: mymodule.i $(NUMCXX_HEADERS)
 _mymodule.so: swigwrap_mymodule.cxx 
 	$(CXX) $(CXXFLAGS) $(PYTHON_LIBS) $(LINALG_LIBS) $(SHLDFLAGS) $< -o $@
 test: 
-	PYTHONPATH=$(NUMCXX)/lib/python $(PYTHON) test.py
+	PYTHONPATH=$(NUMCXX)/lib/python $(PYTHON) featuretest.py
 
 clean:
 	-rm -r *.o  swigwrap*.* *.dSYM *.pyc __pycache__ mymodule.py $(BINARIES) *~
