@@ -1,7 +1,7 @@
 NUMCXX=..
 include $(NUMCXX)/Makefile.inc
 
-BINARIES= libnumcxx.a _numcxxwrap.so
+BINARIES= libnumcxx.a _numcxxwrap.$(SO)
 
 # default rule, makes binaries and copies them to ../lib
 all: $(BINARIES)
@@ -9,7 +9,7 @@ all: $(BINARIES)
 	-mkdir -p $(NUMCXX)/lib/python
 	-mkdir -p $(NUMCXX)/lib/python/numcxx
 	-cp -p libnumcxx.a $(NUMCXX)/lib
-	-cp -p *.py *.so $(NUMCXX)/lib/python/numcxx
+	-cp -p *.py *.$(SO) $(NUMCXX)/lib/python/numcxx
 
 # numcxx library
 libnumcxx.a:  libnumcxx.a(triangle.o) libnumcxx.a(simplegrid.o)
@@ -29,8 +29,8 @@ numcxxwrap.cxx: $(NUMCXX_SRC)/numcxx.i $(NUMCXX_HEADERS)
 numcxxwrap.o: numcxxwrap.cxx
 
 # create shared library
-_numcxxwrap.so: numcxxwrap.cxx libnumcxx.a
-	$(CXX) $(CXXFLAGS) $(PYTHON_LIBS) $(LINALG_LIBS) $(SHLDFLAGS) $< libnumcxx.a -o $@
+_numcxxwrap.$(SO): numcxxwrap.cxx libnumcxx.a
+	$(CXX) $(CXXFLAGS) $< libnumcxx.a $(PYTHON_LIBS) $(LINALG_LIBS) $(SHLDFLAGS)  -o $@
 
 clean:
 	-rm -r *.o  *.a numcxxwrap*.* *.dSYM *.pyc numcxx.py $(BINARIES) *~

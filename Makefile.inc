@@ -8,16 +8,16 @@ CXX=g++
 CC=gcc
 
 # Python executable
-PYTHON=python3
+PYTHON=python
 
 # C++ compiler flags
-CXXFLAGS=-fPIC -O3  -std=c++11 
+CXXFLAGS=-O3  -std=c++11 
 
 #Check bounds flag for numcxx
 CXXFLAGS:=$(CXXFLAGS) -DNUMCXX_CHECK_BOUNDS
 
 # C compiler flags
-CFLAGS=-fPIC -O3 
+CFLAGS=-O3 
 
 # Linker flag for creating shared libraries
 SHLDFLAGS= -shared 
@@ -90,4 +90,14 @@ endif
 
 ifneq ($(wildcard $(_SWIG5)),)
 SWIG=$(_SWIG5)
+endif
+
+# figure out extension of shared objects
+
+ifneq ($(wildcard $(/usr/bin/cygwin*.dll)),)
+SO=dll
+else
+SO=so
+CXXFLAGS:=$(CXXFLAGS) -fPIC
+CFLAGS:=$(CFLAGS) -fPIC
 endif
