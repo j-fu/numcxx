@@ -26,13 +26,14 @@ doxygen:
 
 clean:  
 	-rm -r lib
+	-rm -r html
 	-cd src; $(MAKE) clean
 	-cd devel; $(MAKE) clean
 	-cd examples/part1; $(MAKE) clean
 	-cd examples/part2; $(MAKE) clean
 	-cd examples/part3; $(MAKE) clean
 	-cd examples/part4; $(MAKE) clean
-	-cd html; rm -r *
+ 
 
 test:
 	cd devel; $(MAKE) ; $(MAKE) test; echo devel ok

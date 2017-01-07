@@ -33,7 +33,7 @@ LINALG_INCLUDES=-I/usr/include/suitesparse -I/usr/local/include
 # Possible locations for swig
 _SWIG1=/usr/bin/swig
 _SWIG2=/usr/bin/swig3.0
-_SWIG3=/Users/fuhrmann/Wias/work/pdelib2/external/lib.gnu_hb/swig-3.0.5-2/bin/swig
+_SWIG3=/usr/local/bin/swig
 _SWIG4=/Users/fuhrmann/Wias/work/pdelib2/external/lib.gnu_hb/swig-3.0.5-2/bin/swig
 _SWIG5=/Users/fuhrmann/Wias/work/pdelib2/external/lib.gnu_hb/swig-3.0.5-2/bin/swig
 
