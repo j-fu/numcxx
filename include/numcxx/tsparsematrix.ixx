@@ -223,7 +223,14 @@ namespace numcxx
         auto &IA=*pIA;
         auto &JA=*pJA;
         auto &A=*pA;
-    
+#ifdef NUMCXX_CHECK_BOUNDS
+        if (i<0||j<0||i>=n||j>=n) 
+        {
+            char errormsg[80];
+            snprintf(errormsg,80,"numcxx::TSparseMatrix::op(): shape=(%d %d) but using index (%d %d)\n",n,n,i,j);
+            throw std::out_of_range(errormsg);
+        }
+#endif
         for (int k=IA[i];k<IA[i+1];k++)
             if (JA[k]==j) 
                 return A[k];
