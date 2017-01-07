@@ -94,7 +94,7 @@ endif
 
 # figure out extension of shared objects
 
-ifneq ($(wildcard $(/usr/bin/cygwin*.dll)),)
+ifneq ($(wildcard /usr/bin/cygwin*.dll),)
 SO=dll
 else
 SO=so
