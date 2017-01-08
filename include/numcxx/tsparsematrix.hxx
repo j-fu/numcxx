@@ -19,6 +19,9 @@ namespace numcxx
         friend class TPreconJacobi<T>;
     public:
         typedef T value_type;
+
+        TSparseMatrix():n(0) {};
+
         /// Create an empty sparse matrix representing
         /// an  n1 x n2 system of linear equations
         /// (currently, n1 must be equal to n2)

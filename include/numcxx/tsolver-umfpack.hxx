@@ -23,6 +23,7 @@ namespace numcxx
         /// Pointer to numeric factorization data
         void * Numeric;
     public:
+        TSolverUMFPACK(){};
 
         /// Create LU factorization class
         TSolverUMFPACK(const std::shared_ptr<TSparseMatrix<T>> pA);
@@ -38,6 +39,9 @@ namespace numcxx
 
         /// Solve LU factorized system
         void solve( TArray<T> & Sol,  const TArray<T> & Rhs);
+
+      void solve( std::shared_ptr< TArray<T> > Sol,  const std::shared_ptr<TArray<T> > Rhs) {solve(*Sol,*Rhs);};
+
     };
 }
 

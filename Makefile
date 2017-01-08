@@ -8,6 +8,7 @@ default: build
 	-cd examples/part1; $(MAKE)
 	-cd examples/part2; $(MAKE)
 	-cd examples/part3; $(MAKE)
+	-cd examples/part4; $(MAKE)
 
 build:
 	-cd src; $(MAKE) 
@@ -27,6 +28,7 @@ doxygen:
 clean:  
 	-rm -r lib
 	-rm -r html
+	-rm INSTALL.pdf
 	-cd src; $(MAKE) clean
 	-cd devel; $(MAKE) clean
 	-cd examples/part1; $(MAKE) clean
