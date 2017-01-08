@@ -350,6 +350,7 @@ namespace numcxx
     };
 
 
+
     class DMatrix
     {
     public:
@@ -367,6 +368,28 @@ namespace numcxx
         std::shared_ptr<DMatrix> calculate_inverse();
     };
     
+
+
+    class DSparseMatrix
+    {
+    public:
+      static std::shared_ptr<DSparseMatrix> create(index n1, index n2);
+      void  flush();
+      std::shared_ptr< DMatrix > copy_as_dense();
+      index shape(int idim);
+    };
+
+    class DSolverUMFPACK
+    {
+    public:
+      static std::shared_ptr<DSolverUMFPACK> create(const std::shared_ptr<DSparseMatrix> pA);
+      void update();
+      void solve( std::shared_ptr<DArray1> Sol,  const std::shared_ptr<DArray1> Rhs);
+    };
+
+    
+
+
 
     class Geometry
     {
@@ -425,6 +448,8 @@ Section 5: template expansions
 %template(shared_ptrIArray1) std::shared_ptr<numcxx::IArray1 >;
 %template(shared_ptrIArray2) std::shared_ptr<numcxx::IArray2 >;
 %template(shared_ptrDMatrix) std::shared_ptr<numcxx::DMatrix >;
+%template(shared_ptrDSparseMatrix) std::shared_ptr<numcxx::DSparseMatrix >;
+%template(shared_ptrDSolverUMFPACK) std::shared_ptr<numcxx::DSolverUMFPACK >;
 %template(shared_ptrDSolverLapackLU) std::shared_ptr<numcxx::DSolverLapackLU >;
 %template(shared_ptrSimpleGrid) std::shared_ptr<numcxx::SimpleGrid >;
 %template(shared_ptrGeometry) std::shared_ptr<numcxx::Geometry >;
