@@ -1,5 +1,6 @@
 ###########################################
-# Make variables to adapt
+# Make variables to adapt. Consider to put
+# any changes to MyMakefile.inc
 
 # C++ compiler
 CXX=g++
@@ -13,15 +14,18 @@ PYTHON=python
 # C++ compiler flags
 CXXFLAGS=-O3  -std=c++11 
 
-#Check bounds flag for numcxx
-CXXFLAGS:=$(CXXFLAGS) -DNUMCXX_CHECK_BOUNDS
+# Control array bounds check in numcxx
+CHECKBOUNDS_FLAGS=-DNUMCXX_CHECK_BOUNDS
 
 # C compiler flags
 CFLAGS=-O3 
 
+# Compiler flags for generating position independent code
+# (for Mac/Unix shared objects, ignored on windows)
+PICFLAGS=-fPIC
+
 # Linker flag for creating shared libraries
 SHLDFLAGS= -shared 
-
 
 # Dense+Sparse linear algebra libraries
 LINALG_LIBS=-L/usr/local/lib -llapack -lblas -lumfpack -lamd -lcolamd -lcholmod -lsuitesparseconfig
@@ -38,29 +42,39 @@ _SWIG4=/Users/fuhrmann/Wias/work/pdelib2/external/lib.gnu_hb/swig-3.0.5-2/bin/sw
 _SWIG5=/Users/fuhrmann/Wias/work/pdelib2/external/lib.gnu_hb/swig-3.0.5-2/bin/swig
 
 
-# end of customizable part
+# End of customizable part
+###############################################################
+
 ###############################################################
 # This file is meant to be included from subdirectory makefiles
-# which define $(NUMCXX)
+# which define $(NUMCXX). It uses GNUMake syntax (which 
+# defines ':=' and 'ifeq' in addition  to the usual makefile 
+# syntax.
 
+# If exists, include a file  where you can overwrite 
+# any of the previous flags without changing
+# the present file file.
+sinclude $(NUMCXX)/MyMakefile.inc
 
-# include directory for numcxx 
+# Include directory for numcxx 
 NUMCXX_INCLUDE=$(NUMCXX)/include
 
-# source directory for numcxx
+# Source directory for numcxx
 NUMCXX_SRC=$(NUMCXX)/src
+
+CXXFLAGS:=$(CXXFLAGS) $(CHECKBOUNDS_FLAGS)
 
 # numcxx header files
 NUMCXX_HEADERS=$(wildcard $(NUMCXX_INCLUDE)/*/*.hxx $(NUMCXX_INCLUDE)/*/*.ixx)
 
-# amend cxxflags by necessary includes
+# Amend cxxflags by necessary includes
 CXXFLAGS:=$(CXXFLAGS)   -I$(NUMCXX)/include $(LINALG_INCLUDES) `$(PYTHON) $(NUMCXX_SRC)/find_python_paths.py --includes`
 
-# amend libs by necessary python libs
+# Amend libs by necessary python libs
 PYTHON_LIBS=`$(PYTHON) $(NUMCXX_SRC)/find_python_paths.py --libs`
 
 
-# default rules
+# Default rules
 .SUFFIXES: .c .cxx .cpp
 
 .cxx.o:
@@ -71,7 +85,7 @@ PYTHON_LIBS=`$(PYTHON) $(NUMCXX_SRC)/find_python_paths.py --libs`
 	$(CXX) $(CXXFLAGS) -o $@  $< $(LINALG_LIBS)
 
 
-# figure out swig executable
+# Figure out swig executable
 ifneq ($(wildcard $(_SWIG1)),)
 SWIG=$(_SWIG1)
 endif
@@ -92,12 +106,11 @@ ifneq ($(wildcard $(_SWIG5)),)
 SWIG=$(_SWIG5)
 endif
 
-# figure out extension of shared objects
-
+# Figure out extension of shared objects
 ifneq ($(wildcard /usr/bin/cygwin*.dll),)
 SO=dll
 else
 SO=so
-CXXFLAGS:=$(CXXFLAGS) -fPIC
-CFLAGS:=$(CFLAGS) -fPIC
+CXXFLAGS:=$(CXXFLAGS) $(PICFLAGS)
+CFLAGS:=$(CFLAGS) $(PICFLAGS)
 endif
