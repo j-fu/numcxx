@@ -6,7 +6,7 @@ import argparse
 parser = argparse.ArgumentParser(description=
         """
         Python script to find libs + includes for python along with numpy.
-        Works with python2.7 + python3
+        Works with python2.7 + python3 on Linux, MacOSX and cygwin
         """
         )
 parser.add_argument('--libs',  action='store_true', default=False,    dest='libs',help='Print out python libs')
@@ -24,7 +24,7 @@ for directory in sys.path:
         break
 
 if not numpy_root:
-    raise Exception("missing numpy path")
+    raise Exception("Missing numpy path.")
 
 
 python_includes= ['-I' + sysconfig.get_python_inc(),
@@ -45,6 +45,7 @@ ldpath=sysconfig.get_config_var('LIBPL')
 
 if args.includes:
     print(  ' '.join(python_includes))
+
 if args.libs:
     print( '-L'+ldpath+' '+' '.join(python_libs))
 
