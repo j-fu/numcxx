@@ -1,10 +1,10 @@
 # This needs to be customized to point to the numcxx installation
-# on yoru system
+# on your system
 NUMCXX=../..
 
 
 ifeq ($(wildcard $(NUMCXX)/Makefile.inc),)
-NUMCXX=/net/wir	
+NUMCXX=/net/wir/numcxx
 endif
 
 
