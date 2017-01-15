@@ -1,8 +1,9 @@
 #!/usr/bin/env python
-title="Simple test for P1 finite elements"
+title="Simple test for P1 finite elements with heat source"
+
 import numcxx
 from numcxx import numcxxplot
-import numpy
+import numpy, math
 import fem2d
 import matplotlib
 from matplotlib import pyplot as plt
@@ -17,7 +18,7 @@ geom.set_points(
         [0,0],
         [1,0],
         [1,1],
-        [0,1.5],
+        [0,1],
     ])
 
 # Give initial list of boundary faces.
@@ -36,9 +37,9 @@ geom.set_bfaces(
 # These should be larger than 0
 geom.set_bfaceregions([1,2,3,4])
 
-diri=numcxx.asiarray([0,1,0,1,0])
+bcfac=numcxx.asdarray([fem2d.DirichletPenalty,fem2d.DirichletPenalty,fem2d.DirichletPenalty,fem2d.DirichletPenalty,fem2d.DirichletPenalty])
 
-dirival=numcxx.asdarray([0,10,0,0,0])
+bcval=numcxx.asdarray([0,0,0,0,0])
 
 # Give interior region points to mark
 # region
@@ -47,6 +48,7 @@ geom.set_regionpoints([[0.5,0.55]])
 # Give maximal area of triangles
 # in region corresponding to region volumes
 geom.set_regionvolumes([0.001])
+
 
 # Give region numbers for regions corresponding
 # to region point
@@ -63,17 +65,27 @@ geom.set_regionnumbers([1])
 # -D  Conforming Delaunay:  all triangles are truly Delaunay.
 grid=numcxx.SimpleGrid.create(geom,"zpaAqD")
 
+nnodes=grid.npoints()
+source=numcxx.DArray1.create(nnodes)
+kappa=numcxx.DArray1.create(nnodes)
 
+points=grid.get_points()
+for i in range(nnodes):
+    kappa[i]=1.0
+    dx=points[i][0]-0.5
+    dy=points[i][1]-0.5
+    source[i]=math.exp((dx*dx+dy*dy)/100.0)
 
-S=fem2d.assemble_heat_matrix(grid,diri)
+S=fem2d.assemble_general_heat_matrix(grid,kappa,bcfac)
 
-Rhs=fem2d.assemble_heat_rhs(grid,diri,dirival)
+Rhs=fem2d.assemble_general_heat_rhs(grid,source,bcval,bcfac)
 
 
 Solver=numcxx.DSolverUMFPACK.create(S)
 Solver.update()
 Sol=Rhs.copy()
 Solver.solve(Sol,Rhs)
+
 
 npsol=numcxx.asnumpy(Sol)
 

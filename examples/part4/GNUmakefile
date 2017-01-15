@@ -1,4 +1,7 @@
+# This needs to be customized to point to the numcxx installation
+# on yoru system
 NUMCXX=../..
+
 include $(NUMCXX)/Makefile.inc
 
 BINARIES= $(PROGRAMS) _mymodule.$(SO)

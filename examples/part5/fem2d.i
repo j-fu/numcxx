@@ -35,5 +35,21 @@ namespace fem2d
     std::shared_ptr<numcxx::DArray1> g,        // boundary ambient temperature
     std::shared_ptr<numcxx::DArray1> alpha     // boundary heat transfer coefficient (large value marks Dirichlet)
     );
+
+  void assemble_transient_heat_matrix_and_rhs(
+    std::shared_ptr<numcxx::SimpleGrid> grid,// Discretization grid
+    std::shared_ptr<numcxx::DSparseMatrix> S,
+    std::shared_ptr<numcxx::DArray1> Rhs,
+    std::shared_ptr<numcxx::DArray1> OldSol,
+    std::shared_ptr<numcxx::DArray1> f,    // heat source (per node)
+    std::shared_ptr<numcxx::DArray1> g,    // boundary ambient temperature
+    std::shared_ptr<numcxx::DArray1> kappa, // heat conduction coefficient (per node)
+    std::shared_ptr<numcxx::DArray1> alpha, // boundary heat transfer coefficient (per boundary region, value >=DirichletPenalty marks Dirichlet)
+    double tau,
+    double theta
+    );
+
+
+
 }
 

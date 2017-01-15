@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-#  Python script to test triangle mesh generator via numcxx
+title="Simple test for more general P1 FEM implementation"
 import numcxx
 from numcxx import numcxxplot
 import numpy
@@ -91,7 +91,8 @@ npsol=numcxx.asnumpy(Sol)
 
 
 triang=numcxxplot.triangulation(grid)
-plt.tricontourf(triang, npsol,20,cmap='gnuplot')
+plt.tricontourf(triang, npsol,20,cmap='plasma')
+plt.title(title)
 plt.colorbar()
 plt.tricontour(triang, npsol,20,colors="black",linestyles="solid",colorbar='none')
 
