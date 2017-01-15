@@ -2,6 +2,10 @@
 # on yoru system
 NUMCXX=../..
 
+ifeq ($(wildcard $(NUMCXX)/Makefile.inc),)
+NUMCXX=/net/wir	
+endif
+
 include $(NUMCXX)/Makefile.inc
 
 BINARIES= $(PROGRAMS) _mymodule.$(SO)
