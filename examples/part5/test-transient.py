@@ -109,7 +109,7 @@ for n in range(N):
     Solver.solve(Sol,Rhs)
     npsol=numcxx.asnumpy(Sol)
     plt.clf()
-    plt.tricontourf(triang, npsol,20,cmap='plasma')
+    plt.tricontourf(triang, npsol,20,cmap='gnuplot')
     plt.title("%s, t=%f\n"%(title,t))
     plt.colorbar()
     plt.tricontour(triang, npsol,20,colors="black",linestyles="solid",colorbar='none')

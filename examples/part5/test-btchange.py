@@ -95,7 +95,7 @@ npsol=numcxx.asnumpy(Sol)
 
 
 triang=numcxxplot.triangulation(grid)
-plt.tricontourf(triang, npsol,20,cmap='plasma')
+plt.tricontourf(triang, npsol,20,cmap='gnuplot')
 plt.title(title)
 plt.colorbar()
 plt.tricontour(triang, npsol,20,colors="black",linestyles="solid",colorbar='none')
