@@ -1,6 +1,7 @@
 NUMCXX=../..
 include $(NUMCXX)/Makefile.inc
 
+PROGRAMS=test-general-fem2d
 BINARIES= $(PROGRAMS) _fem2d.$(SO)
 all: $(BINARIES)
 

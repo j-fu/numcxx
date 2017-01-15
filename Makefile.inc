@@ -82,7 +82,7 @@ PYTHON_LIBS=`$(PYTHON) $(NUMCXX_SRC)/find_python_paths.py --libs`
 .c.o:
 	$(CC) $(CFLAGS) -c  $< -o $@
 .cxx:
-	$(CXX) $(CXXFLAGS) -o $@  $< $(LINALG_LIBS)
+	$(CXX) $(CXXFLAGS) -o $@  $< $(NUMCXX)/lib/libnumcxx.a $(LINALG_LIBS) 
 
 
 # Figure out swig executable
