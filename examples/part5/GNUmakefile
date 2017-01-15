@@ -2,6 +2,12 @@
 # on yoru system
 NUMCXX=../..
 
+
+ifeq ($(wildcard $(NUMCXX)/Makefile.inc),)
+NUMCXX=/net/wir	
+endif
+
+
 include $(NUMCXX)/Makefile.inc
 
 PROGRAMS=test-general-fem2d
