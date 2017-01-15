@@ -53,18 +53,18 @@ namespace fem2d
 
       // Compute determinant
       double det=V(0,0)*V(1,1) - V(0,1)*V(1,0);
-      double invdet = 1.0/det;
+      double invvol = 2.0/det;
 
       
       // Compute entris of local stiffness matrix
-      SLocal(0,0)= invdet * (  ( V(1,0)-V(1,1) )*( V(1,0)-V(1,1) )+( V(0,1)-V(0,0) )*( V(0,1)-V(0,0) ) );
-      SLocal(0,1)= invdet * (  ( V(1,0)-V(1,1) )* V(1,1)          - ( V(0,1)-V(0,0) )*V(0,1) );
-      SLocal(0,2)= invdet * ( -( V(1,0)-V(1,1) )* V(1,0)          + ( V(0,1)-V(0,0) )*V(0,0) );
+      SLocal(0,0)= invvol * (  ( V(1,0)-V(1,1) )*( V(1,0)-V(1,1) )+( V(0,1)-V(0,0) )*( V(0,1)-V(0,0) ) );
+      SLocal(0,1)= invvol * (  ( V(1,0)-V(1,1) )* V(1,1)          - ( V(0,1)-V(0,0) )*V(0,1) );
+      SLocal(0,2)= invvol * ( -( V(1,0)-V(1,1) )* V(1,0)          + ( V(0,1)-V(0,0) )*V(0,0) );
 
-      SLocal(1,1)=  invdet * (  V(1,1)*V(1,1) + V(0,1)*V(0,1) );
-      SLocal(1,2)=  invdet * ( -V(1,1)*V(1,0) - V(0,1)*V(0,0) );
+      SLocal(1,1)=  invvol * (  V(1,1)*V(1,1) + V(0,1)*V(0,1) );
+      SLocal(1,2)=  invvol * ( -V(1,1)*V(1,0) - V(0,1)*V(0,0) );
 
-      SLocal(2,2)=  invdet * ( V(1,0)*V(1,0)+ V(0,0)*V(0,0) );
+      SLocal(2,2)=  invvol * ( V(1,0)*V(1,0)+ V(0,0)*V(0,0) );
 
       SLocal(1,0)=SLocal(0,1);
       SLocal(2,0)=SLocal(0,2);
@@ -185,25 +185,25 @@ namespace fem2d
 
       // Compute determinant
       double det=V(0,0)*V(1,1) - V(0,1)*V(1,0);
-      double invdet = 1.0/det;
+      double invvol = 2.0/det;
 
       
       // Compute entris of local stiffness matrix
-      SLocal(0,0)= invdet * (  ( V(1,0)-V(1,1) )*( V(1,0)-V(1,1) )+( V(0,1)-V(0,0) )*( V(0,1)-V(0,0) ) );
-      SLocal(0,1)= invdet * (  ( V(1,0)-V(1,1) )* V(1,1)          - ( V(0,1)-V(0,0) )*V(0,1) );
-      SLocal(0,2)= invdet * ( -( V(1,0)-V(1,1) )* V(1,0)          + ( V(0,1)-V(0,0) )*V(0,0) );
+      SLocal(0,0)= invvol * (  ( V(1,0)-V(1,1) )*( V(1,0)-V(1,1) )+( V(0,1)-V(0,0) )*( V(0,1)-V(0,0) ) );
+      SLocal(0,1)= invvol * (  ( V(1,0)-V(1,1) )* V(1,1)          - ( V(0,1)-V(0,0) )*V(0,1) );
+      SLocal(0,2)= invvol * ( -( V(1,0)-V(1,1) )* V(1,0)          + ( V(0,1)-V(0,0) )*V(0,0) );
 
-      SLocal(1,1)=  invdet * (  V(1,1)*V(1,1) + V(0,1)*V(0,1) );
-      SLocal(1,2)=  invdet * ( -V(1,1)*V(1,0) - V(0,1)*V(0,0) );
+      SLocal(1,1)=  invvol * (  V(1,1)*V(1,1) + V(0,1)*V(0,1) );
+      SLocal(1,2)=  invvol * ( -V(1,1)*V(1,0) - V(0,1)*V(0,0) );
 
-      SLocal(2,2)=  invdet * ( V(1,0)*V(1,0)+ V(0,0)*V(0,0) );
+      SLocal(2,2)=  invvol * ( V(1,0)*V(1,0)+ V(0,0)*V(0,0) );
 
       SLocal(1,0)=SLocal(0,1);
       SLocal(2,0)=SLocal(0,2);
       SLocal(2,1)=SLocal(1,2);
       
       // Quadrature for heat transfer coefficient
-      double KLocal=(kappa(cells(icell,0))+kappa(cells(icell,1))+kappa(cells(icell,2)));
+      double KLocal=(kappa(cells(icell,0))+kappa(cells(icell,1))+kappa(cells(icell,2)))/3.0;
 
       // Assemble into global stiffness matrix
       for (int i=0;i<=ndim;i++)
@@ -336,19 +336,156 @@ namespace fem2d
     return pRhs;
   }
   
+/////////////////////////////////////////////////////////
+  void assemble_transient_heat_matrix_and_rhs(
+    numcxx::SimpleGrid &grid,// Discretization grid
+    numcxx::DSparseMatrix& S,
+    numcxx::DArray1& Rhs,
+    numcxx::DArray1& OldSol,
+    numcxx::DArray1& f,    // heat source (per node)
+    numcxx::DArray1& g,    // boundary ambient temperature
+    numcxx::DArray1& kappa, // heat conduction coefficient (per node)
+    numcxx::DArray1& alpha, // boundary heat transfer coefficient (per boundary region, value >=DirichletPenalty marks Dirichlet)
+    double tau,
+    double theta
+    )
+  {
+    auto ndim=grid.spacedim();
+    auto points=grid.get_points(); // Array of global nodes
+    auto cells=grid.get_cells();   // Local-global dof map
+    int npoints=grid.npoints();
+    int ncells=grid.ncells();
+    double tauinv=1.0/tau;
+    
+    // Local stiffness matrix
+    auto pSLocal=numcxx::DMatrix::create(ndim+1, ndim+1);
+    auto &SLocal=*pSLocal;
+    
+    // Local mass matrix
+//    auto pMLocal0=numcxx::DMatrix::create({{2,1,1},{1,2,1},{1,1,2}}); // from Stroud quadrature...
+    auto pMLocal0=numcxx::DMatrix::create({{3,0,0},{0,3,0},{0,0,3}}); // from Stroud quadrature...
+    auto &MLocal0=*pMLocal0;
+    MLocal0*=1.0/12.0;
+    
+    // Local matrix of coordinate differences
+    auto pV=numcxx::DMatrix::create(ndim, ndim);
+    auto &V=*pV;
+    
+    // Loop over all elements (cells) of the triangulation
+    Rhs=0.0;
+    S(0,0)=0;
+    S.clear();
+    for (int icell=0; icell<ncells; icell++)
+    {
+      // Fill matrix V
+      V(0,0)= points(cells(icell,1),0)- points(cells(icell,0),0);
+      V(0,1)= points(cells(icell,2),0)- points(cells(icell,0),0);
+      
+      V(1,0)= points(cells(icell,1),1)- points(cells(icell,0),1);
+      V(1,1)= points(cells(icell,2),1)- points(cells(icell,0),1);
+      
 
+      // Compute determinant
+      double det=V(0,0)*V(1,1) - V(0,1)*V(1,0);
+      double vol = 0.5*det;
+      double invvol=1.0/vol;
+      
+      // Compute entries of local stiffness matrix
+      SLocal(0,0)= invvol * (  ( V(1,0)-V(1,1) )*( V(1,0)-V(1,1) )+( V(0,1)-V(0,0) )*( V(0,1)-V(0,0) ) );
+      SLocal(0,1)= invvol * (  ( V(1,0)-V(1,1) )* V(1,1)          - ( V(0,1)-V(0,0) )*V(0,1) );
+      SLocal(0,2)= invvol * ( -( V(1,0)-V(1,1) )* V(1,0)          + ( V(0,1)-V(0,0) )*V(0,0) );
+      
+      SLocal(1,1)=  invvol * (  V(1,1)*V(1,1) + V(0,1)*V(0,1) );
+      SLocal(1,2)=  invvol * ( -V(1,1)*V(1,0) - V(0,1)*V(0,0) );
+      
+      SLocal(2,2)=  invvol * ( V(1,0)*V(1,0)+ V(0,0)*V(0,0) );
+      
+      SLocal(1,0)=SLocal(0,1);
+      SLocal(2,0)=SLocal(0,2);
+      SLocal(2,1)=SLocal(1,2);
+      
+      // Quadrature for heat transfer coefficient
+      double KLocal=(kappa(cells(icell,0))+kappa(cells(icell,1))+kappa(cells(icell,2)))/3.0;
+      
+      
+      double fac=vol/3.0;
+      int i;
+      for (int i=0;i<=ndim;i++)
+      {
+        Rhs(cells(icell,i))+= fac*f(cells(icell,i));
+        for (int j=0;j<=ndim;j++)
+        {
+          S(cells(icell,i),cells(icell,j))+=theta*KLocal*SLocal(i,j)+ tauinv*vol*MLocal0(i,j);
+          Rhs(cells(icell,j))+=((1.0-theta)*KLocal*SLocal(i,j)+ tauinv*vol*MLocal0(i,j))* OldSol(cells(icell,j));
+        }
+      }    
+    }
+
+    // Assemble boundary conditions (Dirichlet penalty method)
+    int nbfaces=grid.nbfaces();
+    auto bfaces=grid.get_bfaces();
+    auto bfaceregions=grid.get_bfaceregions();
+    
+    for (int ibface=0; ibface<nbfaces; ibface++)
+    {
+      // Obtain number of boundary condition
+      int ireg=bfaceregions(ibface);
+      
+      // Check if it is "Dirichlet"
+      if (alpha(ireg)>=DirichletPenalty)
+      {
+        // Assemble penalty values
+        int i;
+        i=bfaces(ibface,0);
+        S(i,i)+=alpha(ireg);
+        Rhs(i)+=DirichletPenalty*g(ireg);
+        
+        i=bfaces(ibface,1);
+        S(i,i)+=alpha(ireg);
+        Rhs(i)+=DirichletPenalty*g(ireg);
+        
+      }
+      else if (alpha(ireg)>0.0)
+      {
+
+        double dx= points(bfaces(ibface,1),0)-points(bfaces(ibface,0),0);
+        double dy= points(bfaces(ibface,1),1)-points(bfaces(ibface,0),1);
+        double h=sqrt(dx*dx+dy*dy);
+        // first oder quadrature, needs to be replaced by second order
+        int i0=bfaces(ibface,0);
+        int i1=bfaces(ibface,1);
+        
+        S(i0,i0)+=theta*h*alpha(ireg)/3.0;
+        S(i0,i1)+=theta*h*alpha(ireg)/6.0;
+        
+        S(i1,i0)+=theta*h*alpha(ireg)/6.0;
+        S(i1,i1)+=theta*h*alpha(ireg)/3.0;
+        
+        Rhs(i0)+=OldSol(i0)*(1.0-theta)*h*alpha(ireg)/3.0;
+        Rhs(i0)+=OldSol(i1)*(1.0-theta)*h*alpha(ireg)/6.0;
+        Rhs(i1)+=OldSol(i0)*(1.0-theta)*h*alpha(ireg)/6.0;
+        Rhs(i1)+=OldSol(i1)*(1.0-theta)*h*alpha(ireg)/3.0;
+        
+        Rhs(i0)+=0.5*h*g(ireg);
+        Rhs(i0)+=0.5*h*g(ireg);
+      }
+    }
+    S.flush();
+  }
+
+////////////////////////////////////////////////////////
 
   
   // Interfacing with python requires to work with smart pointers... 
-  inline 
-  std::shared_ptr<numcxx::DSparseMatrix> 
-  assemble_heat_matrix(
-    std::shared_ptr<numcxx::SimpleGrid> pg, 
-    std::shared_ptr<numcxx::IArray1> diri
-    )
-  {return assemble_heat_matrix(*pg,*diri);}
-  
-  inline
+    inline 
+      std::shared_ptr<numcxx::DSparseMatrix> 
+      assemble_heat_matrix(
+        std::shared_ptr<numcxx::SimpleGrid> pg, 
+        std::shared_ptr<numcxx::IArray1> diri
+        )
+    {return assemble_heat_matrix(*pg,*diri);}
+    
+    inline
   std::shared_ptr<numcxx::TArray1<double>>
   assemble_heat_rhs(std::shared_ptr<numcxx::SimpleGrid> pg, 
                     std::shared_ptr<numcxx::IArray1> diri,  
@@ -382,5 +519,25 @@ namespace fem2d
   {
     return assemble_general_heat_rhs(*grid,*f,*g,*alpha);
   }
+
+
+
+  void assemble_transient_heat_matrix_and_rhs(
+    std::shared_ptr<numcxx::SimpleGrid> grid,// Discretization grid
+    std::shared_ptr<numcxx::DSparseMatrix> S,
+    std::shared_ptr<numcxx::DArray1> Rhs,
+    std::shared_ptr<numcxx::DArray1> OldSol,
+    std::shared_ptr<numcxx::DArray1> f,    // heat source (per node)
+    std::shared_ptr<numcxx::DArray1> g,    // boundary ambient temperature
+    std::shared_ptr<numcxx::DArray1> kappa, // heat conduction coefficient (per node)
+    std::shared_ptr<numcxx::DArray1> alpha, // boundary heat transfer coefficient (per boundary region, value >=DirichletPenalty marks Dirichlet)
+    double tau,
+    double theta
+    )
+  {
+    assemble_transient_heat_matrix_and_rhs(*grid,*S,*Rhs,*OldSol,*f,*g,*kappa,*alpha,tau,theta);
+  }
+
+
 }
 #endif

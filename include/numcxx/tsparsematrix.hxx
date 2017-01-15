@@ -51,6 +51,9 @@ namespace numcxx
         /// accomodated all newly created elements.
         void  flush();
 
+
+        void  clear() {  flush(); (*pIA)=0.0;}
+
         /// Apply sparse matrix to vector
         void apply(const TArray<T> &U,TArray<T> &V ) const;
 

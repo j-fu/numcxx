@@ -85,6 +85,8 @@ PYTHON_LIBS=`$(PYTHON) $(NUMCXX_SRC)/find_python_paths.py --libs`
 	$(CXX) $(CXXFLAGS) -o $@  $< $(NUMCXX)/lib/libnumcxx.a $(LINALG_LIBS) 
 
 
+SWIG="error: swig_does_not_exist!"
+
 # Figure out swig executable
 ifneq ($(wildcard $(_SWIG1)),)
 SWIG=$(_SWIG1)
@@ -105,6 +107,8 @@ endif
 ifneq ($(wildcard $(_SWIG5)),)
 SWIG=$(_SWIG5)
 endif
+
+
 
 # Figure out extension of shared objects
 ifneq ($(wildcard /usr/bin/cygwin*.dll),)
