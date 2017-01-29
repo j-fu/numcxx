@@ -1,9 +1,9 @@
 #!/usr/bin/env python
-title="Test transient  problem"
+title="Simple test for 2D FVM implementation"
 import numcxx
 from numcxx import numcxxplot
 import numpy
-import fem2d
+import fvm2d
 import matplotlib
 from matplotlib import pyplot as plt
 
@@ -17,7 +17,7 @@ geom.set_points(
         [0,0],
         [1,0],
         [1,1],
-        [0,1],
+        [0,1.5],
     ])
 
 # Give initial list of boundary faces.
@@ -36,7 +36,7 @@ geom.set_bfaces(
 # These should be larger than 0
 geom.set_bfaceregions([1,2,3,4])
 
-bcfac=numcxx.asdarray([0,fem2d.DirichletPenalty,0,fem2d.DirichletPenalty,0])
+bcfac=numcxx.asdarray([0,fvm2d.DirichletPenalty,0,fvm2d.DirichletPenalty,0])
 
 bcval=numcxx.asdarray([0,10,0,0,0])
 
@@ -46,7 +46,7 @@ geom.set_regionpoints([[0.5,0.55]])
 
 # Give maximal area of triangles
 # in region corresponding to region volumes
-geom.set_regionvolumes([0.01])
+geom.set_regionvolumes([0.1])
 
 # Give region numbers for regions corresponding
 # to region point
@@ -62,58 +62,39 @@ geom.set_regionnumbers([1])
 # -q  Quality mesh generation.  A minimum angle may be specified.
 # -D  Conforming Delaunay:  all triangles are truly Delaunay.
 grid=numcxx.SimpleGrid.create(geom,"zpaAqD")
-triang=numcxxplot.triangulation(grid)
-
-
-T=1.0
-N=100
-tau=T/N
-theta=0.5
-
 
 nnodes=grid.npoints()
-Matrix=numcxx.DSparseMatrix.create(nnodes,nnodes);
-Solver=numcxx.DSolverUMFPACK.create(Matrix)
-
 source=numcxx.DArray1.create(nnodes)
 kappa=numcxx.DArray1.create(nnodes)
-Rhs=numcxx.DArray1.create(nnodes)
-Sol=numcxx.DArray1.create(nnodes)
-OldSol=numcxx.DArray1.create(nnodes)
-
 for i in range(nnodes):
     source[i]=0.0
-    kappa[i]=1.0e-1
-    Sol[i]=0.0
+    kappa[i]=1.0
 
-t=0.0
-for n in range(N):
-    t=t+tau
-    print("time step %d"%n)
-    for i in range(nnodes):
-        OldSol[i]=Sol[i]
+S=fvm2d.assemble_general_heat_matrix(grid,kappa,bcfac)
 
-    fem2d.assemble_transient_heat_matrix_and_rhs(
-        grid,
-        Matrix,
-        Rhs,
-        OldSol,
-        source,
-        bcval,
-        kappa,
-        bcfac,
-        tau,
-        theta)
+Rhs=fvm2d.assemble_heat_rhs(grid,bcfac,bcval)
 
-    Solver.update()
-    Solver.solve(Sol,Rhs)
-    npsol=numcxx.asnumpy(Sol)
+print(numcxx.asnumpy(Rhs))
 
-    plt.clf()
-    plt.tricontourf(triang, npsol,20,cmap='gnuplot')
-    plt.title("%s, t=%f\n"%(title,t))
-    plt.colorbar()
-    plt.tricontour(triang, npsol,20,colors="black",linestyles="solid",colorbar='none')
-    plt.pause(1.0e-10)
+Solver=numcxx.DSolverUMFPACK.create(S)
+Solver.update()
+Sol=Rhs.copy()
+Solver.solve(Sol,Rhs)
+print(numcxx.asnumpy(Sol))
+
+
+npsol=numcxx.asnumpy(Sol)
+
+# numcxxplot.plotGrid(plt,grid)
+# print("Close window to finish!");
+# plt.show()
+
+
+triang=numcxxplot.triangulation(grid)
+plt.tricontourf(triang, npsol,20,cmap='gnuplot')
+plt.title(title)
+plt.colorbar()
+plt.tricontour(triang, npsol,20,colors="black",linestyles="solid",colorbar='none')
+
 
 plt.show()

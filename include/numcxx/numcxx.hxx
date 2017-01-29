@@ -29,6 +29,11 @@ namespace numcxx
     using DPreconJacobi=TPreconJacobi<double>;
     using IArray1=TArray1<int>;
     using IArray2=TArray2<int>;
+
+  double norm1(const std::shared_ptr<DArray1> a) {return norm1(*a);}
+    double norm2(const std::shared_ptr<DArray1> a) {return norm2(*a);}
+    double normi(const std::shared_ptr<DArray1> a){return normi(*a);}
+
 }
 
 
