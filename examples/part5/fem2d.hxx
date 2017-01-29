@@ -346,8 +346,8 @@ namespace fem2d
     numcxx::DArray1& g,    // boundary ambient temperature
     numcxx::DArray1& kappa, // heat conduction coefficient (per node)
     numcxx::DArray1& alpha, // boundary heat transfer coefficient (per boundary region, value >=DirichletPenalty marks Dirichlet)
-    double tau,
-    double theta
+    double tau, // time step
+    double theta //  choice of method
     )
   {
     auto ndim=grid.spacedim();
@@ -363,7 +363,7 @@ namespace fem2d
     
     // Local mass matrix
 //    auto pMLocal0=numcxx::DMatrix::create({{2,1,1},{1,2,1},{1,1,2}}); // from Stroud quadrature...
-    auto pMLocal0=numcxx::DMatrix::create({{3,0,0},{0,3,0},{0,0,3}}); // from Stroud quadrature...
+    auto pMLocal0=numcxx::DMatrix::create({{4,0,0},{0,4,0},{0,0,4}}); // mass lumping
     auto &MLocal0=*pMLocal0;
     MLocal0*=1.0/12.0;
     

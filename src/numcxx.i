@@ -289,6 +289,11 @@ namespace numcxx
         void __setitem__(index i,double);
         bool is_matrix();
     };
+    double norm1(const std::shared_ptr<DArray1> a);
+    double norm2(const std::shared_ptr<DArray1> a);
+    double normi(const std::shared_ptr<DArray1> a);
+
+
     
     class DArray2
     {
@@ -339,7 +344,7 @@ namespace numcxx
         std::shared_ptr<IArray1>   __getitem__(int i);
         bool is_matrix();
     };
-
+    
 
     class DSolverLapackLU
     {

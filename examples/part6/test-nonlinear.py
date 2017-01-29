@@ -3,7 +3,7 @@ title="Test transient  problem"
 import numcxx
 from numcxx import numcxxplot
 import numpy
-import fem2d
+import fvm2d
 import matplotlib
 from matplotlib import pyplot as plt
 
@@ -36,7 +36,7 @@ geom.set_bfaces(
 # These should be larger than 0
 geom.set_bfaceregions([1,2,3,4])
 
-bcfac=numcxx.asdarray([0,fem2d.DirichletPenalty,0,fem2d.DirichletPenalty,0])
+bcfac=numcxx.asdarray([0,fvm2d.DirichletPenalty,0,fvm2d.DirichletPenalty,0])
 
 bcval=numcxx.asdarray([0,10,0,0,0])
 
@@ -65,55 +65,52 @@ grid=numcxx.SimpleGrid.create(geom,"zpaAqD")
 triang=numcxxplot.triangulation(grid)
 
 
-T=1.0
-N=100
-tau=T/N
-theta=0.5
-
 
 nnodes=grid.npoints()
+
+
 Matrix=numcxx.DSparseMatrix.create(nnodes,nnodes);
 Solver=numcxx.DSolverUMFPACK.create(Matrix)
-
-source=numcxx.DArray1.create(nnodes)
-kappa=numcxx.DArray1.create(nnodes)
-Rhs=numcxx.DArray1.create(nnodes)
+Res=numcxx.DArray1.create(nnodes)
+Upd=numcxx.DArray1.create(nnodes)
 Sol=numcxx.DArray1.create(nnodes)
-OldSol=numcxx.DArray1.create(nnodes)
+
 
 for i in range(nnodes):
-    source[i]=0.0
-    kappa[i]=1.0e-1
     Sol[i]=0.0
+    Res[i]=0.0
 
-t=0.0
-for n in range(N):
-    t=t+tau
-    print("time step %d"%n)
-    for i in range(nnodes):
-        OldSol[i]=Sol[i]
+fvm2d.initialize_bc(grid,Sol,bcval)
 
-    fem2d.assemble_transient_heat_matrix_and_rhs(
-        grid,
-        Matrix,
-        Rhs,
-        OldSol,
-        source,
-        bcval,
-        kappa,
-        bcfac,
-        tau,
-        theta)
 
+
+iter=0
+norm=1
+while iter<100 and norm >1.0e-13:
+    fvm2d.assemble_and_apply_nonlinear_heat(grid,Matrix, Sol, Res,bcfac,bcval)
     Solver.update()
-    Solver.solve(Sol,Rhs)
-    npsol=numcxx.asnumpy(Sol)
+    
+    Solver.solve(Upd,Res)
+    oldnorm=norm
+    norm=numcxx.norm2(Upd)
+    print("norm=%8.4e contract=%8.5e"%(norm,norm/oldnorm))
+    
+    for i in range(nnodes):
+        Sol[i]=Sol[i]-Upd[i]
+    iter=iter+1
 
-    plt.clf()
-    plt.tricontourf(triang, npsol,20,cmap='gnuplot')
-    plt.title("%s, t=%f\n"%(title,t))
-    plt.colorbar()
-    plt.tricontour(triang, npsol,20,colors="black",linestyles="solid",colorbar='none')
-    plt.pause(1.0e-10)
-
+plt.clf()
+numcxxplot.plotGrid(plt,grid)
+print("Close window to finish!");
 plt.show()
+
+npsol=numcxx.asnumpy(Sol)
+plt.tricontourf(triang, npsol,20,cmap='gnuplot')
+plt.colorbar()
+plt.tricontour(triang, npsol,20,colors="black",linestyles="solid",colorbar='none')
+plt.pause(1.0e-10)
+plt.show()
+
+    
+
+
