@@ -9,7 +9,7 @@ CXX=g++
 CC=gcc
 
 # Python executable
-PYTHON=python
+PYTHON=python3
 
 # C++ compiler flags
 CXXFLAGS=-O3  -std=c++11 
@@ -85,7 +85,7 @@ PYTHON_LIBS=`$(PYTHON) $(NUMCXX_SRC)/find_python_paths.py --libs`
 	$(CXX) $(CXXFLAGS) -o $@  $< $(NUMCXX)/lib/libnumcxx.a $(LINALG_LIBS) 
 
 
-SWIG="error: swig_does_not_exist!"
+SWIG="error:_swig_does_not_exist"
 
 # Figure out swig executable
 ifneq ($(wildcard $(_SWIG1)),)

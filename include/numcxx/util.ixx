@@ -101,4 +101,5 @@ namespace  numcxx
         t=time(&t);
         return ((double)t);
     }
+
 }
