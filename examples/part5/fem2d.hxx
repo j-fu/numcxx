@@ -362,8 +362,8 @@ namespace fem2d
     auto &SLocal=*pSLocal;
     
     // Local mass matrix
-//    auto pMLocal0=numcxx::DMatrix::create({{2,1,1},{1,2,1},{1,1,2}}); // from Stroud quadrature...
-    auto pMLocal0=numcxx::DMatrix::create({{4,0,0},{0,4,0},{0,0,4}}); // mass lumping
+    auto pMLocal0=numcxx::DMatrix::create({{2,1,1},{1,2,1},{1,1,2}}); // from Stroud quadrature...
+//    auto pMLocal0=numcxx::DMatrix::create({{4,0,0},{0,4,0},{0,0,4}}); // mass lumping
     auto &MLocal0=*pMLocal0;
     MLocal0*=1.0/12.0;
     

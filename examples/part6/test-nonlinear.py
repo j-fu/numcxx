@@ -62,6 +62,9 @@ geom.set_regionnumbers([1])
 # -q  Quality mesh generation.  A minimum angle may be specified.
 # -D  Conforming Delaunay:  all triangles are truly Delaunay.
 grid=numcxx.SimpleGrid.create(geom,"zpaAqD")
+numcxxplot.plotGrid(plt,grid)
+print("Close window to finish!");
+plt.show()
 triang=numcxxplot.triangulation(grid)
 
 
@@ -100,10 +103,6 @@ while iter<100 and norm >1.0e-13:
     iter=iter+1
 
 plt.clf()
-numcxxplot.plotGrid(plt,grid)
-print("Close window to finish!");
-plt.show()
-
 npsol=numcxx.asnumpy(Sol)
 plt.tricontourf(triang, npsol,20,cmap='gnuplot')
 plt.colorbar()

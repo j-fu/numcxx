@@ -72,7 +72,7 @@ for i in range(nnodes):
 
 S=fvm2d.assemble_general_heat_matrix(grid,kappa,bcfac)
 
-Rhs=fvm2d.assemble_heat_rhs(grid,bcfac,bcval)
+Rhs=fvm2d.assemble_heat_rhs_zero(grid,bcfac,bcval)
 
 print(numcxx.asnumpy(Rhs))
 
