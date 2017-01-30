@@ -28,7 +28,7 @@ namespace fvm2d
 
   // Assemble zero right hand side for mixed Dirichlet/Homogeneus Neumann problem
   std::shared_ptr<numcxx::DArray1>
-  assemble_heat_rhs(
+  assemble_heat_rhs_zero(
     std::shared_ptr<numcxx::SimpleGrid> grid,  // Discretization grid
     std::shared_ptr<numcxx::DArray1> alpha,     // boundary heat transfer coefficient (large value marks Dirichlet)
     std::shared_ptr<numcxx::DArray1> g     // boundary temperature

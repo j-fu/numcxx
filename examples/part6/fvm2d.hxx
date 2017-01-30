@@ -68,16 +68,19 @@ namespace fvm2d
       double det=V(0,0)*V(1,1) - V(0,1)*V(1,0);
       double ivol = 2.0/det;
 
+      // squares of edge lengths
       dd(0)=V(0,2)*V(0,2)+V(1,2)*V(1,2); // l21
       dd(1)=V(0,1)*V(0,1)+V(1,1)*V(1,1); // l20
       dd(2)=V(0,0)*V(0,0)+V(1,0)*V(1,0); // l10
 
-
+      
+      // contributions to \sigma_kl/h_kl
       epar(0)= (dd(1)+dd(2)-dd(0))*0.125*ivol;
       epar(1)= (dd(2)+dd(0)-dd(1))*0.125*ivol;
       epar(2)= (dd(0)+dd(1)-dd(2))*0.125*ivol;
 
 
+      // contributions to \omega_k
       npar(0)= (epar(2)*dd(2)+epar(1)*dd(1))*0.25;
       npar(1)= (epar(0)*dd(0)+epar(2)*dd(2))*0.25;
       npar(2)= (epar(1)*dd(1)+epar(0)*dd(0))*0.25;
@@ -86,12 +89,12 @@ namespace fvm2d
       int k1=cells(icell,1);
       int k2=cells(icell,2);
 
-      
+      // Assemble fluxes with edge averaged diffusion
+      // coefficients into global matrix
       SGlobal(k0,k0)+=epar(2)*0.5*(kappa(k0)+kappa(k1));
       SGlobal(k0,k1)-=epar(2)*0.5*(kappa(k0)+kappa(k1));
       SGlobal(k1,k0)-=epar(2)*0.5*(kappa(k0)+kappa(k1));
       SGlobal(k1,k1)+=epar(2)*0.5*(kappa(k0)+kappa(k1));
-
 
       SGlobal(k0,k0)+=epar(1)*0.5*(kappa(k0)+kappa(k2));
       SGlobal(k0,k2)-=epar(1)*0.5*(kappa(k0)+kappa(k2));
@@ -146,7 +149,7 @@ namespace fvm2d
 
   // Assemble zero right hand side for mixed Dirichlet/Homogeneus Neumann problem
   std::shared_ptr<numcxx::TArray1<double>>
-  assemble_heat_rhs(
+  assemble_heat_rhs_zero(
     numcxx::SimpleGrid &g,       // Discretization grid
     numcxx::DArray1& alpha, // boundary heat transfer coefficient (per boundary region, value >=DirichletPenalty marks Dirichlet)
     numcxx::DArray1 &bcval       // Dirichlet boundary values
@@ -278,7 +281,7 @@ namespace fvm2d
       double kappa0=kappa(Sol(k0));
       double kappa1=kappa(Sol(k1));
       double kappa2=kappa(Sol(k2));
-      
+
       double dkappa0=dkappa(Sol(k0));
       double dkappa1=dkappa(Sol(k1));
       double dkappa2=dkappa(Sol(k2));
@@ -383,13 +386,13 @@ namespace fvm2d
 
   // Assemble zero right hand side for mixed Dirichlet/Homogeneus Neumann problem
   std::shared_ptr<numcxx::DArray1>
-  assemble_heat_rhs(
+  assemble_heat_rhs_zero(
     std::shared_ptr<numcxx::SimpleGrid> grid,  // Discretization grid
     std::shared_ptr<numcxx::DArray1> alpha,     // boundary heat transfer coefficient (large value marks Dirichlet)
     std::shared_ptr<numcxx::DArray1> g        // boundary ambient temperature
     )
   {
-    return assemble_heat_rhs(*grid,*alpha,*g);
+    return assemble_heat_rhs_zero(*grid,*alpha,*g);
   }
 
 
