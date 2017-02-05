@@ -37,7 +37,7 @@ geom.set_bfaces(
 # These should be larger than 0
 geom.set_bfaceregions([1,2,3,4])
 
-bcfac=numcxx.asdarray([fem2d.DirichletPenalty,fem2d.DirichletPenalty,fem2d.DirichletPenalty,fem2d.DirichletPenalty,fem2d.DirichletPenalty])
+bcfac=numcxx.asdarray([fem2d.Dirichlet,fem2d.Dirichlet,fem2d.Dirichlet,fem2d.Dirichlet,fem2d.Dirichlet])
 
 bcval=numcxx.asdarray([0,0,0,0,0])
 
@@ -76,9 +76,10 @@ for i in range(nnodes):
     dy=points[i][1]-0.5
     source[i]=math.exp((dx*dx+dy*dy)/100.0)
 
-S=fem2d.assemble_general_heat_matrix(grid,kappa,bcfac)
-
-Rhs=fem2d.assemble_general_heat_rhs(grid,source,bcval,bcfac)
+S=numcxx.DSparseMatrix.create(nnodes,nnodes);
+Rhs=numcxx.DArray1.create(nnodes);
+    
+fem2d.assemble_heat_problem_with_source(grid,bcfac,bcval,source,kappa,S, Rhs);
 
 
 Solver=numcxx.DSolverUMFPACK.create(S)

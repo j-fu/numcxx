@@ -36,9 +36,9 @@ geom.set_bfaces(
 # These should be larger than 0
 geom.set_bfaceregions([1,2,3,4])
 
-diri=numcxx.asiarray([0,1,0,1,0])
+bcfac=numcxx.asdarray([0,fem2d.Dirichlet,0,fem2d.Dirichlet,0])
 
-dirival=numcxx.asdarray([0,10,0,0,0])
+bcval=numcxx.asdarray([0,10,0,0,0])
 
 # Give interior region points to mark
 # region
@@ -62,15 +62,14 @@ geom.set_regionnumbers([1])
 # -q  Quality mesh generation.  A minimum angle may be specified.
 # -D  Conforming Delaunay:  all triangles are truly Delaunay.
 grid=numcxx.SimpleGrid.create(geom,"zpaAqD")
+nnodes=grid.npoints()
 
 
-
-S=fem2d.assemble_heat_matrix(grid,diri)
-
-Rhs=fem2d.assemble_heat_rhs(grid,diri,dirival)
-
-
-Solver=numcxx.DSolverUMFPACK.create(S)
+Rhs=numcxx.DArray1.create(nnodes)
+Sol=numcxx.DArray1.create(nnodes)
+Matrix=numcxx.DSparseMatrix.create(nnodes,nnodes);
+Solver=numcxx.DSolverUMFPACK.create(Matrix)
+fem2d.assemble_simple_heat_problem(grid,bcfac,bcval,Matrix,Rhs)
 Solver.update()
 Sol=Rhs.copy()
 Solver.solve(Sol,Rhs)

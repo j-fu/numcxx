@@ -36,7 +36,7 @@ geom.set_bfaces(
 # These should be larger than 0
 geom.set_bfaceregions([1,2,3,4])
 
-bcfac=numcxx.asdarray([0,fem2d.DirichletPenalty,0,fem2d.DirichletPenalty,0])
+bcfac=numcxx.asdarray([0,fem2d.Dirichlet,0,fem2d.Dirichlet,0])
 
 bcval=numcxx.asdarray([0,10,0,0,0])
 
@@ -46,7 +46,7 @@ geom.set_regionpoints([[0.5,0.55]])
 
 # Give maximal area of triangles
 # in region corresponding to region volumes
-geom.set_regionvolumes([0.1])
+geom.set_regionvolumes([0.01])
 
 # Give region numbers for regions corresponding
 # to region point
@@ -70,9 +70,11 @@ for i in range(nnodes):
     source[i]=0.0
     kappa[i]=1.0
 
-S=fem2d.assemble_general_heat_matrix(grid,kappa,bcfac)
+S=numcxx.DSparseMatrix.create(nnodes,nnodes);
+Rhs=numcxx.DArray1.create(nnodes);
+    
+fem2d.assemble_heat_problem_with_source(grid,bcfac,bcval,source,kappa,S, Rhs);
 
-Rhs=fem2d.assemble_general_heat_rhs(grid,source,bcval,bcfac)
 
 print(numcxx.asnumpy(Rhs))
 

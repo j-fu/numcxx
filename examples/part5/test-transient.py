@@ -36,7 +36,7 @@ geom.set_bfaces(
 # These should be larger than 0
 geom.set_bfaceregions([1,2,3,4])
 
-bcfac=numcxx.asdarray([0,fem2d.DirichletPenalty,0,fem2d.DirichletPenalty,0])
+bcfac=numcxx.asdarray([0,fem2d.Dirichlet,0,fem2d.Dirichlet,0])
 
 bcval=numcxx.asdarray([0,10,0,0,0])
 
@@ -46,7 +46,7 @@ geom.set_regionpoints([[0.5,0.55]])
 
 # Give maximal area of triangles
 # in region corresponding to region volumes
-geom.set_regionvolumes([0.01])
+geom.set_regionvolumes([0.0001])
 
 # Give region numbers for regions corresponding
 # to region point
@@ -61,14 +61,17 @@ geom.set_regionnumbers([1])
 # -A  Applies attributes to identify triangles in certain regions.
 # -q  Quality mesh generation.  A minimum angle may be specified.
 # -D  Conforming Delaunay:  all triangles are truly Delaunay.
-grid=numcxx.SimpleGrid.create(geom,"zpaAqD")
-triang=numcxxplot.triangulation(grid)
 
 
 T=1.0
 N=100
 tau=T/N
 theta=0.5
+lump=True
+geom.set_regionvolumes([0.01])
+
+grid=numcxx.SimpleGrid.create(geom,"zpaAqD")
+triang=numcxxplot.triangulation(grid)
 
 
 nnodes=grid.npoints()
@@ -93,17 +96,20 @@ for n in range(N):
     for i in range(nnodes):
         OldSol[i]=Sol[i]
 
+
+
     fem2d.assemble_transient_heat_matrix_and_rhs(
         grid,
-        Matrix,
-        Rhs,
-        OldSol,
-        source,
-        bcval,
-        kappa,
         bcfac,
+        bcval,
+        source,
+        kappa,
         tau,
-        theta)
+        theta,
+        lump,
+        OldSol,
+        Matrix,
+        Rhs)
 
     Solver.update()
     Solver.solve(Sol,Rhs)

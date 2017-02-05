@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-title="Consequences of change on bc type"
+title="Consequences of change of bc type"
 
 import numcxx
 from numcxx import numcxxplot
@@ -39,7 +39,7 @@ geom.set_bfaces(
 # These should be larger than 0
 geom.set_bfaceregions([1,2,3,4,5])
 
-bcfac=numcxx.asdarray([0,fem2d.DirichletPenalty,0,fem2d.DirichletPenalty,0,0])
+bcfac=numcxx.asdarray([0,fem2d.Dirichlet,0,fem2d.Dirichlet,0,0])
 
 bcval=numcxx.asdarray([0,1,0,0,0,0])
 
@@ -76,9 +76,10 @@ for i in range(nnodes):
     kappa[i]=1.0
     source[i]=0.0
 
-S=fem2d.assemble_general_heat_matrix(grid,kappa,bcfac)
-
-Rhs=fem2d.assemble_general_heat_rhs(grid,source,bcval,bcfac)
+S=numcxx.DSparseMatrix.create(nnodes,nnodes);
+Rhs=numcxx.DArray1.create(nnodes);
+    
+fem2d.assemble_heat_problem_with_source(grid,bcfac,bcval,source,kappa,S, Rhs);
 
 
 Solver=numcxx.DSolverUMFPACK.create(S)
