@@ -36,7 +36,7 @@ geom.set_bfaces(
 # These should be larger than 0
 geom.set_bfaceregions([1,2,3,4])
 
-bcfac=numcxx.asdarray([0,fem2d.DirichletPenalty,fem2d.DirichletPenalty,fem2d.DirichletPenalty,fem2d.DirichletPenalty])
+bcfac=numcxx.asdarray([0,fem2d.Dirichlet,fem2d.Dirichlet,fem2d.Dirichlet,fem2d.Dirichlet])
 
 bcval=numcxx.asdarray([0,0,0,0,0])
 
@@ -103,15 +103,16 @@ for n in range(10*N):
 
     fem2d.assemble_transient_heat_matrix_and_rhs(
         grid,
-        Matrix,
-        Rhs,
-        OldSol,
-        source,
-        bcval,
-        kappa,
         bcfac,
+        bcval,
+        source,
+        kappa,
         tau,
-        theta)
+        theta,
+        True,
+        OldSol,
+        Matrix,
+        Rhs)
 
     Solver.update()
     Solver.solve(Sol,Rhs)

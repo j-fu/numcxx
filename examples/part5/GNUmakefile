@@ -15,6 +15,8 @@ BINARIES= $(PROGRAMS) _fem2d.$(SO)
 all: $(BINARIES)
 
 
+test-general-fem2d: fem2d.hxx
+
 swigwrap_fem2d.cxx: fem2d.i $(NUMCXX_HEADERS)
 	$(SWIG)  -c++ -python  -o swigwrap_fem2d.cxx fem2d.i
 

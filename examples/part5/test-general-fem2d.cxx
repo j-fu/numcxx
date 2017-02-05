@@ -22,7 +22,7 @@ int main(void)
         });
     geom->set_bfaceregions({1,2,3,4});
 
-    auto bcfac=numcxx::DArray1::create({0,fem2d::DirichletPenalty,0,fem2d::DirichletPenalty,0});
+    auto bcfac=numcxx::DArray1::create({0,fem2d::Dirichlet,0,fem2d::Dirichlet,0});
     auto bcval=numcxx::DArray1::create({0,10,0,0,0});
 
     geom->set_regionpoints({{0.5,0.55}});
@@ -39,9 +39,10 @@ int main(void)
     *source=0.0;
     *kappa=1.0;
 
-    auto S=fem2d::assemble_general_heat_matrix(grid,kappa,bcfac);
+    auto S=numcxx::DSparseMatrix::create(nnodes,nnodes);
+    auto Rhs=numcxx::DArray1::create(nnodes);
     
-    auto Rhs=fem2d::assemble_general_heat_rhs(grid,source,bcval,bcfac);
+    fem2d::assemble_heat_problem_with_source(grid,bcfac,bcval,source,kappa,S, Rhs);
     auto Solver=numcxx::DSolverUMFPACK::create(S);
 
     Solver->update();

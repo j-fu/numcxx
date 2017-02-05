@@ -15,40 +15,49 @@
 /* These are the actual declarations to be wrapped */
 namespace fem2d
 {
-    inline std::shared_ptr<numcxx::DSparseMatrix> assemble_heat_matrix(std::shared_ptr<numcxx::SimpleGrid> g, std::shared_ptr<numcxx::IArray1> diri);
-    inline std::shared_ptr<numcxx::DArray1> assemble_heat_rhs(std::shared_ptr<numcxx::SimpleGrid> g, std::shared_ptr<numcxx::IArray1> diri, std::shared_ptr<numcxx::DArray1> bcval);
 
-  inline std::shared_ptr<numcxx::DSparseMatrix> 
-  assemble_general_heat_matrix(
-    std::shared_ptr<numcxx::SimpleGrid> grid,  // Discretization grid
-    std::shared_ptr<numcxx::DArray1> kappa, // heat conduction coefficient (per node)
-    std::shared_ptr<numcxx::DArray1> alpha // boundary heat transfer coefficient (per boundary region, value >=DirichletPenalty marks Dirichlet)
+  const double Dirichlet=1.0e30;
+
+  inline void
+  assemble_simple_heat_problem(
+    std::shared_ptr<numcxx::SimpleGrid> &pGrid,
+    std::shared_ptr<numcxx::DArray1> pBCfac,
+    std::shared_ptr<numcxx::DArray1> pBCval,
+    std::shared_ptr<numcxx::DSparseMatrix>&pS,
+    std::shared_ptr<numcxx::DArray1> &pRhs
     );
 
-  const double DirichletPenalty=1.0e30;
-
-  // Assemble zero right hand side for mixed Dirichlet/Homogeneus Neumann problem
-  std::shared_ptr<numcxx::DArray1>
-  assemble_general_heat_rhs(
-    std::shared_ptr<numcxx::SimpleGrid> grid,  // Discretization grid
-    std::shared_ptr<numcxx::DArray1> f,        // heat source (per node)
-    std::shared_ptr<numcxx::DArray1> g,        // boundary ambient temperature
-    std::shared_ptr<numcxx::DArray1> alpha     // boundary heat transfer coefficient (large value marks Dirichlet)
+  inline void
+  assemble_heat_problem_with_source(
+    std::shared_ptr<numcxx::SimpleGrid> &pGrid,
+    std::shared_ptr<numcxx::DArray1> pBCfac,
+    std::shared_ptr<numcxx::DArray1> pBCval,
+    std::shared_ptr<numcxx::DArray1> pSource,
+    std::shared_ptr<numcxx::DArray1> pKappa,
+    std::shared_ptr<numcxx::DSparseMatrix>&pS,
+    std::shared_ptr<numcxx::DArray1> &pRhs
     );
 
   void assemble_transient_heat_matrix_and_rhs(
-    std::shared_ptr<numcxx::SimpleGrid> grid,// Discretization grid
-    std::shared_ptr<numcxx::DSparseMatrix> S,
-    std::shared_ptr<numcxx::DArray1> Rhs,
-    std::shared_ptr<numcxx::DArray1> OldSol,
-    std::shared_ptr<numcxx::DArray1> f,    // heat source (per node)
-    std::shared_ptr<numcxx::DArray1> g,    // boundary ambient temperature
-    std::shared_ptr<numcxx::DArray1> kappa, // heat conduction coefficient (per node)
-    std::shared_ptr<numcxx::DArray1> alpha, // boundary heat transfer coefficient (per boundary region, value >=DirichletPenalty marks Dirichlet)
-    double tau,
-    double theta
+    std::shared_ptr<numcxx::SimpleGrid> &pGrid,
+    std::shared_ptr<numcxx::DArray1> pBCfac,
+    std::shared_ptr<numcxx::DArray1> pBCval,
+    std::shared_ptr<numcxx::DArray1> pSource,
+    std::shared_ptr<numcxx::DArray1> pKappa,
+    double tau, // time step
+    double theta, //  choice of method
+      bool lump,
+    std::shared_ptr<numcxx::DArray1> pOldSol,
+    std::shared_ptr<numcxx::DSparseMatrix>&pS,
+    std::shared_ptr<numcxx::DArray1> &pRhs
     );
 
+
+  double l2norm(std::shared_ptr<numcxx::SimpleGrid> pgrid, 
+                std::shared_ptr<numcxx::DArray1> pu);
+
+  double h1norm(std::shared_ptr<numcxx::SimpleGrid> pgrid, 
+                std::shared_ptr<numcxx::DArray1> pu);
 
 
 }
