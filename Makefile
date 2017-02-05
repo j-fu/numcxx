@@ -9,6 +9,9 @@ default: build
 	-cd examples/part2; $(MAKE)
 	-cd examples/part3; $(MAKE)
 	-cd examples/part4; $(MAKE)
+	-cd examples/part5; $(MAKE)
+	-cd examples/part6; $(MAKE)
+	-cd examples/part7; $(MAKE)
 
 build:
 	-cd src; $(MAKE) 
@@ -35,6 +38,9 @@ clean:
 	-cd examples/part2; $(MAKE) clean
 	-cd examples/part3; $(MAKE) clean
 	-cd examples/part4; $(MAKE) clean
+	-cd examples/part5; $(MAKE) clean
+	-cd examples/part6; $(MAKE) clean
+	-cd examples/part7; $(MAKE) clean
  
 
 test:
