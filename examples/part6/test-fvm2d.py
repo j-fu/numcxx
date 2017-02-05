@@ -17,7 +17,7 @@ geom.set_points(
         [0,0],
         [1,0],
         [1,1],
-        [0,1.5],
+        [0,1],
     ])
 
 # Give initial list of boundary faces.
@@ -36,7 +36,7 @@ geom.set_bfaces(
 # These should be larger than 0
 geom.set_bfaceregions([1,2,3,4])
 
-bcfac=numcxx.asdarray([0,fvm2d.DirichletPenalty,0,fvm2d.DirichletPenalty,0])
+bcfac=numcxx.asdarray([0,fvm2d.Dirichlet,0,fvm2d.Dirichlet,0])
 
 bcval=numcxx.asdarray([0,10,0,0,0])
 
@@ -46,7 +46,7 @@ geom.set_regionpoints([[0.5,0.55]])
 
 # Give maximal area of triangles
 # in region corresponding to region volumes
-geom.set_regionvolumes([0.1])
+geom.set_regionvolumes([0.001])
 
 # Give region numbers for regions corresponding
 # to region point
@@ -70,28 +70,28 @@ for i in range(nnodes):
     source[i]=0.0
     kappa[i]=1.0
 
-S=fvm2d.assemble_general_heat_matrix(grid,kappa,bcfac)
+nnodes=grid.npoints()
 
-Rhs=fvm2d.assemble_heat_rhs_zero(grid,bcfac,bcval)
 
-print(numcxx.asnumpy(Rhs))
+Rhs=numcxx.DArray1.create(nnodes)
+Sol=numcxx.DArray1.create(nnodes)
+Matrix=numcxx.DSparseMatrix.create(nnodes,nnodes);
 
-Solver=numcxx.DSolverUMFPACK.create(S)
+fvm2d.assemble_heat_problem_with_source(grid,bcfac,bcval,source,kappa,Matrix, Rhs);
+
+
+Solver=numcxx.DSolverUMFPACK.create(Matrix)
 Solver.update()
-Sol=Rhs.copy()
 Solver.solve(Sol,Rhs)
-print(numcxx.asnumpy(Sol))
+
 
 
 npsol=numcxx.asnumpy(Sol)
 
-# numcxxplot.plotGrid(plt,grid)
-# print("Close window to finish!");
-# plt.show()
 
 
 triang=numcxxplot.triangulation(grid)
-plt.tricontourf(triang, npsol,20,cmap='gnuplot')
+plt.tricontourf(triang, npsol,20,cmap='plasma')
 plt.title(title)
 plt.colorbar()
 plt.tricontour(triang, npsol,20,colors="black",linestyles="solid",colorbar='none')

@@ -36,7 +36,7 @@ geom.set_bfaces(
 # These should be larger than 0
 geom.set_bfaceregions([1,2,3,4])
 
-bcfac=numcxx.asdarray([0,fvm2d.DirichletPenalty,0,fvm2d.DirichletPenalty,0])
+bcfac=numcxx.asdarray([0,fvm2d.Dirichlet,0,fvm2d.Dirichlet,0])
 
 bcval=numcxx.asdarray([0,10,0,0,0])
 
@@ -46,7 +46,7 @@ geom.set_regionpoints([[0.5,0.55]])
 
 # Give maximal area of triangles
 # in region corresponding to region volumes
-geom.set_regionvolumes([0.01])
+geom.set_regionvolumes([0.001])
 
 # Give region numbers for regions corresponding
 # to region point
@@ -62,9 +62,9 @@ geom.set_regionnumbers([1])
 # -q  Quality mesh generation.  A minimum angle may be specified.
 # -D  Conforming Delaunay:  all triangles are truly Delaunay.
 grid=numcxx.SimpleGrid.create(geom,"zpaAqD")
-numcxxplot.plotGrid(plt,grid)
-print("Close window to finish!");
-plt.show()
+#numcxxplot.plotGrid(plt,grid)
+#print("Close window to finish!");
+#plt.show()
 triang=numcxxplot.triangulation(grid)
 
 
@@ -83,24 +83,27 @@ for i in range(nnodes):
     Sol[i]=0.0
     Res[i]=0.0
 
-fvm2d.initialize_bc(grid,Sol,bcval)
+fvm2d.initialize_bc(grid,bcval,Sol)
 
 
 
 iter=0
 norm=1
+d=0.1
+ddelta=1.2
 while iter<100 and norm >1.0e-13:
-    fvm2d.assemble_and_apply_nonlinear_heat(grid,Matrix, Sol, Res,bcfac,bcval)
+    fvm2d.assemble_and_apply_nonlinear_heat(grid,bcfac,bcval, Sol, Matrix,  Res)
     Solver.update()
     
     Solver.solve(Upd,Res)
     oldnorm=norm
     norm=numcxx.norm2(Upd)
-    print("norm=%8.4e contract=%8.5e"%(norm,norm/oldnorm))
+    print("iter=%d norm=%8.4e contract=%8.5e"%(iter,norm,norm/oldnorm))
     
     for i in range(nnodes):
-        Sol[i]=Sol[i]-Upd[i]
+        Sol[i]=Sol[i]-d*Upd[i]
     iter=iter+1
+    d= min(1, d*ddelta)
 
 plt.clf()
 npsol=numcxx.asnumpy(Sol)
