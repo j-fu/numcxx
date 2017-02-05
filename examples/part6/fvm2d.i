@@ -15,39 +15,32 @@
 /* These are the actual declarations to be wrapped */
 namespace fvm2d
 {
+      const double Dirichlet=1.0e30;
       
-
-  inline std::shared_ptr<numcxx::DSparseMatrix> 
-  assemble_general_heat_matrix(
-    std::shared_ptr<numcxx::SimpleGrid> grid,  // Discretization grid
-    std::shared_ptr<numcxx::DArray1> kappa, // heat conduction coefficient (per node)
-    std::shared_ptr<numcxx::DArray1> alpha // boundary heat transfer coefficient (per boundary region, value >=DirichletPenalty marks Dirichlet)
+  inline void
+  assemble_heat_problem_with_source(
+    std::shared_ptr<numcxx::SimpleGrid> &pGrid,
+    std::shared_ptr<numcxx::DArray1> pBCfac,
+    std::shared_ptr<numcxx::DArray1> pBCval,
+    std::shared_ptr<numcxx::DArray1> pSource,
+    std::shared_ptr<numcxx::DArray1> pKappa,
+    std::shared_ptr<numcxx::DSparseMatrix>&pS,
+    std::shared_ptr<numcxx::DArray1> &pRhs
     );
-
-  const double DirichletPenalty=1.0e30;
-
-  // Assemble zero right hand side for mixed Dirichlet/Homogeneus Neumann problem
-  std::shared_ptr<numcxx::DArray1>
-  assemble_heat_rhs_zero(
-    std::shared_ptr<numcxx::SimpleGrid> grid,  // Discretization grid
-    std::shared_ptr<numcxx::DArray1> alpha,     // boundary heat transfer coefficient (large value marks Dirichlet)
-    std::shared_ptr<numcxx::DArray1> g     // boundary temperature
-    );
-
 
   void assemble_and_apply_nonlinear_heat(
-    std::shared_ptr<numcxx::SimpleGrid >grid,// Discretization grid
-    std::shared_ptr<numcxx::DSparseMatrix> S,
-    std::shared_ptr<numcxx::DArray1> Sol,
-    std::shared_ptr<numcxx::DArray1> Rhs,
-    std::shared_ptr<numcxx::DArray1> alpha,
-    std::shared_ptr<numcxx::DArray1> g
+    std::shared_ptr<numcxx::SimpleGrid >pGrid,// Discretization grid
+    std::shared_ptr<numcxx::DArray1> pBCfac,
+    std::shared_ptr<numcxx::DArray1> pBCval,
+    std::shared_ptr<numcxx::DArray1> pSol,
+    std::shared_ptr<numcxx::DSparseMatrix> pS,
+    std::shared_ptr<numcxx::DArray1> pRhs
     );
 
   void initialize_bc(
     std::shared_ptr<numcxx::SimpleGrid >grid,// Discretization grid
-    std::shared_ptr<numcxx::DArray1> Sol,
-    std::shared_ptr<numcxx::DArray1> g
+    std::shared_ptr<numcxx::DArray1> bcval,
+    std::shared_ptr<numcxx::DArray1> Sol
     );
 
 }

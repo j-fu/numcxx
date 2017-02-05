@@ -131,7 +131,7 @@ plt.loglog(norms[:,1],0.25*ohh,'m:',linewidth=3,label='$0.25h^2$')
 plt.ylabel('error norm')
 plt.xlabel('h')
 
-plt.legend(loc='upper left')
+plt.legend(loc='lower right')
 plt.draw()
 plt.savefig("test-fem2d-convergence-h.pdf")
 

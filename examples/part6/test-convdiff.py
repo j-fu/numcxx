@@ -6,10 +6,10 @@ import numcxx
 import convdiff
 
 
-for N in [20,40,80]:
+for N in [1000]:
 
-    D=0.01
-    V=1
+    D=1
+    V=1.0e3
 
     X=numpy.linspace(0,1,N)
 
@@ -26,8 +26,9 @@ for N in [20,40,80]:
     pyplot.plot(X,Ucnt,label='central')
     pyplot.plot(X,Uupw,label='upwind')
     pyplot.legend(loc='upper left')
-    pyplot.draw()
-    pyplot.savefig("convdiff-%d.pdf"%N)
+    pyplot.show()
+    # pyplot.draw()
+    # pyplot.savefig("convdiff-%d.pdf"%N)
 
 
 
