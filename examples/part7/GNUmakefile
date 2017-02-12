@@ -13,6 +13,8 @@ include $(NUMCXX)/Makefile.inc
 CXXFLAGS:=$(CXXFLAGS) -fopenmp -pthread
 CFLAGS:=$(CFLAGS) -pthread
 
+
+
 PROGRAMS=\
 	pthreads\
 	cpp11threads\
@@ -21,7 +23,19 @@ PROGRAMS=\
 	cppomp-critical\
 	omp-scalpro-wrong\
 	omp-scalpro-critical\
-	omp-scalpro-reduction
+	omp-scalpro-reduction\
+	mpi-sum\
+	mpi-hello
+
+#
+# Special targets for mpi parallel stuff
+# 
+
+mpi-hello:	mpi-hello.cxx
+	mpic++ -std=c++11 -O3 $< -o $@
+
+mpi-sum:	mpi-sum.cxx
+	mpic++ -std=c++11 -O3 $< -o $@
 
 
 BINARIES= $(PROGRAMS) 
