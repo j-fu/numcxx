@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-title="Simple test for P1 finite elements with heat source"
+title="Convergence test for P1 finite elements with heat source"
 
 import numcxx
 from numcxx import numcxxplot
