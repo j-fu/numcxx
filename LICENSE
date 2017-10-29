@@ -1,4 +1,7 @@
-Copyright (c) 2016 Jürgen Fuhrmann, Weierstrass Institute Berlin
+----------------------------------------------------------------------
+License text for all parts of numcxx besides triangle and netlib
+
+Copyright (c) 2016,2017 Jürgen Fuhrmann, Weierstrass Institute Berlin
 
 Permission is hereby granted, free  of charge, to any person obtaining
 a  copy  of this  software  and  associated documentation  files  (the
@@ -18,3 +21,40 @@ NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
 LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING  FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+----------------------------------------------------------------------
+
+
+----------------------------------------------------------------------
+License text for triangle
+
+Copyright 1993, 1995, 1997, 1998, 2002, 2005 Jonathan Richard Shewchuk
+2360 Woolsey #H
+Berkeley, California  94705-1927
+
+These programs may be freely redistributed under the condition that the
+copyright notices (including the copy of this notice in the code comments
+and the copyright notice printed when the `-h' switch is selected) are
+not removed, and no compensation is received.  Private, research, and
+institutional use is free.  You may distribute modified versions of this
+code UNDER THE CONDITION THAT THIS CODE AND ANY MODIFICATIONS MADE TO IT
+IN THE SAME FILE REMAIN UNDER COPYRIGHT OF THE ORIGINAL AUTHOR, BOTH
+SOURCE AND OBJECT CODE ARE MADE FREELY AVAILABLE WITHOUT CHARGE, AND
+CLEAR NOTICE IS GIVEN OF THE MODIFICATIONS.  Distribution of this code as
+part of a commercial system is permissible ONLY BY DIRECT ARRANGEMENT
+WITH THE AUTHOR.  (If you are not directly supplying this code to a
+customer, and you are instead telling them how they can obtain it for
+free, then you are not required to make any arrangement with me.)
+----------------------------------------------------------------------
+
+
+----------------------------------------------------------------------
+License remark for the codes in the netlib directory. 
+
+These have obtained from  http://www.netlib.org/templates/ As for most
+codes in  netlib, no license information  is given for them,  and they
+are  considered to  be in  the public  domain, at  least this  was the
+intention of the creators of netlib, see e.g.
+
+http://www.netlib.org/utk/people/JackDongarra/PAPERS/netlib-history6.pdf
+----------------------------------------------------------------------
+
