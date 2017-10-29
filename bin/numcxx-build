@@ -1,0 +1,125 @@
+#!/bin/sh
+
+help()
+{
+cat <<EOF
+USAGE:
+
+numcxx-compile  [flags] file_1 ... file_n 
+
+Compile and link files together and with numcxx library.
+
+The script creates a CMakeListst.txt file in the present directory and
+a build subdirecotry where it performs an out of source build as it is
+common with cmake.
+
+FLAGS:
+
+    -h, --help: this help
+    -o, --output: specifiy output file name
+    -p, --project: specify project name 
+    -r, --reset: reset build directory
+    -d, --debug: generate code with debug information
+    -v, --verbose: verbose output
+
+(c) 2017 J. Fuhrmann
+EOF
+    
+}
+
+output=main
+
+project=numcxxproject
+
+WD=$PWD
+
+until test $# == 0 ; do
+    case $1 in
+	-h | --help)  help; exit
+	    ;;
+	-o | --output) output=$2 ; shift ; shift
+ 	    ;;
+	-p | --project) project=$2 ; shift ; shift
+ 	    ;;
+	-r | --reset) doreset=1 ; shift 
+ 	    ;;
+	-v | --verbose) verbose=1 ; shift
+            ;;
+	-d | --debug) debug=1 ; shift
+ 	    ;;
+ 	*) if test -f $1; then files="$files $1" ; else echo "missing input $1"; exit; fi; shift
+    esac
+done
+
+
+if test ! -v files ; then
+    echo Missing list of input files
+    help
+    exit
+fi
+
+if test -v debug; then
+    CMAKE_BUILD_TYPE=DEBUG
+    build=.build/$output/debug
+else
+    CMAKE_BUILD_TYPE=RELEASE
+    build=.build/$output/release
+fi
+
+
+
+cat> CMakeLists.txt <<EOF
+cmake_minimum_required(VERSION 2.8.12)
+PROJECT($project C CXX)
+find_package(NUMCXX REQUIRED)
+include_directories("\${NUMCXX_INCLUDE_DIRS}")
+link_libraries("\${NUMCXX_LIBRARIES}")
+if (CMAKE_BUILD_TYPE STREQUAL "DEBUG")
+add_definitions("-DNUMCXX_CHECK_BOUNDS")
+endif()
+add_executable($output $files)
+EOF
+
+if test -v verbose ; then
+    echo \---- CMakeLists.txt ----
+    cat CMakeLists.txt
+    echo \------------------------
+fi
+
+if test -v doreset ; then
+    if  test -d $build; then
+        rm -r $build
+        if test -v verbose ; then
+            echo numcxx-compile: Removed build directory $build
+        fi
+    fi
+fi
+
+if ! test -d $build; then
+    mkdir -p $build
+    cd $build
+    cmake -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE $WD
+    cd $WD
+    if test -v verbose ; then
+        echo numcxx-compile: Created build directory $build
+    fi
+fi
+
+if test -v verbose ; then
+    VERBOSE=1 make -C $build
+else
+    make -C $build
+fi
+
+if test -v verbose ; then
+    echo numcxx-compile: Compiled $output 
+fi
+
+cp -p $build/$output $output
+if test -v verbose ; then
+    echo numcxx-compile: Copied $output from build directory  $build to $PWD
+fi
+
+
+
+

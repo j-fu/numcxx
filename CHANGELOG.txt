@@ -1,0 +1,299 @@
+2017-02-05-2141:
+                 make for all examples in global makefile
+
+2017-02-05-2120:
+                 Added part7: parallel examples
+
+2017-02-05-2104:
+                 - improved fvm2d code organization
+-                 convergence test
+
+2017-02-05-2103:
+                 - improved fem2d code organization
+-                 fixed error in fem2d stiffness matrix
+                 calculation
+-                 fem2d convergence test
+
+2017-01-30-0705:
+                 merge
+
+2017-01-30-0049:
+                 fixed inline wrt. norm calls
+
+2017-01-30-0704:
+                 some comments
+
+2017-01-30-0031:
+                 added part 6: fvm stuff
+
+2017-01-16-0038:
+                 no plasma colormap on unixpool
+
+2017-01-16-0034:
+                 fixed part5 makefile
+
+2017-01-16-0007:
+                 automatic detection of /net/wir if
+                 numcxx/partx was copied
+
+2017-01-15-2353:
+                 various new examples form lecture 22
+
+2017-01-15-2052:
+                 added general (mixed boundary condition
+                 stuff)
+
+2017-01-08-2324:
+                 Added tag RELEASE_2017-01-08 for changeset
+                 36c8973138d6
+
+2017-01-08-2323:
+                 some comments in fem2d.hxx
+
+2017-01-08-2236:
+                 First running 2D FEM test
+
+2017-01-08-1553:
+                 Added tag RELEASE_2017-01-08 for changeset
+                 6b631dd62bae
+
+2017-01-08-1455:
+                 Installation instructions (incl. cygwin)
+                 Introduces MyMakefile.inc for customization
+                 not interfering with version management
+
+2017-01-07-1438:
+                 fixed cygwin detection in makefile
+
+2017-01-07-2330:
+                 cygwin adaptations
+
+2017-01-07-2051:
+                 cd html; rm -r * lead to deletion of
+                 everything in case html did not exist.
+                 Fixed.
+
+2017-01-07-2050:
+                 range check for sparse matrix
+
+2016-12-12-2351:
+                 added forgotten test in part4
+
+2016-12-12-2316:
+                 Reworked directory structure Simplegrid.o
+                 and triangle.o now in libnumcxx.a
+
+2016-12-12-0009:
+                 moved .h to .hxx, commented
+
+2016-12-11-2347:
+                 part4 examples: make local python module
+
+2016-12-04-2140:
+                 modified module import for python3
+
+2016-12-04-2109:
+                 First step to python module
+
+2016-12-03-2032:
+                 explicit rule for triangle.o in
+                 devel/GNUmakefile
+
+2016-12-03-2024:
+                 bugfix: removed include of triangle.ixx
+
+2016-12-03-1956:
+                 added triangle, Geometry class, SimpleGrid
+                 class + python interface
+
+2016-12-03-1954:
+                 Bug fixes: delete copy constructor for
+                 umfpack solver (to avoid double free,
+                 thanks M. Jutzi) initialize info in lapack
+                 solver deleter initialization in tarray2
+
+2016-11-24-1058:
+                 Added tag RELEASE_2016-11-24 for changeset
+                 785ed4a35c29
+
+2016-11-24-1056:
+                 merge
+
+2016-11-24-1055:
+                 Added missing initialization of next in
+                 sparse matrix extension structure
+
+2016-11-23-2210:
+                 Added tag RELEASE_2016-11-23 for changeset
+                 33d89ae58bef
+
+2016-11-23-2205:
+                 size_t to store size cast index to size_t
+                 before calculating 2D Array size throw
+                 error if malloc fails
+
+2016-11-21-1624:
+                 Added tag RELEASE_2016-11-21 for changeset
+                 bbb2a9b57ff8
+
+2016-11-21-1604:
+                 Installed umfpack libraries locally in
+                 numcxx on /net/wir...
+
+2016-11-15-2224:
+                 Added changelog creation for tarballs
+
+2016-11-15-2223:
+                 Added tag RELEASE_2016-11-15 for changeset
+                 9bf2a204c223
+
+2016-11-15-2138:
+                 Added tag RELEASE_2016-11-15 for changeset
+                 a7a73b27d6fb
+
+2016-11-15-2132:
+                 check for different swig versions
+
+2016-11-15-2119:
+                 Moved Makefiles to GNUmakefiles Tested on
+                 mac with homebrew
+
+2016-11-15-0939:
+                 Added tag RELEASE_2016-11-15 for changeset
+                 e64b942ea70b
+
+2016-11-15-0938:
+                 default targed now builds example and devel
+                 code
+
+2016-11-15-0936:
+                 merge
+
+2016-11-14-1842:
+                 modified path in Makefile for reorg
+
+2016-11-14-1852:
+                 Added tag RELEASE_2016-11-14 for changeset
+                 7c214818502f
+
+2016-11-14-1824:
+                 modified paths in Makefile
+
+2016-11-14-1743:
+                 makefile update
+
+2016-11-14-1726:
+                 improved makefile with capability for
+                 release
+
+2016-11-14-1726:
+                 Added tag RELEASE_2016-11-14 for changeset
+                 473e9a80baac
+
+2016-11-14-1715:
+                 reorg: test -> devel
+
+2016-11-14-1715:
+                 added examples part1-3 to repo
+
+2016-11-09-1655:
+                 added all original netlib headers for later
+                 refactoring
+
+2016-11-09-1629:
+                 python interface for Matrix Matrix
+                 constructor now again takes 2 indices.
+
+2016-11-09-1511:
+                 Added calculation of inverse matrices
+
+2016-11-09-1431:
+                 subdirectory reorganization
+
+2016-11-09-0100:
+                 - first working routines from netlib
+                 templates
+-                 ExpressionBase vs MatrixExpressionBase vs
+                 SparseMatrixExpressionBase
+-                 Jacobi preconditioner
+
+2016-11-07-2307:
+                 moved *-imp.hxx to *.ixx
+
+2016-11-07-2104:
+                 slight restructuring, copy constructors,
+                 resize
+
+2016-11-07-2103:
+                 Fixed error in expression templates - scalar
+                 addition was multiplication...
+
+2016-11-07-1742:
+                 first working example for umfpack
+
+2016-11-07-1602:
+                 first steps for sparse matrix
+
+2016-11-07-0008:
+                 some documentation
+
+2016-11-06-2151:
+                 Expression base class first variant of
+                 sparse matrix code (still buggy)
+
+2016-11-06-0035:
+                 more expression template ready stuff
+                 (norm...) separate lapack solver class
+                 updated featuretest
+
+2016-11-05-1956:
+                 expression templates compatible to
+                 std::vector
+
+2016-11-05-0031:
+                 Expression Templates !!!
+
+2016-11-02-0012:
+                 moved *-def.hxx to *-imp.hxx
+
+2016-11-01-2331:
+                 featuretest inverse matrix more documetation
+                 float lapack
+
+2016-10-31-1939:
+                 further reorganization
+
+2016-10-31-1735:
+                 reorganization: one class per header
+
+2016-10-31-1146:
+                 shared_ptr<void> instead of TArrayBase
+                 ndim(), size()
+
+2016-10-31-0040:
+                 deleter instead of owndata flag
+
+2016-10-29-2045:
+                 create routines using make_shared:
+
+                If make_shared knows the type of the
+                 initializer_list, it works: http://stackove
+                 rflow.com/questions/26379311/calling-
+                 initializer-list-constructor-via-make-
+                 unique-make-shared
+
+2016-10-29-2018:
+                 removed array_ptr
+
+2016-10-29-1958:
+                 moved .hxx to .h
+
+2016-10-29-1957:
+                 last version with array_ptr
+
+2016-10-28-0229:
+                 matrix class out-of-body definitions
+
+2016-10-26-1023:
+                 initial checkin
+
