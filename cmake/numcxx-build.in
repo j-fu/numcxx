@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 
 help()
@@ -6,13 +6,12 @@ help()
 cat <<EOF
 USAGE:
 
-numcxx-compile  [flags] file_1 ... file_n 
+numcxx-build  [flags] file_1 ... file_n 
 
-Compile and link files together and with the numcxx library.
+Build and link files together and with the numcxx library.
 
-The script creates a CMakeListst.txt file in the present directory and
-a build subdirectory where it performs an out of source build as it is
-common with cmake.
+The  script creates  a CMakeListst.txt  file in  a build  subdirectory
+where it performs an out of source build as it is common with cmake.
 
 FLAGS:
 
@@ -25,17 +24,7 @@ FLAGS:
 
 (c) 2017 J. Fuhrmann
 EOF
-    
 }
-
-cat > /dev/null <<EOF
-create a cmake script from this:
-cmake -Dinput=filea,fileb,filec -Doutput=main -P numcxx-build.cmake
-
-or better:
-cp TemplateCMakeLists.txt  CMakeLists.txt
-cmake -B
-EOF
 
 
 output=main
@@ -87,7 +76,7 @@ cmake_minimum_required(VERSION 2.8.12)
 
 PROJECT($project C CXX)
 
-find_package(NUMCXX REQUIRED PATHS /net/wir/numcxx/.build)
+find_package(NUMCXX REQUIRED PATHS @PATH_HINT_DIR@)
 
 include_directories("\${NUMCXX_INCLUDE_DIRS}")
 
@@ -113,7 +102,7 @@ if test -v doreset ; then
     if  test -d $build; then
         rm -r $build
         if test -v verbose ; then
-            echo numcxx-compile: Removed build directory $build
+            echo numcxx-build: Removed build directory $build
         fi
     fi
 fi
@@ -124,25 +113,25 @@ if ! test -d $build; then
     CXXFLAGS=-std=c++11 cmake -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE ..
     cd $WD
     if test -v verbose ; then
-        echo numcxx-compile: Created build directory $build
+        echo numcxx-build: Created build directory $build
     fi
 fi
 
 if test -v verbose ; then
-    VERBOSE=1 make -C $build
+    VERBOSE=1 cmake --build $build 
 else
-    make -C $build 
+    cmake --build $build 
 fi
 
 if test -v verbose ; then
-    echo numcxx-compile: Compiled $output 
+    echo numcxx-build: Buildd $output 
 fi
 
 cp -p $build/$output $output
 if test -v verbose ; then
-    echo numcxx-compile: Copied $output from build directory  $build to $PWD
+    echo numcxx-build: Copied $output from build directory  $build to $PWD
 fi
-
+ls -l $output
 
 
 
