@@ -53,7 +53,7 @@ include_directories(include)
 
 set(CMAKE_CXX_STANDARD 11)
 
-add_subdirectory(include)
+
 add_subdirectory(src)
 add_subdirectory(examples)
 enable_testing()
