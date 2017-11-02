@@ -33,7 +33,7 @@ project=numcxxproject
 
 WD=$PWD
 
-until test $# == 0 ; do
+until test $# = 0 ; do
     case $1 in
 	-h | --help)  help; exit
 	    ;;
@@ -54,7 +54,7 @@ done
 
 mkdir -p .build/numcxx/$output
 
-if test ! -v files ; then
+if test  x$files != x  ; then
     echo Missing list of input files
     help
     exit
@@ -92,13 +92,13 @@ add_executable($output $files)
 
 EOF
 
-if test -v verbose ; then
+if test x$verbose != x ; then
     echo \---- CMakeLists.txt ----
     cat .build/numcxx/$output/CMakeLists.txt
     echo \------------------------
 fi
 
-if test -v doreset ; then
+if test  x$doreset != x ; then
     if  test -d $build; then
         rm -r $build
         if test -v verbose ; then
@@ -117,18 +117,18 @@ if ! test -d $build; then
     fi
 fi
 
-if test -v verbose ; then
+if test x$verbose != x ; then
     VERBOSE=1 cmake --build $build 
 else
     cmake --build $build 
 fi
 
-if test -v verbose ; then
+if test x$verbose != x ; then
     echo numcxx-build: Buildd $output 
 fi
 
 cp -p $build/$output $output
-if test -v verbose ; then
+if test x$verbose != x ; then
     echo numcxx-build: Copied $output from build directory  $build to $PWD
 fi
 ls -l $output
