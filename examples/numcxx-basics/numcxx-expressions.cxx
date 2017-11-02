@@ -1,3 +1,7 @@
+///
+/// \example numcxx-expressions.cxx
+/// 
+
 #include <iostream>
 #include <numcxx/numcxx.hxx>
 
