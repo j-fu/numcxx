@@ -1,4 +1,11 @@
+///
+///  \example numcxx-sharedptr.cxx
+///
+
+
 #include <cstdio>
+#include <vector>
+#include <memory>
 #include <numcxx/numcxx.hxx>
 
 // initialize vector x with some data
@@ -19,9 +26,11 @@ double sum_elements(numcxx::DArray1 & X)
 int main()
 {
     const int n=1.0e7;
-    // call constructor 
-    numcxx::TArray1<double> X(n);
-    initialize(X);  
-    double s=sum_elements(X);
+    // call constructor and wrap pointer into smart pointer
+    auto pX=numcxx::TArray1<double>::create(n);
+    initialize(*pX);  // dereference pointer to obtain reference
+    double s=sum_elements(*pX); // dereference pointer to obtain reference
     printf("sum=%e\n",s);
+    // smartpointer calls destructor if reference count
+    // reaches zero
 }

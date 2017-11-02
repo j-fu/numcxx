@@ -54,7 +54,7 @@ done
 
 mkdir -p .build/numcxx/$output
 
-if test  x$files != x  ; then
+if test  -z "$files"  ; then
     echo Missing list of input files
     help
     exit
