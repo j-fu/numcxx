@@ -5,4 +5,5 @@ html
 *.so
 *.pyc
 wrap*.cxx
-numcxx.py
+.build*
+*~
