@@ -771,7 +771,11 @@ WARN_LOGFILE           = doxygen.log
 # spaces. See also FILE_PATTERNS and EXTENSION_MAPPING
 # Note: If this tag is empty the current directory is searched.
 
-INPUT                  =  @PROJECT_SOURCE_DIR@/README.md ./ @PROJECT_SOURCE_DIR@/include/ @PROJECT_SOURCE_DIR@/src/ @PROJECT_SOURCE_DIR@/examples/
+INPUT = @PROJECT_SOURCE_DIR@/README.md 
+INPUT+= @PROJECT_SOURCE_DIR@/include/numcxx
+INPUT+= @PROJECT_SOURCE_DIR@/include/netlib
+INPUT+= @PROJECT_SOURCE_DIR@/src/numcxx
+INPUT+= @PROJECT_SOURCE_DIR@/examples/
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding. Doxygen uses
@@ -796,7 +800,7 @@ INPUT_ENCODING         = UTF-8
 # *.m, *.markdown, *.md, *.mm, *.dox, *.py, *.pyw, *.f90, *.f, *.for, *.tcl,
 # *.vhd, *.vhdl, *.ucf, *.qsf, *.as and *.js.
 
-FILE_PATTERNS          = *.cxx *.h *.md
+FILE_PATTERNS          = *.cxx *.h *.hxx *.md
 
 # The RECURSIVE tag can be used to specify whether or not subdirectories should
 # be searched for input files as well.

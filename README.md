@@ -43,9 +43,11 @@ Linux,
 MacOSX,
 Win10/Cygwin
 
+### Prerequisites
+
 Installation of the python components is currently not necessary.
 
-### Linux
+#### Linux
 
 The following packages should be installed
 using the Linux package manager:
@@ -64,7 +66,7 @@ python-matplotlib
 swig
 ````
 
-### Mac
+#### Mac
 
 We need the same packages as on Linux.
 
@@ -76,13 +78,11 @@ We need the same packages as on Linux.
 $ gcc
 ````
 
-- Check with 
-
-A  dialogue   window  should  pop   up,  click  on  `install`
+- A  dialogue   window  should  pop   up,  click  on  `install`
 
 ````
 $ xcode-select -p /Library/Developer/CommandLineTools
-````~
+````
 
 - Install [Homebrew](http://brew.sh/index.html) + [Cakebrew](https://www.cakebrew.com/)
 
@@ -93,7 +93,7 @@ suite-sparse
 ````
 
 
-### Cygwin
+#### Cygwin
 
 Thanks to the autor of [this post](https://bynario.com/2016-10-01-minimal-cygwin-python-data-science-installation.html)
 for showing the way for matplotlib.
@@ -131,38 +131,43 @@ for showing the way for matplotlib.
 
 - For Python graphics (matplotlib), proceed further:
 
-     - install the cygwin packages
+  - Install the cygwin packages
 
-    ````
-      libfreetype-devel 
-      python-pyqt4
-      xorg-server
-      xinit
-    ````
+````
+  libfreetype-devel 
+  python-pyqt4
+  xorg-server
+  xinit
+````
 
-     - Obtain pip, the python package manager
+ - Obtain pip, the python package manager
 
-    ````
-      $ wget https://bootstrap.pypa.io/get-pip.py
-      $ python get-pip.py
-    ```` 
+````
+  $ wget https://bootstrap.pypa.io/get-pip.py
+  $ python get-pip.py
+```` 
 
-     - Install matplotlib via pip:
+ - Install matplotlib via pip:
 
-    ````
-      $ pip install matplotlib
-    ````
+````
+  $ pip install matplotlib
+````
 
-    -  Start the X server and set the DISPLAY environment variable
+-  Start the X server and set the DISPLAY environment variable
 
-    ````
-     $ startxwin
-     $ export DISPLAY=:0.0
-    ````
+````
+ $ startxwin
+ $ export DISPLAY=:0.0
+````
 
-    - use qt4agg as python backend:
+- use qt4agg as python backend:
 
-    ````
-     $ export MPLBACKEND=qt4agg
-    ````
+````
+ $ export MPLBACKEND=qt4agg
+````
+
+### Installation of numcxx
+
+### Build
+
 
