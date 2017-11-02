@@ -194,7 +194,6 @@ install(FILES
   COMPONENT dev)
 
 install(PROGRAMS  
-  "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/numcxx-config" 
   "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/numcxx-build" 
   DESTINATION bin 
   COMPONENT dev)
