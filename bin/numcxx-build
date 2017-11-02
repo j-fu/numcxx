@@ -1,4 +1,5 @@
-#!/bin/sh
+#!/bin/bash
+
 
 help()
 {
@@ -86,7 +87,7 @@ cmake_minimum_required(VERSION 2.8.12)
 
 PROJECT($project C CXX)
 
-find_package(NUMCXX REQUIRED)
+find_package(NUMCXX REQUIRED PATHS /net/wir/numcxx/.build)
 
 include_directories("\${NUMCXX_INCLUDE_DIRS}")
 
@@ -120,7 +121,7 @@ fi
 if ! test -d $build; then
     mkdir -p $build
     cd $build
-    cmake -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE ..
+    CXXFLAGS=-std=c++11 cmake -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE ..
     cd $WD
     if test -v verbose ; then
         echo numcxx-compile: Created build directory $build
