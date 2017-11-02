@@ -1,3 +1,4 @@
+###
 # See https://cmake.org/Wiki/CMake/Tutorials/How_to_create_a_ProjectConfig.cmake_file
 # see also https://github.com/forexample/package-example
 # https://cmake.org/Wiki/CMake/Tutorials/Exporting_and_Importing_Targets
@@ -25,8 +26,7 @@ SET(NUMCXX_CONFIG "" CACHE STRING "NUMCXX  Config name")
 
 set(NUMCXX_EXPORT_NAME "NUMCXX${NUMCXX_CONFIG}")
 
-
-
+set(CMAKE_EXPORT_COMPILE_COMMANDS "ON" CACHE STRING "export compile commands")
 
 #################################################################################
 #
@@ -49,11 +49,12 @@ link_libraries(${UMFPACK_LIBRARIES})
 
 set(CMAKE_CXX_STANDARD 11)
 include_directories(include ${PROJECT_BINARY_DIR})
+
 add_subdirectory(include)
 add_subdirectory(src)
 add_subdirectory(examples)
-add_subdirectory(tests)
 enable_testing()
+add_subdirectory(tests)
 
 
 if (APPLE)
@@ -69,7 +70,7 @@ if (DOXYGEN_FOUND)
   configure_file(${PROJECT_SOURCE_DIR}/doc/Doxyfile.in   "${PROJECT_BINARY_DIR}/Doxyfile" @ONLY)
   # Somehow, doxygen seems to not recognise .md files properly from other
   # than their directory
-  add_custom_target( doc_doxygen ALL
+  add_custom_target(dox 
     COMMAND ${DOXYGEN_EXECUTABLE} ${PROJECT_BINARY_DIR}/Doxyfile
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
     COMMENT "Generating API documentation with Doxygen"
@@ -113,6 +114,20 @@ set(NUMCXX_INCLUDE_DIRS ${NUMCXX_INCLUDE_DIRS} "${UMFPACK_INCLUDES}")
 
 configure_file(cmake/NUMCXXConfig.cmake.in   "${PROJECT_BINARY_DIR}/${NUMCXX_EXPORT_NAME}Config.cmake" @ONLY)
 configure_file(cmake/NUMCXXConfigVersion.cmake.in  "${PROJECT_BINARY_DIR}/${NUMCXX_EXPORT_NAME}ConfigVersion.cmake" @ONLY)
+
+
+
+set(NUMCXX_INCLUDES_STRING "-I${PROJECT_SOURCE_DIR}/include")
+foreach(dir ${UMFPACK_INCLUDES})
+  string(CONCAT NUMCXX_INCLUDES_STRING ${NUMCXX_INCLUDES_STRING} " -I${dir}")
+endforeach()
+
+set(NUMCXX_LIBRARIES_STRING "${PROJECT_BINARY_DIR}/src/libnumcxx.a")
+foreach(lib ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES} ${UMFPACK_LIBRARIES})
+  string(CONCAT NUMCXX_LIBRARIES_STRING ${NUMCXX_LIBRARIES_STRING} " ${lib}")
+endforeach()
+
+configure_file(cmake/numcxx-config.in  "${PROJECT_BINARY_DIR}/numcxx-config" @ONLY)
  
 
 
@@ -120,7 +135,7 @@ configure_file(cmake/NUMCXXConfigVersion.cmake.in  "${PROJECT_BINARY_DIR}/${NUMC
 #
 # Installation magic, still to be fully understod
 # 
-# Relevant only or make install. 
+# Relevant only for make install. 
 #
 # Relocatable according to 
 # https://cmake.org/Wiki/CMake/Tutorials/How_to_create_a_ProjectConfig.cmake_file
@@ -162,12 +177,29 @@ set(CONF_INCLUDE_DIRS "\${CMAKE_CURRENT_LIST_DIR}/${REL_INCLUDE_DIR}/numcxx")
 configure_file(cmake/NUMCXXConfig.cmake.in   "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${NUMCXX_EXPORT_NAME}Config.cmake" @ONLY)
 configure_file(cmake/NUMCXXConfigVersion.cmake.in  "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${NUMCXX_EXPORT_NAME}ConfigVersion.cmake" @ONLY)
 
+set(NUMCXX_INCLUDES_STRING "-I${CMAKE_INSTALL_PREFIX}/include")
+foreach(dir ${UMFPACK_INCLUDES})
+  string(CONCAT NUMCXX_INCLUDES_STRING ${NUMCXX_INCLUDES_STRING} " -I${dir}")
+endforeach()
+
+set(NUMCXX_LIBRARIES_STRING "${CMAKE_INSTALL_PREFIX}/lib/libnumcxx.a")
+foreach(lib ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES} ${UMFPACK_LIBRARIES})
+  string(CONCAT NUMCXX_LIBRARIES_STRING ${NUMCXX_LIBRARIES_STRING} " ${lib}")
+endforeach()
+
+configure_file(cmake/numcxx-config.in  "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/numcxx-config" @ONLY)
+
+
+
 # Install the ${NUMCXX_EXPORT_NAME}Config.cmake and ${NUMCXX_EXPORT_NAME}ConfigVersion.cmake
 install(FILES
   "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${NUMCXX_EXPORT_NAME}Config.cmake"
   "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${NUMCXX_EXPORT_NAME}ConfigVersion.cmake"
    DESTINATION "${INSTALL_CMAKE_DIR}" COMPONENT dev)
- 
+
+install(PROGRAMS  "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/numcxx-config" DESTINATION bin COMPONENT dev)
+install(PROGRAMS  "${PROJECT_SOURCE_DIR}/bin/numcxx-build" DESTINATION bin COMPONENT dev)
+
 # Install the export set for use with the install-tree
 install(EXPORT ${NUMCXX_EXPORT_NAME} DESTINATION  "${INSTALL_CMAKE_DIR}" COMPONENT dev)
 
