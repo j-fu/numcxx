@@ -1,12 +1,12 @@
 ///
 /// \example numcxx-expressions.cxx
-/// 
+///
 
 #include <iostream>
 #include <numcxx/numcxx.hxx>
 
 /// This is a test for the expression templates implemented
-/// in numcxx. 
+/// in numcxx.
 int main()
 {
     const int n=3;
@@ -24,7 +24,7 @@ int main()
     A=3.1+B;
     D=A*3.0;
     A=3*(B+C/3.0)-4.0*D/2.0;
-    
+
     // Two ways to perform matrix-vector multiplication
     // Via expression template
     B=Mat*A;
