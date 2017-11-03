@@ -168,6 +168,72 @@ for showing the way for matplotlib.
 
 ### Installation of numcxx
 
-### Build
+#### TU Berlin UNIX Pool
 
+Here,  the  current  version  of  numcxx,  without  the  examples,  is
+installed in the directory /net/wir  The example subdirectories can be
+copied separately as a whole.
+
+#### Build on your own system
+
+Go to the  numcxx root directory and set up the cmake project:
+
+````
+$ mkdir .build
+$ cd .build
+$ CXXFLAGS=-std=c++11 cmake ..
+$ cmake -C build .
+````
+
+This should compile the library and make it findeable by depending
+projects via an entry im the user CMake project registry found
+under ``.cmake`` in your home directory.
+
+### Working with the examples
+
+
+First, copy an example directory to your working directory
+
+````
+$ cp -r <numcxx>/examples/whatever .
+$ cd whatever
+````
+
+Each of the example subdirectories has its own CMakeLists.txt which
+looks for an installed numcxx during the setup phase.
+
+#### Plain unix
+
+
+Set up a build subdirectory and compile the project:
+
+````
+$ mkdir .build
+$ cd .build
+$ CXXFLAGS=-std=c++11 cmake ..
+$ cmake --build .
+$ ./<whatever example>
+````
+
+#### Code::Blocks
+
+Set up a build subdirectory for codeblocks:
+````
+$ mkdir .build
+$ cd .build
+$ CXXFLAGS=-std=c++11 cmake -G"CodeBlocks - Unix Makefiles" ..
+$ codeblocks <whatver the project name is>.cbp
+````
+
+#### Other IDEs
+
+In codeblocks, select a target under "Build/Select Target".
+In the management pane (left), select the corresponding
+source file. Now you can build and run   via the correspondin
+menu items of codeblocks.
+
+Many of them should work. Like with  code blocks, find out the name of
+the generator via ``cmake -G``. If you don't find your IDE name there,
+there might be  some chance that your IDE supports  cmake directly (as
+e.g. QTCreator does).
 

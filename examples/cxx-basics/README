@@ -1,0 +1,5 @@
+This  directory  contains  a   number  of  basic  examples  describing
+different possibilities to work with vectors/arrays in C++.
+
+They build independently of the numcxx tree.
+
