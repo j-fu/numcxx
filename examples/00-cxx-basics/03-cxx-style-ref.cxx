@@ -1,15 +1,17 @@
 /// \example 03-cxx-style-ref.cxx
 ///
-/// Working with C++ STL vectors passed as references
+/// Working with C++ STL vectors passed as references.
 ///
-/// The class std::vector contains size information and can be
-/// instantiated for any data type. We pass a reference to the vector
-/// to the functions using it.
-///
+/// This uses the class [std::vector](http://www.cplusplus.com/reference/vector/vector/).
+///  
 #include <cstdio>
 #include <vector>
 
 
+/// The class std::vector contains size information and can be
+/// instantiated for any data type. Here we do it for double.
+/// We pass a reference to the vector
+/// to the functions using it.
 void initialize(std::vector<double>& x)
 {
   const int n=x.size();

@@ -2,11 +2,9 @@
 ///
 /// Working with C++ vectors passed via shared pointers
 ///
-/// The class std::vector contains size information and can be
-/// instantiated for any data type. We pass a smartpointer to  the vector
-/// to the functions using it.
+/// This is one way to work with smart pointers of the type
+/// [std::shared_ptr](http://www.cplusplus.com/reference/memory/shared_ptr/)
 ///
-
 #include <cstdio>
 #include <vector>
 #include <memory>
@@ -35,7 +33,6 @@ int main()
 
   // This declares  and creates a shared pointer from an object
   // allocated with new. Quite cumbersome...
-
   std::shared_ptr<std::vector<double>> x=std::shared_ptr<std::vector<double>>(new std::vector<double>(n));
   initialize(x);
   double s=sum_elements(x);

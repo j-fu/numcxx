@@ -2,10 +2,6 @@
 ///
 /// Working with "plain" c-style arrays placed on the heap
 ///
-/// Functions using plain c style arrays need to have
-/// both the pointer to the data and the size information
-/// as parameters.
-///
 
 #include <cstdio>
 
@@ -25,6 +21,7 @@ double sum_elements(double *x, int n)
 int main()
 {
   const int n=12345678;
+
   // Allocate an array on the heap
   double* x=new double[n];
 

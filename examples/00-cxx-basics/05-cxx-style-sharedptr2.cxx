@@ -2,17 +2,17 @@
 /// \example 05-cxx-style-sharedptr2.cxx
 ///
 /// Working with C++ vectors allocated as smart pointers
-/// but passed as references.
-///
-/// The class std::vector contains size information and can be
-/// instantiated for any data type. We pass (as in example 03) a reference to
-/// the vector to the functions using it. This is possible as long as the
-/// function itself does not store the vector in another class.
-///
-
+/// but passed as references.  Demonstrate as well the use of 
+/// [std::make_shared](http://www.cplusplus.com/reference/memory/make_shared/).
+/// 
 #include <cstdio>
 #include <vector>
 #include <memory>
+
+
+/// We pass (as in example 03) a reference to
+/// the vector to the functions using it. This is possible as long as the
+/// function itself does not store the vector in another class.
 
 void initialize(std::vector<double> &x)
 {
@@ -30,6 +30,7 @@ double sum_elements(std::vector<double> & x)
 int main()
 {
   const int n=12345678;
+
   // This is a shortcut to the cumbersome statement from
   // Example 04. We have to write the data type only once,
   // as a template argument to std::make_shared<>.
