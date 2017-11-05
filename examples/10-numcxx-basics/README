@@ -1,0 +1,16 @@
+This directory  contains a number  of basic examples  introducing the
+numcxx library.
+
+They  build independently  of the  numcxx  tree but  use an  installed
+version of numcxx.
+
+In order to  compile these examples, use cmake  and the CMakeLists.txt
+file in this directory.
+
+Alternatively, they can be built by numcxx-build:
+
+$
+$ numcxx-build-o example example.cxx
+$ ./example
+$
+

@@ -1,7 +1,0 @@
-This  directory  contains  a   number  of  basic  examples introuducing
-the numcxx library.
-
-They build independently of the numcxx tree but use an installed version
-of numcxx.
-
-

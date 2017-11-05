@@ -1,0 +1,16 @@
+This  directory contains  a number  of basic  examples for  simple C++
+programs.  Furthermore, we  describe different  possibilities to  work
+with vectors/arrays in C++.
+
+They build independently  of the numcxx tree.
+Each of the example can be built and executed
+using the commands
+
+$ g++ -o example example.cxx
+$ ./example
+
+Alternatively, the g++ can be replacd here by numcxx-build:
+
+
+$ numcxx-build-o example example.cxx
+$ ./example
