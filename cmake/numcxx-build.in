@@ -15,12 +15,14 @@ where it performs an out of source build as it is common with cmake.
 
 FLAGS:
 
+    -d, -g, --debug: generate code with debug information
     -h, --help: this help
-    -o, --output: specifiy output file name
-    -p, --project: specify project name 
+    -o, --output  <name>: specifiy output file name
+    -p, --project <name>: specify project name 
     -r, --reset: reset build directory
-    -d, --debug: generate code with debug information
     -v, --verbose: verbose output
+    -x, --execute: run program after build
+    --cxx <name>: Set c++ compiler. Same as CXX=<name> numcxx-build ... 
 
 (c) 2017 J. Fuhrmann
 EOF
@@ -35,6 +37,8 @@ WD=$PWD
 
 until test $# = 0 ; do
     case $1 in
+	-d | -g| --debug) debug=1 ; shift
+ 	    ;;
 	-h | --help)  help; exit
 	    ;;
 	-o | --output) output=$2 ; shift ; shift
@@ -45,12 +49,21 @@ until test $# = 0 ; do
  	    ;;
 	-v | --verbose) verbose=1 ; shift
             ;;
-	-d | --debug) debug=1 ; shift
+	-x | --execute) execute=1 ; shift
+            ;;
+	--cxx)  CXX=$2; shift; shift;
  	    ;;
- 	*) if test -f $1; then files="$files ../../../$1" ; else echo "missing input $1"; exit; fi; shift
+ 	*) if test -f $1; then 
+            files="$files ../../../$1" 
+            else 
+            echo "Missing input file $1 or command line syntax error"; 
+            exit 1; 
+            fi; shift
     esac
 done
 
+
+export CXX
 
 mkdir -p .build/numcxx/$output
 
@@ -110,7 +123,7 @@ fi
 if ! test -d $build; then
     mkdir -p $build
     cd $build
-    CXXFLAGS=-std=c++11 cmake -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE ..
+    CXXFLAGS="-std=c++11 $CXXFLAGS" cmake -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE ..
     cd $WD
     if test -v verbose ; then
         echo numcxx-build: Created build directory $build
@@ -118,13 +131,19 @@ if ! test -d $build; then
 fi
 
 if test x$verbose != x ; then
-    VERBOSE=1 cmake --build $build 
-else
-    cmake --build $build 
+    VERBOSE=1
+    export VERBOSE
 fi
 
+if ! cmake --build $build ; then
+    echo
+    echo numcxx-build: compilation error
+    exit 1
+fi
+    
+
 if test x$verbose != x ; then
-    echo numcxx-build: Buildd $output 
+    echo numcxx-build: Built $output 
 fi
 
 cp -p $build/$output $output
@@ -132,6 +151,11 @@ if test x$verbose != x ; then
     echo numcxx-build: Copied $output from build directory  $build to $PWD
 fi
 ls -l $output
+
+if test x$execute != x ; then
+    $output
+    exit $1
+fi
 
 
 

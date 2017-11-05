@@ -12,10 +12,11 @@ Authors:
 - Keep the  code reasonably  simple and  transparent for  beginners in
   order to be useful for teaching
 
-- Study expressive capabilities of modern C++
+- Study expressive capabilities of modern C++ in the context of numerical
+  algorithms
 
-- Efficient,  reference  counted exchange  of  array  data with  other
-  packages without copying data
+- Zero copy,  reference  counted exchange  of  array  data with  other
+  packages without copying data, in particular
   - LAPACK
   - UMFPACK
   - triangle
