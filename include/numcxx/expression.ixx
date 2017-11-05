@@ -2,28 +2,44 @@
 #define NUMCXX_EXPRESSION_HXX
 #include <type_traits>
 
+
+// Implementation of expression templates inspired by ideas from 
+//
+// Iglberger, K., Hager, G., Treibig,  J., & Rüde, U. (2012). Expression
+// templates    revisited:   a    performance    analysis   of    current
+// methodologies. SIAM Journal on Scientific Computing, 34(2), C42-C69.
+// https://arxiv.org/pdf/1104.1729
+
+// Pitfalls encountered.
+//
+// Pitfall 1
+//
+// All classes to be used with the numcxx expression templates
+// should be derived from numcxx specific base classes. The rationale is the control
+// of expression template specialization via ``std::is_base_of``,
+// and the prevention of accidental invocation of the templates
+// in unexpected situations, e.g. with STL vectors.
+// It seems that C++11 provides much better tool to handle this situation via
+// its type_traits
+
+// Pitfall 2
+//
+// Epression templates using scalars shall store the scalar as a value
+// and not as a reference. E.g. g++ -O optimizes these references away.
+// It seems that this behaviour has to be expected by default,
+// see e.g. Vandevoorde/Josuttis, C++ Templates: The Complete Guide, 2nd Ed. 18.2.1
+// or   http://www.cplusplus.com/forum/general/72582/#msg387184
+// (the broken link therein goes to Vandevoorde/Josuttis) 
+//
+
+
 namespace numcxx
 {
 
-    /// Base class for arrays used in expression templates
-    ///
-    /// All classes to be used with the numcxx expression templates
-    /// should be derived from this one. The rationale is the control
-    /// of expression template specialization with ``std::is_base_of``,
-    /// and the prevention of accidental invocation of the templates
-    /// in unexected situations.
-
-    class ExpressionBase
-    {
-    };
-
-    class MatrixExpressionBase
-    {
-    };
-
-    class SparseMatrixExpressionBase
-    {
-    };
+    // Base classes for arrays used in expression templates
+    class ExpressionBase  { };
+    class MatrixExpressionBase  { };
+    class SparseMatrixExpressionBase { };
 
 
     ////////////////////////////////////////////////////////////////////////////////////
@@ -40,6 +56,7 @@ namespace numcxx
         AdditionExpression(const A& a, const B& b):a(a), b(b){}
         unsigned int size() const { return a.size(); }
         const value_type operator[](const unsigned int i) const {return a[i] + b[i];}
+      AdditionExpression& operator=(const AdditionExpression&)=delete;
     };
         
     template<typename A, typename B, 
@@ -80,13 +97,13 @@ namespace numcxx
     template<typename A, typename B,
              typename= typename std::enable_if<std::is_base_of<ExpressionBase,A>::value, A>::type,
              typename= typename std::enable_if<std::is_base_of<ExpressionBase,B>::value, B>::type>
-    class DiffExpression: public ExpressionBase
+    class SubtractionExpression: public ExpressionBase
     {
         const A& a;
         const B& b;
     public:
         typedef typename A::value_type value_type;
-        DiffExpression(const A& a, const B& b):a(a), b(b){}
+        SubtractionExpression(const A& a, const B& b):a(a), b(b){}
         unsigned int size() const { return a.size(); }
         const value_type operator[](const unsigned int i) const  {   return a[i] - b[i];}
     };
@@ -94,9 +111,9 @@ namespace numcxx
     template<typename A, typename B,
              typename= typename std::enable_if<std::is_base_of<ExpressionBase,A>::value, A>::type,
              typename= typename std::enable_if<std::is_base_of<ExpressionBase,B>::value, B>::type>
-    const DiffExpression<A,B> operator-(const A& a, const B& b)
+    const SubtractionExpression<A,B> operator-(const A& a, const B& b)
     {
-        return DiffExpression<A,B>(a, b);
+        return SubtractionExpression<A,B>(a, b);
     }
         
     ////////////////////////////////////////////////////////////////////////////////////
@@ -106,7 +123,7 @@ namespace numcxx
              typename= typename std::enable_if<std::is_base_of<ExpressionBase,B>::value, B>::type>
     class LeftScalarMultiplicationExpression: public ExpressionBase
     {
-        const A& a;
+        const A a; 
         const B& b;
     public:
         typedef typename B::value_type value_type;
@@ -132,12 +149,12 @@ namespace numcxx
     class RightScalarMultiplicationExpression: public ExpressionBase
     {
         const A& a;
-        const B& b;
+        const B b; 
     public:
-        typedef typename A::value_type value_type;
-        RightScalarMultiplicationExpression(const A& a, const B& b):a(a), b(b){}
+      typedef typename A::value_type value_type;
+      RightScalarMultiplicationExpression(const A& a, const B& b):a(a),b(b){;}
         unsigned int size() const { return a.size(); }
-        const value_type operator[](const unsigned int i) const   { return a[i]*b; }
+      const value_type operator[](const unsigned int i) const   {return a[i]*b; }
     };
         
     template<typename A, typename B,
@@ -158,7 +175,7 @@ namespace numcxx
     class RightScalarAdditionExpression: public ExpressionBase
     {
         const A& a;
-        const B& b;
+        const B b; 
     public:
         typedef typename A::value_type value_type;
         RightScalarAdditionExpression(const A& a, const B& b):a(a), b(b){}
@@ -181,7 +198,7 @@ namespace numcxx
              typename= typename std::enable_if<std::is_base_of<ExpressionBase,B>::value, B>::type>
     class LeftScalarAdditionExpression: public ExpressionBase
     {
-        const A& a;
+        const A a; 
         const B& b;
     public:
         typedef typename B::value_type value_type;
@@ -206,7 +223,7 @@ namespace numcxx
     class RightScalarDivisionExpression: public ExpressionBase
     {
         const A& a;
-        const B& b;
+        const B b; 
     public:
         typedef typename A::value_type value_type;
         RightScalarDivisionExpression(const A& a, const B& b):a(a), b(b){}
