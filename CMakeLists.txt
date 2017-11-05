@@ -29,14 +29,19 @@ SET(NUMCXX_CONFIG "" CACHE STRING "NUMCXX  Config name")
 #
 set(NUMCXX_EXPORT_NAME "NUMCXX${NUMCXX_CONFIG}")
 
-#################################################################################
-#
-# Package content
-#
+
 set(CMAKE_EXPORT_COMPILE_COMMANDS "ON" CACHE STRING "export compile commands")
 
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
+#################################################################################
+#
+# Package content
+#
+
+set(CMAKE_CXX_STANDARD 11)
+
+find_package(Doxygen)
 find_package(LAPACK  REQUIRED QUIET)
 find_package(UMFPACK REQUIRED QUIET)
 
@@ -51,7 +56,6 @@ include_directories(include)
 
 
 
-set(CMAKE_CXX_STANDARD 11)
 
 
 add_subdirectory(src)
@@ -59,7 +63,6 @@ enable_testing()
 add_subdirectory(tests)
 
 
-find_package(Doxygen)
 if (DOXYGEN_FOUND)
   configure_file(${PROJECT_SOURCE_DIR}/cmake/Doxyfile.in "${PROJECT_BINARY_DIR}/Doxyfile" @ONLY)
   # Somehow, doxygen seems to not recognise .md files properly from other
@@ -79,51 +82,41 @@ endif()
 # This registers the build-tree with a global CMake-registry,
 # On unix, it sits under .cmake/packages. 
 # find_packages()  via the NAMES section is able to distinguish between
-# them.
-#
-# This stuff allows to access the current installation 
+# them. This allows to access the current installation 
 # from other packages. No need to "make export" whatsoever.
+#
+export(PACKAGE ${NUMCXX_EXPORT_NAME})
+
 #
 # Furthermore, the target export allows client packages to
 # figure out if they need a recompile or not.
-
+#
 export(TARGETS numcxx 
   FILE "${PROJECT_BINARY_DIR}/${NUMCXX_EXPORT_NAME}Targets.cmake" 
   EXPORT_LINK_INTERFACE_LIBRARIES)
 
-export(PACKAGE ${NUMCXX_EXPORT_NAME})
 
 #
-# In order to work, we need to set up  the corresponding 
+# We need to set up  the corresponding 
 # Files in ${PROJECT_BINARY_DIR} which is the root of the
 # build subdirectory
 #
-set(NUMCXX_LIBRARIES numcxx)
-set(NUMCXX_LIBRARIES ${NUMCXX_LIBRARIES} "${LAPACK_LIBRARIES}")
-set(NUMCXX_LIBRARIES ${NUMCXX_LIBRARIES} "${UMFPACK_LIBRARIES}")
-
 set(NUMCXX_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}/include")
-set(NUMCXX_INCLUDE_DIRS ${NUMCXX_INCLUDE_DIRS} "${UMFPACK_INCLUDES}")
-
-set(NUMCXX_INCLUDES_STRING "-I${PROJECT_SOURCE_DIR}/include")
-foreach(dir ${UMFPACK_INCLUDES})
-  string(CONCAT NUMCXX_INCLUDES_STRING ${NUMCXX_INCLUDES_STRING} " -I${dir}")
-endforeach()
-
-set(NUMCXX_LIBRARIES_STRING "${PROJECT_BINARY_DIR}/src/libnumcxx.a")
-foreach(lib ${LAPACK_LIBRARIES} ${UMFPACK_LIBRARIES})
-  string(CONCAT NUMCXX_LIBRARIES_STRING ${NUMCXX_LIBRARIES_STRING} " ${lib}")
-endforeach()
-
-# Directory for path hint in numcxx-build. This should be the directory
-# where  *Config*.cmake for this installation is found
-set(PATH_HINT_DIR "${PROJECT_BINARY_DIR}")
-
+set(NUMCXX_LIBRARIES numcxx)
 configure_file(cmake/NUMCXXConfig.cmake.in   "${PROJECT_BINARY_DIR}/${NUMCXX_EXPORT_NAME}Config.cmake" @ONLY)
 configure_file(cmake/NUMCXXConfigVersion.cmake.in  "${PROJECT_BINARY_DIR}/${NUMCXX_EXPORT_NAME}ConfigVersion.cmake" @ONLY)
-configure_file(cmake/numcxx-config.in  "${PROJECT_BINARY_DIR}/numcxx-config" @ONLY)
+
+#
+# Directory for path hint in numcxx-build. This should be the directory
+# where  *Config*.cmake for this installation is found
+#
+set(PATH_HINT_DIR "${PROJECT_BINARY_DIR}")
 configure_file(cmake/numcxx-build.in  "${PROJECT_BINARY_DIR}/numcxx-build" @ONLY)
- 
+
+#
+# Copy numcxx-build to bin. This is a kind of style break
+# with regard to the idea of out-of-source build.
+#
 file(COPY 
   ${PROJECT_BINARY_DIR}/numcxx-build
   DESTINATION ${PROJECT_SOURCE_DIR}/bin
@@ -175,13 +168,14 @@ endforeach()
 
 file(RELATIVE_PATH REL_INCLUDE_DIR "${INSTALL_CMAKE_DIR}"   "${INSTALL_INCLUDE_DIR}")
 
-set(CONF_INCLUDE_DIRS "\${CMAKE_CURRENT_LIST_DIR}/${REL_INCLUDE_DIR}/numcxx")
+set(NUMCXX_INCLUDE_DIRS "\${CMAKE_CURRENT_LIST_DIR}/${REL_INCLUDE_DIR}")
 
-set(PATH_HINT_DIR "${INSTALL_CMAKE_DIR}")
 configure_file(cmake/NUMCXXConfig.cmake.in   "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${NUMCXX_EXPORT_NAME}Config.cmake" @ONLY)
 configure_file(cmake/NUMCXXConfigVersion.cmake.in  "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${NUMCXX_EXPORT_NAME}ConfigVersion.cmake" @ONLY)
+
+set(PATH_HINT_DIR "${INSTALL_CMAKE_DIR}")
 configure_file(cmake/numcxx-build.in  "${PROJECT_BINARY_DIR}/${CMAKE_FILES_DIRECTORY}/numcxx-build" @ONLY)
-configure_file(cmake/numcxx-config.in  "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/numcxx-config" @ONLY)
+
 
 #
 # Install the ${NUMCXX_EXPORT_NAME}Config.cmake and ${NUMCXX_EXPORT_NAME}ConfigVersion.cmake
@@ -211,4 +205,20 @@ install(EXPORT
 # .. and define an uninstall target
 # TODO: rewrite this to be clean CMake
 add_custom_target(uninstall cat ${PROJECT_BINARY_DIR}/install_manifest.txt | xargs rm -fv)
+
+##########################################################################################
+# 
+# Archive
+# 
+set(CPACK_PACKAGE_NAME numcxx)
+set(CPACK_PACKAGE_VERSION_MAJOR ${NUMCXX_MAJOR_VERSION})
+set(CPACK_PACKAGE_VERSION_MINOR ${NUMCXX_MINOR_VERSION})
+set(CPACK_PACKAGE_VERSION_PATCH ${NUMCXX_PATCH_VERSION})
+set(CPACK_PACKAGE_DESCRIPTION "Lightweight classes for numerics in  C++11")
+set(CPACK_PACKAGE_FILE_NAME  "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}")
+
+#
+# What is the easy way to do this with CPack proper ?
+#
+add_custom_target(archive hg archive  ${PROJECT_BINARY_DIR}/${CPACK_PACKAGE_FILE_NAME}.zip)
 
