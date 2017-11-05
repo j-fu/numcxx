@@ -248,6 +248,33 @@ namespace numcxx
         _deleter([](T*p){;})
     {};   
 
+  template <typename T> 
+  inline void TArray<T>::_nullify()
+  {
+    _shape[0]=0;     
+    _shape[1]=0;     
+    _shape[2]=0;     
+    _size=0;       
+    _deleter=[](T*p){;};     
+    _datamanager=nullptr; 
+    _data=nullptr;
+  }
+
+  template <typename T> 
+  inline void TArray<T>::_setshape(index shape0)
+  {
+    if (_ndim!=1)
+    {
+      char errormsg[80];
+      snprintf(errormsg,80,"numcxx::TArray::resize: unable to set 1D shape for 2D array.\n");
+      throw std::runtime_error(errormsg);
+    }
+    _shape[0]=shape0;   
+    _shape[1]=0;
+    _shape[2]=0;
+    _size=shape0;       
+  }
+  
 
     template <typename T> 
     inline void TArray<T>::resize(size_t n)

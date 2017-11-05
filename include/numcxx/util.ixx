@@ -2,6 +2,8 @@
 
 namespace  numcxx
 {
+
+
     template <typename T>
     inline std::shared_ptr<TArray1<T>>  linspace(T x0, T x1, int n)
     { 
@@ -13,6 +15,11 @@ namespace  numcxx
         return pX;
     }
 
+    template <typename A> inline TArray1<typename A::value_type> arrayexpr(const A& a)
+    {
+      TArray1<typename A::value_type> v=a;
+      return std::move(v);
+    }
 
 
     template <typename A> inline typename A::value_type normi(const A& a)

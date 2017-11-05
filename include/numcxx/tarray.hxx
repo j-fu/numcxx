@@ -140,6 +140,21 @@ namespace numcxx
         /// Shape vector
         index _shape[3]={0,0,0};
 
+
+        /// Bounds checker.
+        /// 
+        /// Bounds check is enabled if the code is compiled with
+        /// ``-DNUMCXX_CHECK_BOUNDS``.
+        ///
+        /// On error it throws ``std::out_of_range`` exception.
+        /// \param acc_dim  Dimension to be checked.
+        /// \param acc_ndim Tensor dimension to be checked.
+        /// \param acc_dim  Index in dimension \p acc_dim to be checked.
+        void _check_bounds(index acc_dim, index acc_ndim, index acc_idx) const;
+
+
+    protected:
+
         /// Deleter method.
         /// 
         /// This is the  proper method to be used to  destroy the data
@@ -159,21 +174,9 @@ namespace numcxx
         /// as datamanager and  ``v->data()`` as data pointer
         std::shared_ptr<void>_datamanager =nullptr;
 
-        /// Bounds checker.
-        /// 
-        /// Bounds check is enabled if the code is compiled with
-        /// ``-DNUMCXX_CHECK_BOUNDS``.
-        ///
-        /// On error it throws ``std::out_of_range`` exception.
-        /// \param acc_dim  Dimension to be checked.
-        /// \param acc_ndim Tensor dimension to be checked.
-        /// \param acc_dim  Index in dimension \p acc_dim to be checked.
-        void _check_bounds(index acc_dim, index acc_ndim, index acc_idx) const;
-
-
-    protected:
         /// Data pointer.
         T* _data=nullptr;
+
        
         /// Check if all shapes are the same.
         ///
@@ -188,9 +191,15 @@ namespace numcxx
 
         /// 3D Array index calculation with optional bounds check.
         index _idx(index i0,index i1,index i2)  const;
-    
+
         /// Construct an zero length 1D array.
         TArray();
+
+        ///  Nullify contents of array (for move constructors)
+        void _nullify();
+
+        ///  Set shape of 1D array (for move constructors)
+        void _setshape(index shape0);
 
         /// Construct an empty 1D array of length n0
         /// \param n0 Size.
