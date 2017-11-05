@@ -151,6 +151,7 @@ if test x$verbose != x ; then
     echo numcxx-build: Copied $output from build directory  $build to $PWD
 fi
 ls -l $output
+echo  
 
 if test x$execute != x ; then
     $output
