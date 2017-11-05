@@ -5,6 +5,13 @@
 namespace  numcxx
 {
 
+    /// Evaluate expression as array
+    ///
+    /// This shall help the issue with type inference for expression templates
+    /// \return Array of corresponding type
+    template <typename A> inline TArray1<typename A::value_type> arrayexpr(const A& a);
+ 
+
     /// Maximum norm of array or expression
     ///
     /// \return Maximum ( \f$l^\infty\f$) norm.
@@ -33,6 +40,7 @@ namespace  numcxx
     /// \return  Dot product
     template <typename A, typename B> inline typename A::value_type dot(const A& a, const B&b);
 
+  
     
     /// Minimum of of array or expression.
     ///
@@ -60,8 +68,10 @@ namespace  numcxx
     
     /// wall clock time in seconds
     inline double wall_clock();
+  
 
-      using DArray1=TArray1<double>;
+
+    using DArray1=TArray1<double>;
     using DArray2=TArray2<double>;
     inline double norm1(const std::shared_ptr<DArray1> a) {return norm1(*a);}
     inline double norm2(const std::shared_ptr<DArray1> a) {return norm2(*a);}

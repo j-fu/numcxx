@@ -82,8 +82,25 @@ namespace numcxx
         /// Assignment operator
         TArray1<T>&  operator=(const TArray1<T> &expr) {return static_cast<TArray1<T>&>(assign(*this,expr));}
 
-        // Copy constructor
+        /// Copy constructor
         TArray1(const TArray1<T>& A):TArray1<T>(A.shape(0)){assign(*this,A);}
+
+        /// Move constructor
+      TArray1(TArray1<T> && A):TArray1<T>(A.shape(0), A._data, [](T*p){;}){
+        TArray<T>::_deleter=std::move(A._deleter);
+        TArray<T>::_datamanager=A._datamanager;  
+        A._nullify();
+        }
+        
+        /// Move assignment
+      TArray1<T>& operator=(TArray1<T> && A){
+        TArray<T>::_setshape(A.shape(0));
+        TArray<T>::_data=A._data; 
+        TArray<T>::_deleter=A._deleter;
+        TArray<T>::_datamanager=A._datamanager;  
+        A._nullify();
+        return *this;
+        }
         
         // Copy constructor from expression
         template <typename EXPR, typename= typename std::enable_if<std::is_class<EXPR>::value, EXPR>::type>
