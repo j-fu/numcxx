@@ -69,30 +69,6 @@ namespace numcxx
 
 
     ////////////////////////////////////////////////////////////////////////////////////
-    /// Expression template for   A*B
-    template<typename A, typename B,
-             typename= typename std::enable_if<std::is_base_of<ExpressionBase,A>::value, A>::type,
-             typename= typename std::enable_if<std::is_base_of<ExpressionBase,B>::value, B>::type>
-    class MultiplicationExpression: public ExpressionBase
-    {
-        const A& a;
-        const B& b;
-    public:
-        typedef typename A::value_type value_type;
-        MultiplicationExpression(const A& a, const B& b):a(a), b(b){}
-        unsigned int size() const { return a.size(); }
-        const value_type operator[](const unsigned int i) const {return a[i] * b[i];}
-    };
-        
-    template<typename A, typename B, 
-             typename= typename std::enable_if<std::is_base_of<ExpressionBase,A>::value, A>::type,
-             typename= typename std::enable_if<std::is_base_of<ExpressionBase,B>::value, B>::type>
-    const MultiplicationExpression<A,B> operator*(const A& a, const B& b)
-    {
-        return MultiplicationExpression<A,B>(a, b);
-    }
-        
-    ////////////////////////////////////////////////////////////////////////////////////
     /// Expression template for   A-B
     template<typename A, typename B,
              typename= typename std::enable_if<std::is_base_of<ExpressionBase,A>::value, A>::type,
@@ -216,6 +192,54 @@ namespace numcxx
     }
 
     ////////////////////////////////////////////////////////////////////////////////////
+    /// Expression template for  A-b
+    template<typename A, typename B,
+             typename= typename std::enable_if<std::is_base_of<ExpressionBase,A>::value, A>::type,
+             typename= typename std::enable_if<std::is_fundamental<B>::value, B>::type>
+    class RightScalarSubtractionExpression: public ExpressionBase
+    {
+        const A& a;
+        const B b; 
+    public:
+        typedef typename A::value_type value_type;
+        RightScalarSubtractionExpression(const A& a, const B& b):a(a), b(b){}
+        unsigned int size() const { return a.size(); }
+        const value_type operator[](const unsigned int i) const   { return a[i]-b; }
+    };
+        
+    template<typename A, typename B,
+             typename= typename std::enable_if<std::is_base_of<ExpressionBase,A>::value, A>::type,
+             typename= typename std::enable_if<std::is_fundamental<B>::value, B>::type>
+    const RightScalarSubtractionExpression<A,B> operator-(const A& a, const B& b)
+    {
+        return RightScalarSubtractionExpression<A,B>(a, b);
+    }
+        
+    ////////////////////////////////////////////////////////////////////////////////////
+    /// Expression template for  a-B
+    template<typename A, typename B,
+             typename= typename std::enable_if<std::is_fundamental<A>::value, A>::type,
+             typename= typename std::enable_if<std::is_base_of<ExpressionBase,B>::value, B>::type>
+    class LeftScalarSubtractionExpression: public ExpressionBase
+    {
+        const A a; 
+        const B& b;
+    public:
+        typedef typename B::value_type value_type;
+        LeftScalarSubtractionExpression(const A& a, const B& b):a(a), b(b){}
+        unsigned int size() const { return b.size(); }
+        const value_type operator[](const unsigned int i) const { return a-b[i];}
+    };
+
+    template<typename A, typename B,
+             typename= typename std::enable_if<std::is_fundamental<A>::value, A>::type,
+             typename= typename std::enable_if<std::is_base_of<ExpressionBase,B>::value, B>::type>
+    const LeftScalarSubtractionExpression<A,B> operator-(const A& a, const B& b)
+    {
+        return LeftScalarSubtractionExpression<A,B>(a, b);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////
     /// Expression template for  A/b
     template<typename A, typename B,
              typename= typename std::enable_if<std::is_base_of<ExpressionBase,A>::value, A>::type,
@@ -227,7 +251,7 @@ namespace numcxx
     public:
         typedef typename A::value_type value_type;
         RightScalarDivisionExpression(const A& a, const B& b):a(a), b(b){}
-        unsigned int size() const { return b.size(); }
+        unsigned int size() const { return a.size(); }
         const value_type operator[](const unsigned int i) const {  return a[i]/b;}
     };
 
