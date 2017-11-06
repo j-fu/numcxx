@@ -1,5 +1,7 @@
 ///
-/// \example numcxx-ref.cxx
+/// \example 11-numcxx-ref.cxx
+///
+/// Working with arrays, numcxx  style with references
 ///
 
 #include <cstdio>
@@ -22,7 +24,7 @@ double sum_elements(numcxx::DArray1 & X)
 
 int main()
 {
-    const int n=1.0e7;
+    const int n=12345678;
     // call constructor 
     numcxx::TArray1<double> X(n);
     initialize(X);  
