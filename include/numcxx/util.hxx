@@ -7,8 +7,29 @@ namespace  numcxx
 
     /// Evaluate expression as array
     ///
-    /// This shall help the issue with type inference for expression templates
-    /// \return Array of corresponding type
+    /// This shall help with the issue with type inference for expression templates
+    /// For two vectors A,B of type ``TArray<double>``, 
+    /// ````
+    /// auto C=A+B
+    /// ````
+    /// results in C being an instannce of ``AdditionExpression<TArray<double>,TArray<double>>``
+    /// which will not behave like an array. Operators like ``<<`` are not defined,
+    /// and, more dangerously, subsequent operations using C may create wrong results,
+    /// similar to the situation described in https://eigen.tuxfamily.org/dox/TopicPitfalls.html.
+    /// 
+    /// The best solution is to  avoid `auto` altogther in code with expression templates.
+    /// Just write
+    /// ````
+    /// TArray<double> C=A+B
+    /// ````
+    /// 
+    /// ``arrayexpr`` provides an (more or less experimental) alternative by using move semantics
+    /// for constructing and returning an array. So another safe way would be to write
+    /// ````
+    /// auto C=arrayexpr(A+B)
+    /// ````
+    /// resulting in C being detected as of type ``TArray<double>``
+    /// \return Array of corresponding result type of expression
     template <typename A> inline TArray1<typename A::value_type> arrayexpr(const A& a);
  
 

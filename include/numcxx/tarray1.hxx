@@ -86,7 +86,8 @@ namespace numcxx
         TArray1(const TArray1<T>& A):TArray1<T>(A.shape(0)){assign(*this,A);}
 
         /// Move constructor
-      TArray1(TArray1<T> && A):TArray1<T>(A.shape(0), A._data, [](T*p){;}){
+      TArray1(TArray1<T> && A):TArray1<T>(A.shape(0), A._data, [](T*p){;})
+      {
         TArray<T>::_deleter=std::move(A._deleter);
         TArray<T>::_datamanager=A._datamanager;  
         A._nullify();
@@ -94,6 +95,7 @@ namespace numcxx
         
         /// Move assignment
       TArray1<T>& operator=(TArray1<T> && A){
+        if ( TArray<T>::_datamanager==nullptr)   TArray<T>::_deleter(_data);
         TArray<T>::_setshape(A.shape(0));
         TArray<T>::_data=A._data; 
         TArray<T>::_deleter=A._deleter;
