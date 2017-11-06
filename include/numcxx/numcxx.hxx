@@ -4,7 +4,7 @@
 /// Numcxx template library.
 namespace numcxx
 {
-    using index= unsigned int;
+  using index= unsigned int;
 }
 
 #include "expression.ixx"
@@ -20,15 +20,15 @@ namespace numcxx
 
 namespace numcxx
 {
-    using DArray1=TArray1<double>;
-    using DArray2=TArray2<double>;
-    using DMatrix=TMatrix<double>;
-    using DSparseMatrix=TSparseMatrix<double>;
-    using DSolverLapackLU=TSolverLapackLU<double>;
-    using DSolverUMFPACK=TSolverUMFPACK<double>;
-    using DPreconJacobi=TPreconJacobi<double>;
-    using IArray1=TArray1<int>;
-    using IArray2=TArray2<int>;
+  using DArray1=TArray1<double>;
+  using DArray2=TArray2<double>;
+  using DMatrix=TMatrix<double>;
+  using DSparseMatrix=TSparseMatrix<double>;
+  using DSolverLapackLU=TSolverLapackLU<double>;
+  using DSolverUMFPACK=TSolverUMFPACK<double>;
+  using DPreconJacobi=TPreconJacobi<double>;
+  using IArray1=TArray1<int>;
+  using IArray2=TArray2<int>;
 }
 
 
