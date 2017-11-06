@@ -442,7 +442,7 @@ EXTRACT_STATIC         = YES
 # for Java sources.
 # The default value is: YES.
 
-EXTRACT_LOCAL_CLASSES  = YES
+EXTRACT_LOCAL_CLASSES  = NO
 
 # This flag is only useful for Objective-C code. If set to YES, local methods,
 # which are defined in the implementation section but not in the interface are
@@ -772,6 +772,7 @@ WARN_LOGFILE           = doxygen.log
 # Note: If this tag is empty the current directory is searched.
 
 INPUT = @PROJECT_SOURCE_DIR@/README.md 
+INPUT+= @PROJECT_SOURCE_DIR@/doc
 INPUT+= @PROJECT_SOURCE_DIR@/include/numcxx
 INPUT+= @PROJECT_SOURCE_DIR@/include/netlib
 INPUT+= @PROJECT_SOURCE_DIR@/src/numcxx
@@ -800,7 +801,7 @@ INPUT_ENCODING         = UTF-8
 # *.m, *.markdown, *.md, *.mm, *.dox, *.py, *.pyw, *.f90, *.f, *.for, *.tcl,
 # *.vhd, *.vhdl, *.ucf, *.qsf, *.as and *.js.
 
-FILE_PATTERNS          = *.cxx *.h *.hxx *.md
+FILE_PATTERNS          = *.c *.cpp  *.cxx *.h *.hxx *.ixx *.md
 
 # The RECURSIVE tag can be used to specify whether or not subdirectories should
 # be searched for input files as well.

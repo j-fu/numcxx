@@ -2,6 +2,19 @@
 /// \example 10-numcxx-expressions.cxx
 ///
 /// Demonstrate the basic usage of arrays and expression templates in numcxx.
+///
+/// Compile it with
+/// ````
+/// $ numcxx-compile -o 10-numcxx-expressions 10-numcxx-expressions.cxx
+/// ````
+/// This invokes cmake to find the installation of the numcxx library,
+/// to set up the a small cmake project and then to compile the code.
+/// 
+///
+/// Run with
+/// ````
+/// $ ./00-hello-world
+/// ````
 /// 
 /// Epression templates  provide two advantages: they allow to work with
 /// vectors using the common mathematical notations. Furthermore, for

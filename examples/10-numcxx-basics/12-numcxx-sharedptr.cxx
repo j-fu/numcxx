@@ -1,7 +1,8 @@
 ///
-///  \example numcxx-sharedptr.cxx
+///  \example 12-numcxx-sharedptr.cxx
 ///
-
+/// Working with arrays, numcxx  style with shared pointers
+///
 
 #include <cstdio>
 #include <vector>

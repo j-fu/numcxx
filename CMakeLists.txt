@@ -10,7 +10,7 @@ PROJECT(NUMCXX C CXX)
 
 set(NUMCXX_MAJOR_VERSION 0)
 set(NUMCXX_MINOR_VERSION 9)
-set(NUMCXX_PATCH_VERSION 20171031)
+set(NUMCXX_PATCH_VERSION 20171105)
 set(NUMCXX_VERSION    ${NUMCXX_MAJOR_VERSION}.${NUMCXX_MINOR_VERSION}.${NUMCXX_PATCH_VERSION})
 
 #
@@ -222,3 +222,14 @@ set(CPACK_PACKAGE_FILE_NAME  "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION_MAJO
 #
 add_custom_target(archive hg archive  ${PROJECT_BINARY_DIR}/${CPACK_PACKAGE_FILE_NAME}.zip)
 
+
+#
+# Works only on one computer...
+#
+set(MYWWW "/home/fuhrmann/Wias/www/fuhrmann")
+add_custom_target(upload 
+                 COMMAND rsync -avu html ${MYWWW}/staging/numcxx
+                 COMMAND cp -rp ${PROJECT_BINARY_DIR}/${CPACK_PACKAGE_FILE_NAME}.zip ${MYWWW}/staging/numcxx
+                 COMMAND make -C ${MYWWW}/sitesrc upload
+                 DEPENDS dox archive
+                 )
