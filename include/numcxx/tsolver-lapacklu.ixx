@@ -6,7 +6,19 @@ namespace numcxx
     pMatrix(pMatrix),
     pLU(pMatrix->clone()),
     pIPiv(TArray1<int>::create(pMatrix->shape(0)))
-  { update();;}
+  {
+    update();;
+  }
+  
+  template<typename T> 
+  inline TSolverLapackLU<T>::TSolverLapackLU(const TMatrix<T> &Matrix):
+    TLinSolver<T>(),
+    pMatrix(0),
+    pLU(TMatrix<T>::create(Matrix.shape(0),Matrix.shape(1))),
+    pIPiv(TArray1<int>::create(Matrix.shape(0)))
+  { 
+    update(Matrix);
+  }
     
   template<typename T> 
   inline std::shared_ptr<TSolverLapackLU<T>> TSolverLapackLU<T>::create(const std::shared_ptr<TMatrix<T>> a)
@@ -25,11 +37,11 @@ namespace numcxx
   }
 
   template<> 
-  inline void TSolverLapackLU<double>::update()
+  inline void TSolverLapackLU<double>::update(const TMatrix<double>& Matrix)
   {
     int n=pLU->shape(0);
     int info=0;
-    *pLU=*pMatrix;
+    *pLU=Matrix;
     dgetrf_(&n,&n,pLU->data(),&n,pIPiv->data(),&info);
     if (info!=0)
     {
@@ -58,11 +70,11 @@ namespace numcxx
 
 
   template<> 
-  inline void TSolverLapackLU<float>::update()
+  inline void TSolverLapackLU<float>::update(const TMatrix<float>& Matrix)
   {
     int n=pLU->shape(0);
     int info;
-    *pLU=*pMatrix;
+    *pLU=Matrix;
     sgetrf_(&n,&n,pLU->data(),&n,pIPiv->data(),&info);
     if (info!=0)
     {
@@ -72,6 +84,15 @@ namespace numcxx
     }
 
   }
+
+  template<typename T> 
+  void TSolverLapackLU<T>::update()
+  {
+    if (pMatrix==nullptr)
+      throw std::runtime_error("numcxx: TSolverLapackLU created without smartpointer");
+    update(*pMatrix);
+  }
+  
     
   template<> 
   inline void TSolverLapackLU<float>::solve( TArray<float> & sol,  const TArray<float> & rhs) const
