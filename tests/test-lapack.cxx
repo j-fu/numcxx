@@ -28,5 +28,6 @@ int main(void)
     double residual=normi(M*U-F);
     
     std::cout << "residual:" << residual << std::endl;
+    assert(residual<1.0e-15);
 }
 
