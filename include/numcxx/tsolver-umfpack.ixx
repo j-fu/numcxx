@@ -1,3 +1,9 @@
+///
+/// \file tsolver-umfpack.ixx
+///
+/// Inline method definitions for class numcxx::TSolverUMFPACK
+///
+
 #include <cstdio>
 #include <umfpack.h>
 namespace numcxx
@@ -11,6 +17,15 @@ namespace numcxx
     Numeric(nullptr)
   {
     update();
+  }
+
+  template<typename T> 
+  inline TSolverUMFPACK<T>::TSolverUMFPACK(const TSparseMatrix<T> &Matrix):
+    pMatrix(nullptr),
+    Symbolic(nullptr),
+    Numeric(nullptr)
+  {
+    update(Matrix);
   }
 
   template<typename T> 
@@ -39,11 +54,20 @@ namespace numcxx
   template<typename T> 
   inline void TSolverUMFPACK<T>::update()
   {
-    pMatrix->flush();
-    if (pMatrix->empty()) return;
-    int n=pMatrix->shape(0);
-    int nia=pMatrix->pIA->size();
-    int nja=pMatrix->pJA->size();
+    if (pMatrix==nullptr)
+      throw std::runtime_error("numcxx: TSolverUMFPACK created without smartpointer");
+    update(*pMatrix);
+  }
+  template<typename T> 
+  inline void TSolverUMFPACK<T>::update(const TSparseMatrix<T> &Matrix)
+  {
+    if (Matrix.empty()) return;
+    if (Matrix.pattern_changed())
+      throw std::runtime_error("numcxx: forgot flush() after sparse pattern changed");
+      
+    int n=Matrix.shape(0);
+    int nia=Matrix.pIA->size();
+    int nja=Matrix.pJA->size();
 
 
     // double Control[UMFPACK_CONTROL];
@@ -56,11 +80,11 @@ namespace numcxx
     double *control=nullptr;
         
     int status;
-    if (pMatrix->pattern_changed() || Symbolic==nullptr)
+    if (Matrix.pattern_changed() || Symbolic==nullptr)
     {
       if (Symbolic) umfpack_di_free_symbolic(&Symbolic),Symbolic=nullptr;
       if (Numeric) umfpack_di_free_numeric(&Numeric),Numeric=nullptr;
-      status=umfpack_di_symbolic (n, n, pMatrix->pIA->data(), pMatrix->pJA->data(), pMatrix->pA->data(), &Symbolic, 0, 0);
+      status=umfpack_di_symbolic (n, n, Matrix.pIA->data(), Matrix.pJA->data(), Matrix.pA->data(), &Symbolic, 0, 0);
       if (status>1)
       {
         char errormsg[80];
@@ -74,14 +98,17 @@ namespace numcxx
       umfpack_di_free_numeric(&Numeric);
       Numeric=nullptr;
     }
-    status =umfpack_di_numeric (pMatrix->pIA->data(), pMatrix->pJA->data(), pMatrix->pA->data(), Symbolic, &Numeric, control, 0) ;
+    status =umfpack_di_numeric (Matrix.pIA->data(), Matrix.pJA->data(), Matrix.pA->data(), Symbolic, &Numeric, control, 0) ;
     if (status>1)
     {
       char errormsg[80];
       snprintf(errormsg,80,"numcxx::TSolverUMFPACK::update: umfpack_di_numeric error %d\n",status);
       throw std::runtime_error(errormsg);
     }
-    pMatrix->pattern_changed(false);
+    /// copy matrix data for use in solve
+    pIA=Matrix.pIA;
+    pJA=Matrix.pIA;
+    pA=Matrix.pA;
   }
     
   /// Solve LU factorized system
@@ -91,7 +118,7 @@ namespace numcxx
     Sol.resize(Rhs.size());
     double *control=nullptr;
     int status;
-    status=umfpack_di_solve (UMFPACK_At,pMatrix->pIA->data(), pMatrix->pJA->data(), pMatrix->pA->data(), Sol.data(), Rhs.data(), Numeric, control, 0 ) ;
+    status=umfpack_di_solve (UMFPACK_At,pIA->data(), pJA->data(),pA->data(), Sol.data(), Rhs.data(), Numeric, control, 0 ) ;
     if (status>1)
     {
       char errormsg[80];

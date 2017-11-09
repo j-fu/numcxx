@@ -1,3 +1,9 @@
+///
+/// \file tsparsematrix.hxx
+///
+/// Header for class numcxx::TSparseMatrix
+///
+
 #ifndef NUMCXX_TSPARSEMATRIX_H
 #define NUMCXX_TSPARSEMATRIX_H
 
@@ -61,7 +67,7 @@ namespace numcxx
     std::shared_ptr<TMatrix<T>> copy_as_dense();
 
     /// Return the shape od the matrix
-    index shape(int idim) {return n;}
+    index shape(int idim)  const  {return n;}
         
     /// Copy constructor is deleted
     TSparseMatrix(const TSparseMatrix<T>& A)=delete;
@@ -87,13 +93,14 @@ namespace numcxx
     /// Calculate inverse of sparse matrix whuch is dense
     std::shared_ptr<TMatrix<T>> calculate_inverse();
 
+    /// Check if pattern has changed after last solver
+    /// update
+    bool pattern_changed()  const  {return _pattern_changed;}
+
   private:
 
 
 
-    /// Check if pattern has changed after last solver
-    /// update
-    bool pattern_changed(){return _pattern_changed;}
 
     void pattern_changed(bool chg) {_pattern_changed=chg;};
 
@@ -103,7 +110,7 @@ namespace numcxx
     int maxrow=0;
 
     bool _first_flush_done=false;
-    bool empty() { return !_first_flush_done;}
+    bool empty()  const { return !_first_flush_done;};
     /// Row entry for flush method
     class RowEntry;
 
