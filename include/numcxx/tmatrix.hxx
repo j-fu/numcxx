@@ -1,3 +1,7 @@
+/// \file tmatrix.hxx
+/// 
+/// Header for numcxx::TMatrix
+///
 #ifndef NUMCXX_TMATRIX_H
 #define NUMCXX_TMATRIX_H
 
@@ -8,7 +12,28 @@
 
 namespace numcxx
 {
-  /// Dense matrix class
+  /// Dense matrix class.
+  /// 
+  /// Besides two dimensional
+  /// indexing like for numcxx::TArray2 it provides the  method  numcxx::TMatrix::apply()
+  /// for efficient matrix-vector multiplication via LAPACK dgemm.
+  ///
+  /// Alternatively LeftMatrixMultiplicationExpression<A,B> operator*(const A& a, const B& b)
+  /// can be used as an expression template which allows an instance of this class to be
+  /// used in typical linear algebra expressions.
+  ///
+  /// Instances of this class can be created in various ways. The preferred
+  /// construction of empty array goes like this:
+  /// ````
+  /// numcxx::TMatrix<double> A(n,m);
+  /// std::shared_ptr<numcxx::TMatrix<double>> pA=numcxx::TMatrix<double>::create(n,m)
+  /// ````
+  /// 
+  /// As a derived class from numcxx::TArray<T>  it is merely a facade to the content
+  /// in the base class. 
+  /// 
+  /// An alias numcxx::DMatrix for numcxx::TMatrix<double> is available from numcxx.h.
+
   template<typename T> 
   class TMatrix: public TArray<T>, public TLinOperator<T>, public MatrixExpressionBase
   {
@@ -17,8 +42,6 @@ namespace numcxx
     using TArray<T>::shape;
     using TArray<T>::operator[];
         
-    /// Construct zero size array.
-    TMatrix(): TArray<T>(){_assert_square();};
         
     /// Construct an empty matrix
     ///
@@ -107,12 +130,21 @@ namespace numcxx
         
     /// Apply matrix to vector
     ///
+    /// This method performs a matrix-vector multiplication.
+    /// 
+    /// For float and double  datatypes,  sgemm resp. dgemm of LAPACK are called.
+    ///
     /// \param u input
     /// \param v output: v=A*u
+    ///
     void apply(const TArray<T> &u, TArray<T> &v) const;
         
     /// Calculate inverse of matrix
     std::shared_ptr<TMatrix<T>> calculate_inverse();
+
+    /// Construct zero size matrix.
+    TMatrix(): TArray<T>(){_assert_square();};
+
 
     bool is_matrix(){return true;}
         

@@ -38,5 +38,6 @@ projects:
 - [Trilinos/DOMI](https://trilinos.org/packages/domi)
 
 ## Further information
+ - [Introduction](doc/intro.md) 
  - [Installation](doc/installation.md) 
 

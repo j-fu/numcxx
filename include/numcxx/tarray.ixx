@@ -1,5 +1,7 @@
-/////////////////////////////////////////////////
-// Inline methods of TArray<T>
+/// \file tarray.ixx
+/// 
+/// Inline metho definitions for numcxx::TArray
+///
 #include <cstdlib>
 #include <cmath>
 

@@ -1,3 +1,17 @@
+/// \file numcxx.hxx
+///
+/// Main header of the library. 
+///
+/// It includes 
+/// all other necessary headers In a typical installation  it 
+/// should be included via
+/// ````
+/// #include <numcxx/numcxx.hxx>
+/// ````
+///
+/// Besides including the main headers, it provides alias declarations
+/// for specializations of the main classes
+/// 
 #ifndef NUMCXX_HXX
 #define NUMCXX_HXX
 

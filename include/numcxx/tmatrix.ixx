@@ -1,3 +1,8 @@
+/// 
+/// \file tmatrix.ixx
+///
+/// Inline method definitions for class numcxx::TMatrix
+/// 
 #include "tsolver-lapacklu.hxx"
 namespace numcxx
 {

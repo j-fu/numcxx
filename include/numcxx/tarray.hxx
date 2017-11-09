@@ -1,3 +1,7 @@
+/// \file tarray.hxx
+/// 
+/// Header for numcxx::TArray
+///
 #ifndef NUMCXX_TARRAY_H
 #define NUMCXX_TARRAY_H
 #include <ostream>
@@ -23,12 +27,22 @@ namespace numcxx
   public:
 
     typedef T value_type;
+
+    /// Access operator for 1D arrays.
+    ///
+    /// \param i0  Index of element to be accessed.
+    /// \return    Reference to element to be accessed.
+    T & operator()(const index i0)  { return _data[_idx(i0)];};
+    const T & operator()(const index i0) const  { return _data[_idx(i0)];};
+
+    /// Access operator for 2D arrays.
+    ///
+    /// \param i0  Row index of element to be accessed.
+    /// \param i0  Column index of element to be accessed.
+    /// \return    Reference to element to be accessed.
+    T & operator()(const index i0, const index i1)  { return _data[_idx(i0,i1)];};
+    const T & operator()(const index i0, const index i1) const { return _data[_idx(i0,i1)];};
     
-    /// Obtain C-pointer of data array.
-    /// 
-    /// \return Address of C-Array managed by the class which holds
-    ///         the data
-    T*data() const { return _data;}
 
     /// Obtain tensor dimension of array.
     /// 
@@ -96,23 +110,7 @@ namespace numcxx
     static void operate(std::function< void ( T& a, T&b,T&c)> f, TArray<T> & A, TArray<T> & B,TArray<T> & C);
 
 
-    /// Access operator for 1D arrays.
-    ///
-    /// \param i0  Index of element to be accessed.
-    /// \return    Reference to element to be accessed.
-    T & operator()(const index i0)  { return _data[_idx(i0)];};
-    const T & operator()(const index i0) const  { return _data[_idx(i0)];};
-
-    /// Access operator for 2D arrays.
-    ///
-    /// \param i0  Row index of element to be accessed.
-    /// \param i0  Column index of element to be accessed.
-    /// \return    Reference to element to be accessed.
-    T & operator()(const index i0, const index i1)  { return _data[_idx(i0,i1)];};
-    const T & operator()(const index i0, const index i1) const { return _data[_idx(i0,i1)];};
-
-
-    /// Reference to entry 
+    /// Alternative access operator for 1D arrays
     T & operator[](const index i) { return _data[i];}
 
     /// Const reference to entry for use in expression templates
@@ -122,8 +120,16 @@ namespace numcxx
     template <typename VAL>
     TArray<T>&  operator=(const VAL  &expr)  {return assign(*this,expr);}
 
+    /// Obtain C-pointer of data array.
+    /// 
+    /// \return Address of C-Array managed by the class which holds
+    ///         the data
+    T*data() const { return _data;}
+
+
     /// Resize array
     void resize(size_t n);
+
 
     /// Copy constructor is deleted
     TArray(const TArray<T>& A)=delete;
