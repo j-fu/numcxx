@@ -1,44 +1,59 @@
+///
+/// \file expression.ixx
+///
+/// Implementation of expression templates 
+///
+///
+/// Inspired by ideas from:
+///
+/// Iglberger, K., Hager, G., Treibig,  J., & Rüde, U. (2012). Expression
+/// templates    revisited:   a    performance    analysis   of    current
+/// methodologies. SIAM Journal on Scientific Computing, 34(2), C42-C69.
+/// https://arxiv.org/pdf/1104.1729
+///
+/// ## Pitfalls encountered.
+///
+/// ### Pitfall 1
+///
+/// All classes to be used with the numcxx expression templates
+/// should be derived from numcxx specific base classes. The rationale is the control
+/// of expression template specialization via ``std::is_base_of``,
+/// and the prevention of accidental invocation of the templates
+/// in unexpected situations, e.g. with STL vectors.
+/// It seems that C++11 provides much better tool to handle this situation via
+/// its type_traits
+///
+/// ### Pitfall 2
+///
+/// Epression templates using scalars shall store the scalar as a value
+/// and not as a reference. E.g. g++ -O optimizes these references away.
+/// It seems that this behaviour has to be expected by default,
+/// see e.g. Vandevoorde/Josuttis, C++ Templates: The Complete Guide, 2nd Ed. 18.2.1
+/// or   http://www.cplusplus.com/forum/general/72582/#msg387184
+/// (the broken link therein goes to Vandevoorde/Josuttis) 
+///
+
+
 #ifndef NUMCXX_EXPRESSION_HXX
 #define NUMCXX_EXPRESSION_HXX
 #include <type_traits>
 
-
-// Implementation of expression templates inspired by ideas from 
-//
-// Iglberger, K., Hager, G., Treibig,  J., & Rüde, U. (2012). Expression
-// templates    revisited:   a    performance    analysis   of    current
-// methodologies. SIAM Journal on Scientific Computing, 34(2), C42-C69.
-// https://arxiv.org/pdf/1104.1729
-
-// Pitfalls encountered.
-//
-// Pitfall 1
-//
-// All classes to be used with the numcxx expression templates
-// should be derived from numcxx specific base classes. The rationale is the control
-// of expression template specialization via ``std::is_base_of``,
-// and the prevention of accidental invocation of the templates
-// in unexpected situations, e.g. with STL vectors.
-// It seems that C++11 provides much better tool to handle this situation via
-// its type_traits
-
-// Pitfall 2
-//
-// Epression templates using scalars shall store the scalar as a value
-// and not as a reference. E.g. g++ -O optimizes these references away.
-// It seems that this behaviour has to be expected by default,
-// see e.g. Vandevoorde/Josuttis, C++ Templates: The Complete Guide, 2nd Ed. 18.2.1
-// or   http://www.cplusplus.com/forum/general/72582/#msg387184
-// (the broken link therein goes to Vandevoorde/Josuttis) 
-//
-
-
 namespace numcxx
 {
 
-  // Base classes for arrays used in expression templates
+  /// Empty base classes for Array expressions
+  ///
+  /// Used to control template instantiation via type_traits
   class ExpressionBase  { };
+
+  /// Empty base classes for dense matrix aexpressions
+  ///
+  /// Used to control template instantiation via type_traits
   class MatrixExpressionBase  { };
+
+  /// Empty base classes for sparse matrix expressions
+  ///
+  /// Used to control template instantiation via type_traits
   class SparseMatrixExpressionBase { };
 
 

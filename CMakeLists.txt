@@ -1,4 +1,4 @@
-#################################################################################
+###############################################################################
 # See 
 #   https://cmake.org/Wiki/CMake/Tutorials/How_to_create_a_ProjectConfig.cmake_file
 #   https://github.com/forexample/package-example
@@ -10,7 +10,7 @@ PROJECT(NUMCXX C CXX)
 
 set(NUMCXX_MAJOR_VERSION 0)
 set(NUMCXX_MINOR_VERSION 10)
-set(NUMCXX_PATCH_VERSION 20171106)
+set(NUMCXX_PATCH_VERSION 20171108)
 set(NUMCXX_VERSION    ${NUMCXX_MAJOR_VERSION}.${NUMCXX_MINOR_VERSION}.${NUMCXX_PATCH_VERSION})
 
 #

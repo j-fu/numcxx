@@ -1,16 +1,33 @@
+/// \file tarray1.hxx
+/// 
+/// Header for numcxx::TArray1
+///
 #ifndef NUMCXX_TARRAY1_H
 #define NUMCXX_TARRAY1_H
 #include <vector>
 #include "tarray.hxx"
 
-
-
-
 namespace numcxx
 {
 
-    
+  ///
   /// One dimensional array class
+  /// 
+  /// Instances of this class can be created in various ways. The preferred
+  /// construction of empty array goes like this:
+  /// ````
+  /// numcxx::TArray1<double> A(n);
+  /// std::shared_ptr<numcxx::TArray1<double>> pA=numcxx::TArray1<double>::create(n)
+  /// ````
+  /// 
+  /// As a derived class from numcxx::TArray<T>  it is merely a facade to the content
+  /// in the base class. 
+  /// 
+  /// An alias numcxx::DArray1 for numcxx::TArray1<double> is available from numcxx.h.
+  ///
+  /// For this class, expression templates are defined in expression.ixx which allow
+  /// to use these arrays in standard linear algebra expressions.
+  ///
   template<typename T> class TArray1: public TArray<T>, public ExpressionBase
   {
   public:
@@ -20,23 +37,30 @@ namespace numcxx
     using TArray<T>::operator=;
 
 
-    // Default constructor.
-    TArray1():TArray<T>(){};
         
 
     /// Construct an empty 1D array.
     ///
+    /// After construction, the entry values are unitialized
     /// \param n0 Size.
-    TArray1(index n0):TArray<T>(n0){};
+    TArray1(index n):TArray<T>(n){};
 
-    /// Construct an 1D array from data pointer
+    /// Construct 1D Array from std::initializer list.
+    /// 
+    /// This is the preferable way for small arrays. It allows to write e.g.
+    /// ````
+    /// TArray1<double> A={1,2,3};
+    /// ````
+    TArray1(const std::initializer_list<T> &il ):TArray<T>(il){};
+
+    /// Construct an 1D array from  plain old C Array
     ///
     /// \param n0 Size.
     /// \param data Pointer to data.
     /// \param deleter Deleter method, \see TArray<T>#_deleter
     TArray1(index n0, T*data, std::function<void(T*p)> deleter):TArray<T>(n0,data,deleter){};
 
-    /// Construct an 1D array from data pointer
+    /// Construct an 1D array from  smartpointer managed array
     ///
     /// \param n0 Size.
     /// \param data Pointer to data.
@@ -45,20 +69,15 @@ namespace numcxx
     TArray1(index n0, T*data, std::shared_ptr<void> datamanager):TArray<T>(n0,data,datamanager){}; 
 
 
-    /// Construct 1D Array from std::initializer list.
-    TArray1(const std::initializer_list<T> &il ):TArray<T>(il){};
-
-
-    /// Construct 1D Array from std::vector.
+    /// Construct 1D Array from smart pointer to std::vector.
     ///
-    ///  \param v Smart pointer to vector. A copy (increasin refcount)
+    ///  \param v Smart pointer to vector. A copy (increasing refcount)
     /// is stored as datamanager in created object.
     TArray1(std::shared_ptr<std::vector<T>> v):TArray<T>(v->size(),v->data(),v){};
 
-
-    /// Construct empty 1D Array
     ///
-    /// Mainly for access from python
+    /// Construct smart pointer empty 1D Array
+    ///
     static std::shared_ptr<TArray1 <T> > create(index n1) { return std::make_shared<TArray1 <T> >(n1);}
 
 
@@ -68,7 +87,8 @@ namespace numcxx
     /// which has problems to detect the type of the ``initializer_list``.
     static std::shared_ptr<TArray1 <T> > create(const std::initializer_list<T> il){return std::make_shared<TArray1 <T> >(il);}
 
-    /// Create a copy.
+    /// Create a copy
+    ///
     std::shared_ptr<TArray1 <T> > copy() const {return std::make_shared<TArray1 <T>>(*this); }
 
 
@@ -92,7 +112,7 @@ namespace numcxx
       TArray<T>::_datamanager=A._datamanager;  
       A._nullify();
     }
-        
+
     /// Move assignment
     TArray1<T>& operator=(TArray1<T> && A){
       if ( TArray<T>::_datamanager==nullptr)   TArray<T>::_deleter(_data);
@@ -104,7 +124,7 @@ namespace numcxx
       return *this;
     }
         
-    // Copy constructor from expression
+    /// Copy constructor from expression
     template <typename EXPR, typename= typename std::enable_if<std::is_class<EXPR>::value, EXPR>::type>
     TArray1(const EXPR& A):TArray1<T>(A.size()){assign(*this,A);}
 
@@ -137,8 +157,11 @@ namespace numcxx
     /// \param x value to be copied to element at index.
     void __setitem__(index i0,T x)  { _data[_idx(i0)]=x; };
 
+    
+    bool is_matrix()  {return false;};
 
-    bool is_matrix(){return false;}
+    /// Default constructor.
+    TArray1():TArray<T>(){};
 
   private:
     using TArray<T>::_data;

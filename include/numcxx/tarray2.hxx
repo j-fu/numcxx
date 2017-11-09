@@ -1,3 +1,9 @@
+///
+/// \file tarray2.hxx
+/// 
+/// Header for numcxx::TArray2
+///
+
 #ifndef NUMCXX_TARRAY2_H
 #define NUMCXX_TARRAY2_H
 
@@ -7,6 +13,20 @@
 namespace  numcxx
 {
   /// Two-dimensional array class
+  ///
+  /// Instances of this class can be created in various ways. The preferred
+  /// construction of empty array goes like this:
+  /// ````
+  /// numcxx::TArray2<double> A(n,m);
+  /// std::shared_ptr<numcxx::TArray2<double>> pA=numcxx::TArray2<double>::create(n,m)
+  /// ````
+  /// 
+  /// As a derived class from numcxx::TArray<T>  it is merely a facade to the content
+  /// in the base class. 
+  /// 
+  /// An alias numcxx::DArray2 for numcxx::TArray2<double> is available from numcxx.h.
+  ///
+  ///
   template<typename T> 
   class TArray2: public TArray<T>, public ExpressionBase
   {
@@ -16,8 +36,6 @@ namespace  numcxx
     using TArray<T>::operator[];
     using TArray<T>::operator=;
         
-    // Construct zero size array.
-    TArray2():TArray<T>(){};;
 
     /// Construct an empty 2D array.
     ///
@@ -55,6 +73,8 @@ namespace  numcxx
     /// Assignment operator
     TArray2<T>&  operator=(const TArray2<T> &expr) { return static_cast<TArray2<T>&>(assign(*this,expr));}
 
+    // Construct zero size array.
+    TArray2():TArray<T>(){};;
 
 
     /// Construct empty 2D Array

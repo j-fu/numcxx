@@ -1,3 +1,8 @@
+///
+/// \file tsolver-lapacklu.ixx
+///
+/// Inline methods for  numcxx::TSolverLapackLU
+/// 
 namespace numcxx
 {
   template<typename T> 
@@ -26,6 +31,7 @@ namespace numcxx
     return std::make_shared<TSolverLapackLU<T>>(a);
   }
 
+  // Declarations for Fortran methos from LAPACK
   extern "C" 
   {
     void sgetrf_(int *n, int *m, float *a, int *lda, int* ipiv, int *info);
