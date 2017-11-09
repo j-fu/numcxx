@@ -1,3 +1,8 @@
+///
+/// \file tsparsematrix.ixx
+///
+/// Inline method definitions for  class numcxx::TSparseMatrix
+///
 #include <algorithm>
 #include <functional>
 #include "tsolver-lapacklu.hxx"
@@ -194,7 +199,7 @@ namespace numcxx
     pJA=pNew_JA;
     pA=pNew_A;
     maxrow=New_maxrow;
-    _pattern_changed=true;
+    _pattern_changed=false;
     _first_flush_done=true;
     pExt=nullptr;
   }
@@ -236,6 +241,7 @@ namespace numcxx
         return A[k];
         
     if (pExt==nullptr) pExt=std::make_shared<Extension>(n);
+    pattern_changed(true);
     return pExt->entry(i,j);
   }
 
