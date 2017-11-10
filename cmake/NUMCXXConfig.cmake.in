@@ -1,13 +1,20 @@
-# - Config file for the FooBar package
-# It defines the following variables
+# Config file for the numcxx package
+# It defines the following variables for the standard cmake find interface
+#  
 #  NUMCXX_INCLUDE_DIRS - include directories for FooBar
 #  NUMCXX_LIBRARIES    - libraries to link against
- 
+#  NUMCXX_CMAKE_DIR    - directory where NUMCXXConfig.cmake has been found
+
 # Compute paths
+
 get_filename_component(NUMCXX_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+
 set(NUMCXX_INCLUDE_DIRS "@NUMCXX_INCLUDE_DIRS@" "@UMFPACK_INCLUDES@")
+
 set(CMAKE_CXX_STANDARD 11)
+
 include("${CMAKE_CURRENT_LIST_DIR}/@NUMCXX_EXPORT_NAME@Targets.cmake")
+
 set(NUMCXX_LIBRARIES numcxx "@UMFPACK_LIBRARIES@" "@LAPACK_LIBRARIES@")
 
 

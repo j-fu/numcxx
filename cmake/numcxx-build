@@ -28,6 +28,13 @@ FLAGS:
 EOF
 }
 
+#
+# https://stackoverflow.com/a/40554323
+#
+# Assume numcxx-build is installed in somewhere/bin, we can 
+# find NUMCXXConfig.make using this information
+# 
+numcxx_root=`dirname $0 | while read a; do cd $a && pwd && break; done`
 
 output=main
 
@@ -89,7 +96,7 @@ cmake_minimum_required(VERSION 2.8.12)
 
 PROJECT($project C CXX)
 
-find_package(NUMCXX REQUIRED PATHS @PATH_HINT_DIR@)
+find_package(NUMCXX REQUIRED PATHS "$numcxx_root/../;$numcxx_root/../.build")
 
 include_directories("\${NUMCXX_INCLUDE_DIRS}")
 
@@ -103,6 +110,9 @@ endif()
 
 add_executable($output $files)
 
+message(STATUS "")
+message(STATUS "numcxx installation: \${NUMCXX_CMAKE_DIR}")
+message(STATUS "")
 EOF
 
 if test x$verbose != x ; then

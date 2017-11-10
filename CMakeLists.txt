@@ -29,9 +29,9 @@ SET(NUMCXX_CONFIG "" CACHE STRING "NUMCXX  Config name")
 #
 set(NUMCXX_EXPORT_NAME "NUMCXX${NUMCXX_CONFIG}")
 
-
-set(CMAKE_EXPORT_COMPILE_COMMANDS "ON" CACHE STRING "export compile commands")
-
+#
+# Path to a couple of our own FindXXX.cmake files (e.g. UMFPACK)
+#
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
 #################################################################################
@@ -48,14 +48,14 @@ find_package(UMFPACK REQUIRED QUIET)
 message(STATUS "LAPACK_LIBRARIES : ${LAPACK_LIBRARIES}")
 message(STATUS "UMFPACK_LIBRARIES: ${UMFPACK_LIBRARIES}")
 
+#
+# LAPACK has no includes... 
+#
 include_directories(${UMFPACK_INCLUDES})
 
 link_libraries(${LAPACK_LIBRARIES})
 link_libraries(${UMFPACK_LIBRARIES})
 include_directories(include)
-
-
-
 
 
 add_subdirectory(src)
@@ -64,6 +64,9 @@ enable_testing()
 add_subdirectory(tests)
 
 
+#
+# Add target dox for building doxygen documentation in  build directory
+#
 if (DOXYGEN_FOUND)
   configure_file(${PROJECT_SOURCE_DIR}/cmake/Doxyfile.in "${PROJECT_BINARY_DIR}/Doxyfile" @ONLY)
   # Somehow, doxygen seems to not recognise .md files properly from other
@@ -75,17 +78,57 @@ if (DOXYGEN_FOUND)
     VERBATIM )
 endif()
 
+#
+# Copy numcxx-build to bin. This is a kind of style break
+# with regard to the idea of out-of-source build.
+#
+file(COPY 
+  ${PROJECT_SOURCE_DIR}/cmake/numcxx-build
+  DESTINATION ${PROJECT_SOURCE_DIR}/bin
+  FILE_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE 
+  GROUP_READ  GROUP_EXECUTE 
+  WORLD_READ WORLD_EXECUTE)
+
+
+# 
+# Archive
+# 
+set(ZIP_FILE_NAME_ROOT  "numcxx-${NUMCXX_VERSION}")
+
+#
+# What is the easy way to do this with CPack proper ?
+#
+add_custom_target(zip hg archive  ${PROJECT_BINARY_DIR}/${ZIP_FILE_NAME_ROOT}.zip)
+
+
+#
+# Upload doc
+#
+set(MYWWW "/home/fuhrmann/Wias/www/fuhrmann")
+add_custom_target(upload 
+                 COMMAND rsync -avu html ${MYWWW}/staging/numcxx
+                 COMMAND cp -rp ${PROJECT_BINARY_DIR}/${CPACK_PACKAGE_FILE_NAME}.zip ${MYWWW}/staging/numcxx
+                 COMMAND make -C ${MYWWW}/sitesrc upload
+                 DEPENDS dox zip
+                 )
+
+#######################################################
+#######################################################
+# From here on, things can be more or less well cloned
+# for other packages
 
 ########################################################
 #
-# Export the package for use from the build-tree.
+# Magic for package use from the build tree.
 #
-# This registers the build-tree with a global CMake-registry,
+# This registers the build tree with a global CMake registry,
 # On unix, it sits under .cmake/packages. 
-# find_packages()  via the NAMES section is able to distinguish between
-# them. This allows to access the current installation 
+# This allows to access the current installation 
 # from other packages. No need to "make export" whatsoever.
 #
+# find_packages()  via the NAMES section is able to distinguish between
+# different export names.
+
 export(PACKAGE ${NUMCXX_EXPORT_NAME})
 
 #
@@ -107,33 +150,16 @@ set(NUMCXX_LIBRARIES numcxx)
 configure_file(cmake/NUMCXXConfig.cmake.in   "${PROJECT_BINARY_DIR}/${NUMCXX_EXPORT_NAME}Config.cmake" @ONLY)
 configure_file(cmake/NUMCXXConfigVersion.cmake.in  "${PROJECT_BINARY_DIR}/${NUMCXX_EXPORT_NAME}ConfigVersion.cmake" @ONLY)
 
-#
-# Directory for path hint in numcxx-build. This should be the directory
-# where  *Config*.cmake for this installation is found
-#
-set(PATH_HINT_DIR "${PROJECT_BINARY_DIR}")
-configure_file(cmake/numcxx-build.in  "${PROJECT_BINARY_DIR}/numcxx-build" @ONLY)
-
-#
-# Copy numcxx-build to bin. This is a kind of style break
-# with regard to the idea of out-of-source build.
-#
-file(COPY 
-  ${PROJECT_BINARY_DIR}/numcxx-build
-  DESTINATION ${PROJECT_SOURCE_DIR}/bin
-  FILE_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE 
-  GROUP_READ  GROUP_EXECUTE 
-  WORLD_READ WORLD_EXECUTE)
 
 
 ########################################################
 #
-# Magic for install target.
+# Magic for installation 
 #
 # make install will install the package to ${CMAKE_INSTALL_PREFIX}/{lib|bin|include}
-# The cmake find stuff shall be  in lib/cmake 
+# The cmake find stuff shall be  in lib/cmake/numcxx 
 #
-# Relocatable according to 
+# The way it is done here produces a relocatable package.
 # https://cmake.org/Wiki/CMake/Tutorials/How_to_create_a_ProjectConfig.cmake_file
 #
 # It works from the same config.in files 
@@ -167,16 +193,18 @@ foreach(p LIB BIN INCLUDE CMAKE)
   endif()
 endforeach()
 
+#
+# Get include dir relative to install directory
+#
 file(RELATIVE_PATH REL_INCLUDE_DIR "${INSTALL_CMAKE_DIR}"   "${INSTALL_INCLUDE_DIR}")
 
-
+#
+# This will  end up in NUMCXXConfig.cmake making things relocatable
+#
 set(NUMCXX_INCLUDE_DIRS "\${CMAKE_CURRENT_LIST_DIR}/${REL_INCLUDE_DIR}")
 
 configure_file(cmake/NUMCXXConfig.cmake.in   "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${NUMCXX_EXPORT_NAME}Config.cmake" @ONLY)
 configure_file(cmake/NUMCXXConfigVersion.cmake.in  "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${NUMCXX_EXPORT_NAME}ConfigVersion.cmake" @ONLY)
-
-set(PATH_HINT_DIR "${INSTALL_CMAKE_DIR}")
-configure_file(cmake/numcxx-build.in  "${PROJECT_BINARY_DIR}/${CMAKE_FILES_DIRECTORY}/numcxx-build" @ONLY)
 
 
 #
@@ -188,8 +216,11 @@ install(FILES
   DESTINATION "${INSTALL_CMAKE_DIR}" 
   COMPONENT dev)
 
+#
+# Install shell script etc.
+#
 install(PROGRAMS  
-  "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/numcxx-build" 
+  ${PROJECT_SOURCE_DIR}/cmake/numcxx-build
   DESTINATION bin 
   COMPONENT dev)
 
@@ -211,30 +242,3 @@ install(EXPORT
 # TODO: rewrite this to be clean CMake
 add_custom_target(uninstall cat ${PROJECT_BINARY_DIR}/install_manifest.txt | xargs rm -fv)
 
-##########################################################################################
-# 
-# Archive
-# 
-set(CPACK_PACKAGE_NAME numcxx)
-set(CPACK_PACKAGE_VERSION_MAJOR ${NUMCXX_MAJOR_VERSION})
-set(CPACK_PACKAGE_VERSION_MINOR ${NUMCXX_MINOR_VERSION})
-set(CPACK_PACKAGE_VERSION_PATCH ${NUMCXX_PATCH_VERSION})
-set(CPACK_PACKAGE_DESCRIPTION "Lightweight classes for numerics in  C++11")
-set(CPACK_PACKAGE_FILE_NAME  "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}")
-
-#
-# What is the easy way to do this with CPack proper ?
-#
-add_custom_target(archive hg archive  ${PROJECT_BINARY_DIR}/${CPACK_PACKAGE_FILE_NAME}.zip)
-
-
-#
-# Works only on one computer...
-#
-set(MYWWW "/home/fuhrmann/Wias/www/fuhrmann")
-add_custom_target(upload 
-                 COMMAND rsync -avu html ${MYWWW}/staging/numcxx
-                 COMMAND cp -rp ${PROJECT_BINARY_DIR}/${CPACK_PACKAGE_FILE_NAME}.zip ${MYWWW}/staging/numcxx
-                 COMMAND make -C ${MYWWW}/sitesrc upload
-                 DEPENDS dox archive
-                 )
