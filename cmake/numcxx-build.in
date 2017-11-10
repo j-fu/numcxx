@@ -114,7 +114,7 @@ fi
 if test  x$doreset != x ; then
     if  test -d $build; then
         rm -r $build
-        if test x$verbose !=x ; then
+        if test x$verbose != x ; then
             echo numcxx-build: Removed build directory $build
         fi
     fi
@@ -125,7 +125,7 @@ if ! test -d $build; then
     cd $build
     CXXFLAGS="-std=c++11 $CXXFLAGS" cmake -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE ..
     cd $WD
-    if test x$verbose !=x ; then
+    if test x$verbose != x ; then
         echo numcxx-build: Created build directory $build
     fi
 fi
