@@ -59,6 +59,7 @@ include_directories(include)
 
 
 add_subdirectory(src)
+add_subdirectory(include)
 enable_testing()
 add_subdirectory(tests)
 
@@ -152,7 +153,7 @@ set(INSTALL_INCLUDE_DIR include CACHE PATH  "Installation directory for header f
 if(WIN32 AND NOT CYGWIN)
   set(DEF_INSTALL_CMAKE_DIR CMake)
 else()
-  set(DEF_INSTALL_CMAKE_DIR lib/CMake/numcxx)
+  set(DEF_INSTALL_CMAKE_DIR lib/cmake/numcxx)
 endif()
 set(INSTALL_CMAKE_DIR ${DEF_INSTALL_CMAKE_DIR} CACHE PATH  "Installation directory for CMake files")
 
@@ -193,13 +194,16 @@ install(PROGRAMS
   COMPONENT dev)
 
 #
-# Install the export set for use with the install-tree
+# Install the relocatable export set for use with the install tree
 #
-# This creates NUMCXX.cmake and  NUMCXX-noconfig.cmake
+# Here, we need to give a relative destination
+#
+# This creates NUMCXXTargets.cmake and  NUMCXX-<config>.cmake
 #
 install(EXPORT 
   ${NUMCXX_EXPORT_NAME} 
-  DESTINATION  "${INSTALL_CMAKE_DIR}" 
+  DESTINATION  "${DEF_INSTALL_CMAKE_DIR}"
+  FILE "${NUMCXX_EXPORT_NAME}Targets.cmake"
   COMPONENT dev)
 
 #
