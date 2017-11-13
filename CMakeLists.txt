@@ -107,7 +107,7 @@ add_custom_target(zip hg archive  ${PROJECT_BINARY_DIR}/${ZIP_FILE_NAME_ROOT}.zi
 set(MYWWW "/home/fuhrmann/Wias/www/fuhrmann")
 add_custom_target(upload 
                  COMMAND rsync -avu html ${MYWWW}/staging/numcxx
-                 COMMAND cp -rp ${PROJECT_BINARY_DIR}/${CPACK_PACKAGE_FILE_NAME}.zip ${MYWWW}/staging/numcxx
+                 COMMAND cp -rp ${PROJECT_BINARY_DIR}/${ZIP_FILE_NAME_ROOT}.zip ${MYWWW}/staging/numcxx
                  COMMAND make -C ${MYWWW}/sitesrc upload
                  DEPENDS dox zip
                  )
