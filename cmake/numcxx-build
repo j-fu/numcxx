@@ -8,24 +8,69 @@ USAGE:
 
 numcxx-build  [flags] file_1 ... file_n 
 
-Build and link files together and with the numcxx library.
+Compile C and C++ source files, link them together and with the numcxx
+library.   It  assumes  that  only  of the  files  contains  a  main()
+function.
 
-The  script creates  a CMakeListst.txt  file in  a build  subdirectory
-where it performs an out of source build as it is common with cmake.
+The script  by default detects  an outputname  as the basename  of the
+first  file given  on  the command  line. With  --output,  this can  be
+overidden.
+
+Then, the  script creates  a CMakeLists.txt  file in  the subdirectory
+numcxx.build/<outputname>,  configures  the  project for  an  out  of
+source debug or  release build and invokes the build,  resulting in an
+executable <outputname> in the present directory.
+
+If --execute is given, the executable <outputname> is started.
+
+Alternatively, if --codeblocks is on  the command line, a subdirectory
+<outputname>.codeblocks  is  created  which  contains  the  codeblocks
+project file  <outputname>.cbp. In this  case, if --execute  is given,
+codeblocks is  started with this  project file. A  target <outputname>
+will be available in the codeblocks GUI.
+
 
 FLAGS:
 
-    -d, -g, --debug: generate code with debug information
-    -h, --help: this help
-    -o, --output  <name>: specifiy output file name
-    -p, --project <name>: specify project name 
-    -r, --reset: reset build directory
-    -v, --verbose: verbose output
-    -x, --execute: run program after build
-    --cxx <name>: Set c++ compiler. Same as CXX=<name> numcxx-build ... 
+             -d, -g, --debug: generate code with debug information
+                     --clean: remove all subdirectories created by numcxx
+                              (including codeblocks projects)
+                  -h, --help: this help
+  -o <name>, --output <name>: specifiy output file name. 
+                              Default: basename of first source file
+                 -r, --reset: reset build directory
+            -b, --codeblocks: configure codeblocks project
+               -v, --verbose: verbose execution
+               -x, --execute: run program after build
+                --cxx <name>: Set c++ compiler. 
+                              Same as CXX=<name> numcxx-build ... 
+
+EXAMPLES:
+
+Assume  hello.cxx and sub.cxx are  c++ files in the current directory.
+
+1. Compile and link, run separately
+ 
+  $ numcxx-build  hello.cxx sub.cxx
+  $ ./hello
+
+2. Compile, link and run directly:
+
+  $ numcxx-build --execute hello.cxx sub.cxx
+
+3. Setup codeblocks project and start codeblocks separately
+
+  $ numcxx-build  --codeblocks hello.cxx sub.cxx
+  $ codeblocks hello.codeblocks/hello.cbp
+
+4. Setup codeblocks project and start codeblocks directly
+
+  $ numcxx-build  --codeblocks  --execute hello.cxx sub.cxx
 
 (c) 2017 J. Fuhrmann
 EOF
+
+
 }
 
 #
@@ -36,43 +81,60 @@ EOF
 # 
 numcxx_root=`dirname $0 | while read a; do cd $a && pwd && break; done`
 
-output=main
+# this directory
+thisdir=$PWD
 
-project=numcxxproject
 
-WD=$PWD
 
+# analyze command line arguments
 until test $# = 0 ; do
     case $1 in
 	-d | -g| --debug) debug=1 ; shift
  	    ;;
-	-h | --help)  help; exit
+	-h | --help)  help | more; exit
 	    ;;
 	-o | --output) output=$2 ; shift ; shift
  	    ;;
-	-p | --project) project=$2 ; shift ; shift
- 	    ;;
 	-r | --reset) doreset=1 ; shift 
+            ;;
+	-b | --codeblocks) codeblocks=1 ; shift 
  	    ;;
 	-v | --verbose) verbose=1 ; shift
             ;;
 	-x | --execute) execute=1 ; shift
             ;;
+        --clean) rm -rfv numcxx.build *.codeblocks ; exit $?
+            ;;
 	--cxx)  CXX=$2; shift; shift;
  	    ;;
  	*) if test -f $1; then 
-            files="$files ../../../$1" 
+              # positional arguments are assumed to be source files
+              # we compile a list of them
+              files="$files $thisdir/$1" 
+              # if output is emtpy, detect it from filename.
+              if test x$output = x ; then
+                  output=`basename  $1 | cut -f1 -d.`
+                  echo $output
+              fi
             else 
-            echo "Missing input file $1 or command line syntax error"; 
+              echo "Missing input file $1 or command line syntax error"; 
             exit 1; 
             fi; shift
     esac
 done
 
 
+#
+# Make CXX available in the environment of the cmake process
+#
 export CXX
 
-mkdir -p .build/numcxx/$output
+#
+# Create the cmake dir
+#
+cmakedir=$PWD/numcxx.build/$output
+
+mkdir -p $cmakedir
 
 if test  -z "$files"  ; then
     echo Missing list of input files
@@ -80,21 +142,39 @@ if test  -z "$files"  ; then
     exit
 fi
 
+
+#
+# Decide debug or release and
+# set the build directories accordingly
+#
 if test x$debug = !x; then
     CMAKE_BUILD_TYPE=DEBUG
-    build=.build/numcxx/$output/debug
+    build=$cmakedir/debug
 else
     CMAKE_BUILD_TYPE=RELEASE
-    build=.build/numcxx/$output/release
+    build=$cmakedir/release
 fi
 
+#
+# Choose a different subdirectory if a codeblocks
+# project is to be created
+#
+if test x$codeblocks != x; then
+    build=$output.codeblocks
+fi
 
+rundate=`date +%Y-%m-%d-%H%M`
 
-cat> .build/numcxx/$output/CMakeLists.txt <<EOF
-
+#
+# Create the CMakeLists.txt
+#
+cat> $cmakedir/CMakeLists.txt <<EOF
+#
+# automagically created by numcxx-build $rundate
+#
 cmake_minimum_required(VERSION 2.8.12)
 
-PROJECT($project C CXX)
+PROJECT($output C CXX)
 
 find_package(NUMCXX REQUIRED PATHS "$numcxx_root/../;$numcxx_root/../.build")
 
@@ -115,12 +195,18 @@ message(STATUS "numcxx installation: \${NUMCXX_CMAKE_DIR}")
 message(STATUS "")
 EOF
 
+#
+# Print CMakelists.txt for debug purposes
+#
 if test x$verbose != x ; then
     echo \---- CMakeLists.txt ----
-    cat .build/numcxx/$output/CMakeLists.txt
+    cat $cmakedir/CMakeLists.txt
     echo \------------------------
 fi
 
+#
+# Reset build system by removing the build directory
+#
 if test  x$doreset != x ; then
     if  test -d $build; then
         rm -r $build
@@ -130,43 +216,90 @@ if test  x$doreset != x ; then
     fi
 fi
 
+
+#
+# If build directory does not exist, create it and configure the
+# build system with cmake
+#
 if ! test -d $build; then
     mkdir -p $build
     cd $build
-    CXXFLAGS="-std=c++11 $CXXFLAGS" cmake -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE ..
-    cd $WD
+    if test x$codeblocks != x; then
+        #
+        # Setup for codeblocks, start codeblocks or exit
+        #
+        CXXFLAGS="-std=c++11 $CXXFLAGS" cmake -G"CodeBlocks - Unix Makefiles" $cmakedir
+        cat <<EOF
+
+Created codeblocks project in $build.
+
+To load the project, run
+
+   \$ codeblocks $build/$output.cbp
+
+Once started, change "all" in the target selection box to $output.
+After that, you can build and run the project.
+
+EOF
+        if test x$execute != x ; then
+            cd $thisdir
+            exec codeblocks $build/$output.cbp -ns
+        fi
+        exit
+    else
+        #
+        # Default configuration: continue with standard cmake procedure
+        #
+        CXXFLAGS="-std=c++11 $CXXFLAGS" cmake -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE $cmakedir
+    fi
+    cd $thisdir
     if test x$verbose != x ; then
         echo numcxx-build: Created build directory $build
     fi
 fi
 
+#
+# Set VERBOSE environment variable. This is understood
+# by the cmake generated Makefile in the build directory
+#
 if test x$verbose != x ; then
     VERBOSE=1
     export VERBOSE
 fi
 
+#
+# Run the build
+#
 if ! cmake --build $build ; then
     echo
     echo numcxx-build: compilation error
     exit 1
 fi
     
-
 if test x$verbose != x ; then
     echo numcxx-build: Built $output 
 fi
 
+#
+# Copy the executable to the working directory
+#
 cp -p $build/$output $output
 if test x$verbose != x ; then
-    echo numcxx-build: Copied $output from build directory  $build to $PWD
+    echo numcxx-build: Copied $output from build directory  $build to $thisdir
 fi
+
+#
+# List executable file with date
+#
+echo
 ls -l $output
 echo  
 
+#
+# Run
+#
 if test x$execute != x ; then
-    ./$output
-    exit $1
+    exec ./$output
 fi
-
 
 
