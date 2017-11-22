@@ -1,4 +1,5 @@
 #include <ctime>
+#include <fstream>
 
 namespace  numcxx
 {
@@ -108,5 +109,22 @@ namespace  numcxx
     t=time(&t);
     return ((double)t);
   }
+  
+  template <typename T>
+  inline void savetxt(const std::string fname, const TArray<T> &a)
+  {
+    std::filebuf fb;
+    fb.open (fname,std::ios::out);
+    std::ostream s(&fb);
+    a.savetxt(s);
+    fb.close();
+  }
+  
+  template <typename T>
+  inline void savetxt(std::ostream &s, const TArray<T> &a)
+  {
+    a.savetxt(s);
+  }
+  
 
 }

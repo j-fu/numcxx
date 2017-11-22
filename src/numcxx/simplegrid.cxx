@@ -9,8 +9,10 @@ namespace triangle
 #define VOID void
 #define REAL double 
 #define ANSI_DECLARATORS
-#define TRILIBRARY
 #include "../triangle/triangle.h"
+#undef REAL
+#undef VOID
+#undef ANSI_DECLARATORS
   }
 }
 

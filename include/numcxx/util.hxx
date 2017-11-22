@@ -91,12 +91,18 @@ namespace  numcxx
   inline double wall_clock();
   
 
+  template <typename T>
+  inline void savetxt(const std::string fname, const TArray<T> &a);
+  template <typename T>
+  inline void savetxt(const std::ostream s, const TArray<T> &a);
+
 
   using DArray1=TArray1<double>;
   using DArray2=TArray2<double>;
   inline double norm1(const std::shared_ptr<DArray1> a) {return norm1(*a);}
   inline double norm2(const std::shared_ptr<DArray1> a) {return norm2(*a);}
   inline double normi(const std::shared_ptr<DArray1> a){return normi(*a);}
+
 
 }
 
