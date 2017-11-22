@@ -2,8 +2,8 @@
 
 #include <cstdio>
 #include <cmath>
-#include "vtkfigFrame.h"
-#include "vtkfigXYPlot.h"
+#include "vtkfig/vtkfigFrame.h"
+#include "vtkfig/vtkfigXYPlot.h"
 
 
 int main(void)

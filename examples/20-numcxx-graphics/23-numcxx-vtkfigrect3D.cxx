@@ -2,9 +2,9 @@
 
 #include <cstdio>
 #include <cmath>
-#include "vtkfigFrame.h"
-#include "vtkfigDataSet.h"
-#include "vtkfigScalarView.h"
+#include "vtkfig/vtkfigFrame.h"
+#include "vtkfig/vtkfigDataSet.h"
+#include "vtkfig/vtkfigScalarView.h"
 
 
 int main(void)
