@@ -146,7 +146,7 @@ fi
 # Decide debug or release and
 # set the build directories accordingly
 #
-if test x$debug = !x; then
+if test x$debug != x; then
     CMAKE_BUILD_TYPE=DEBUG
     build=$cmakedir/debug
 else
@@ -178,8 +178,14 @@ PROJECT($output C CXX)
 find_package(NUMCXX REQUIRED PATHS "$numcxx_root/../;$numcxx_root/../.build")
 
 include_directories("\${NUMCXX_INCLUDE_DIRS}")
-
 link_libraries("\${NUMCXX_LIBRARIES}")
+
+find_package(VTKFIG PATHS "$numcxx_root/../;$numcxx_root/../../vtkfig/.build")
+
+if (VTKFIG_FOUND)
+  include_directories("\${VTKFIG_INCLUDE_DIRS}")
+  link_libraries("\${VTKFIG_LIBRARIES}")
+endif()
 
 if (CMAKE_BUILD_TYPE STREQUAL "DEBUG")
 

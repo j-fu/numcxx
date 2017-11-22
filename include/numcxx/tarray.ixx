@@ -348,4 +348,21 @@ namespace numcxx
   }
 
 
+  template <typename T> 
+  inline void TArray<T>::savetxt(std::ostream &s) const
+  {
+    if (ndim()==1)
+      for (index i=0;i<size();i++) s << _data[i] << std::endl << std::flush;
+    else
+    {
+      for (index i=0;i<shape(0);i++) 
+      {
+        for (index j=0;j<shape(1);j++) 
+          s << _data[_idx(i,j)] << " ";
+        s<< std::endl;
+      }
+      s << std::flush;
+    }
+  }
+
 }
