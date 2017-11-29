@@ -8,6 +8,7 @@
 #include <typeinfo>
 #include <memory>
 #include <stdexcept> 
+#include <functional> 
 #include "expression.ixx"
 
 
@@ -134,8 +135,7 @@ namespace numcxx
     /// Copy constructor is deleted
     TArray(const TArray<T>& A)=delete;
 
-    void savetxt(std::ostream &s) const;
-    
+
   private:
 
     /// Tensor dimension.
@@ -264,6 +264,7 @@ namespace numcxx
 
     /// Print contents of array.
     friend std::ostream & operator<< <T>(std::ostream & s, TArray<T> &A);
+
 
   };
 

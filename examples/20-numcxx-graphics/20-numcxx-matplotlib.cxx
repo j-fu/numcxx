@@ -1,3 +1,6 @@
+//
+// /net/wir/numcxx/examples/20-graphics/20-numcxx-matplotlib.py
+//
 #include <numcxx/numcxx.hxx>
 #include <cstdio>
 #include <cmath>
@@ -5,7 +8,6 @@
 
 int main(void)
 {
-
   const double x0=0.0;
   const double x1=1.0;
   double h=0.01;
