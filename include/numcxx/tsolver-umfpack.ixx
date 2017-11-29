@@ -107,7 +107,7 @@ namespace numcxx
     }
     /// copy matrix data for use in solve
     pIA=Matrix.pIA;
-    pJA=Matrix.pIA;
+    pJA=Matrix.pJA;
     pA=Matrix.pA;
   }
     
