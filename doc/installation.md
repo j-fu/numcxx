@@ -145,7 +145,7 @@ Go to the  numcxx root directory and set up the cmake project:
 $ mkdir .build
 $ cd .build
 $ CXXFLAGS=-std=c++11 cmake ..
-$ cmake -C build .
+$ cmake --build .
 ````
 
 This should compile the library and make it findeable by depending

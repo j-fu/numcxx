@@ -1,3 +1,8 @@
+///
+/// \file tprecon-jacobi.hxx
+///
+/// Header for  Jacobi preconditioner
+/// 
 #ifndef TPRECON_JACOBI_HXX
 #define TPRECON_JACOBI_HXX
 

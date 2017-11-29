@@ -135,6 +135,7 @@ namespace numcxx
     /// Copy constructor is deleted
     TArray(const TArray<T>& A)=delete;
 
+    void savetxt(std::ostream &s) const;
 
   private:
 
