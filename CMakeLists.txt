@@ -44,6 +44,7 @@ set(CMAKE_CXX_STANDARD 11)
 find_package(Doxygen)
 find_package(LAPACK  REQUIRED QUIET)
 find_package(UMFPACK REQUIRED QUIET)
+find_package(X11)
 
 message(STATUS "LAPACK_LIBRARIES : ${LAPACK_LIBRARIES}")
 message(STATUS "UMFPACK_LIBRARIES: ${UMFPACK_LIBRARIES}")

@@ -184,6 +184,7 @@ link_libraries("\${NUMCXX_LIBRARIES}")
 find_package(VTKFIG PATHS "$numcxx_root/../;$numcxx_root/../../vtkfig/.build")
 
 if (VTKFIG_FOUND)
+  add_definitions(-DVTKFIG=1)
   include_directories("\${VTKFIG_INCLUDE_DIRS}")
   link_libraries("\${VTKFIG_LIBRARIES}")
 endif()
