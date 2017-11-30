@@ -1,3 +1,8 @@
+///
+/// \example 30-triangle.cxx
+///
+///  Create a triangular grid and visualize it using vtkfig
+/// 
 #include <cstdio>
 #include <iostream>
 #include <ctime>

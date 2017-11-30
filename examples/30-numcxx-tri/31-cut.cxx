@@ -1,3 +1,8 @@
+///
+/// \example 31-cut.cxx
+///
+///  Create a triangular grid with multiple regions and visualize it using vtkfig
+/// 
 #include <cstdio>
 #include <iostream>
 #include <ctime>
