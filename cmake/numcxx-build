@@ -248,12 +248,7 @@ Once started, change "all" in the target selection box to $output.
 After that, you can build and run the project.
 
 EOF
-        if test x$execute != x ; then
-            cd $thisdir
-            exec codeblocks $build/$output.cbp -ns
-        fi
-        exit
-    else
+  else
         #
         # Default configuration: continue with standard cmake procedure
         #
@@ -264,6 +259,14 @@ EOF
         echo numcxx-build: Created build directory $build
     fi
 fi
+
+if test x$codeblocks=x ; then
+  if test x$execute != x ; then
+    cd $thisdir
+    exec codeblocks $build/$output.cbp -ns
+  fi
+fi
+
 
 #
 # Set VERBOSE environment variable. This is understood
