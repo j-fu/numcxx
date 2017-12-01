@@ -160,7 +160,7 @@ fi
 # project is to be created
 #
 if test x$codeblocks != x; then
-    build=$thisdir.$output.codeblocks
+    build=$thisdir/$output.codeblocks
 fi
 
 rundate=`date +%Y-%m-%d-%H%M`
