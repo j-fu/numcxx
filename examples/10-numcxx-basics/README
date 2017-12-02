@@ -10,7 +10,7 @@ file in this directory.
 Alternatively, they can be built by numcxx-build:
 
 $
-$ numcxx-build-o example example.cxx
+$ numcxx-build -o example example.cxx
 $ ./example
 $
 

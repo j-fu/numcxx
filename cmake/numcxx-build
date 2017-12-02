@@ -1,4 +1,4 @@
-#!/bin/sh
+!/bin/sh
 
 
 help()
@@ -260,11 +260,11 @@ EOF
     fi
 fi
 
-if test x$codeblocks=x ; then
-  if test x$execute != x ; then
-    cd $thisdir
-    exec codeblocks $build/$output.cbp -ns
-  fi
+if test x$codeblocks != x ; then
+    if test x$execute != x ; then
+        cd $thisdir
+        exec codeblocks $build/$output.cbp -ns
+    fi
 fi
 
 
