@@ -13,15 +13,16 @@ Installation of the python components is currently not necessary.
 ### Linux
 
 The following packages should be installed
-using the Linux package manager:
+using the Linux package manager (from system to system,
+they have different names)
 
 ````
 gcc
 g++
 cmake 
 blas
-lapack
-suitesparse (umfpack)
+lapack 
+suitesparse 
 python
 python-devel
 python-numpy
@@ -136,6 +137,13 @@ for showing the way for matplotlib.
 Here,  the  current  version  of  numcxx,  without  the  examples,  is
 installed in the directory /net/wir  The example subdirectories can be
 copied separately as a whole.
+
+### Virtual Machine
+
+The debian-numcxx  virtual machine can  be downloaded from  the course
+home page. Load this machine into VirtualBox and start it.
+Vtk, numcxx and vtkfig and codeblocks are installed on this machine. Examples
+can be run with the numcxx-build utility.
 
 ### Build on your own system
 
