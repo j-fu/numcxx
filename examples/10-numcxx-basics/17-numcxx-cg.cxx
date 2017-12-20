@@ -35,8 +35,9 @@ int main(void)
   pA->flush();
   
   
-  auto pJacobi=std::make_shared<numcxx::TPreconJacobi<double>>(pA);
-  
+  auto pJacobi=numcxx::DPreconJacobi::create(pA);
+  numcxx::TPreconJacobi<double> JacobiSolver(pA);
+
   
   U=0.0;
   netlib::CG(A,U,F,*pJacobi,max_iter,tol);

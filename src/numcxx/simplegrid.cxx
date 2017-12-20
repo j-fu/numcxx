@@ -51,7 +51,7 @@ namespace numcxx
     {
       throw std::runtime_error("numcxx: triangulate: Missing 'z' flag"); 
     }
-        
+    
     struct triangle::triangulateio in,out;
     int dbg=0;
         

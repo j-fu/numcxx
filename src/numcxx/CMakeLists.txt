@@ -1,5 +1,6 @@
 add_library(numcxx
   simplegrid.cxx
+  fem2d.cxx
   ../triangle/triangle.c
   )
 
