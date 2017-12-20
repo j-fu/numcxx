@@ -54,19 +54,19 @@ namespace numcxx
     const TArray1<int>& get_bfaceregions() const { return *bfaceregions;};
 
     /// Return dimension of space
-    int spacedim() { return points->shape(1);}
+    const int spacedim()  const { return points->shape(1);}
 
     /// Return dimension of grid
-    int griddim() { return bfaces->shape(1);}
+    const int griddim() const { return bfaces->shape(1);}
 
     /// Return number of cells
-    int ncells() {return cells->shape(0);}
+    const int ncells() const {return cells->shape(0);}
 
     /// Return number of points
-    int npoints() {return points->shape(0);}
+    const int npoints() const {return points->shape(0);}
 
     /// Return number of boundary faces
-    int nbfaces() {return bfaces->shape(0);}
+    const int nbfaces() const {return bfaces->shape(0);}
     
   private:
     std::shared_ptr<TArray2<double>> points=nullptr;
