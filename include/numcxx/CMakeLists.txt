@@ -19,6 +19,7 @@ install(FILES
   tsparsematrix.ixx
   util.hxx
   util.ixx
+  fem2d.hxx
   vtkfig-simplegrid.hxx
   DESTINATION include/numcxx
 )
