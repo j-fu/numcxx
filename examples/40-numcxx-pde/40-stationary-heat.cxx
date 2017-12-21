@@ -23,8 +23,8 @@
 
 int main(void)
 {
-  auto pGeometry=numcxx::Geometry::create();
-  pGeometry->set_points({
+  numcxx::Geometry Geometry;
+  Geometry.set_points({
       {-2,0},
       {0,0},
       {2,0},
@@ -34,7 +34,8 @@ int main(void)
       {-0.5,2},
       {-2,2}
     });
-  pGeometry->set_bfaces({
+
+  Geometry.set_bfaces({
       {0,1},
       {1,2},
       {2,3},
@@ -47,18 +48,18 @@ int main(void)
         });
   
   
-  pGeometry->set_bfaceregions({1,1,2,3,4,4,3,2,5});
+  Geometry.set_bfaceregions({1,1,2,3,4,4,3,2,5});
   
-  pGeometry->set_regionpoints({
+  Geometry.set_regionpoints({
       {-0.5,1},
       {0.5,1}
     });
-  pGeometry->set_regionnumbers({1,2});
-  pGeometry->set_regionvolumes({0.01,0.01});
+  Geometry.set_regionnumbers({1,2});
+  Geometry.set_regionvolumes({0.01,0.01});
   
   
   
-  numcxx::SimpleGrid grid(*pGeometry,"zpaAqDV");
+  numcxx::SimpleGrid grid(Geometry,"zpaAqDV");
   
   
   

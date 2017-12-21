@@ -2,6 +2,7 @@
 #include <numcxx/simplegrid.hxx>
 #include <numcxx/fem2d.hxx>
 #include <cmath>
+#include <cassert>
 
 namespace fem2d
 {
@@ -79,7 +80,8 @@ namespace fem2d
     numcxx::DArray1 &Rhs)
   {
     
-    auto ndim=grid.spacedim();
+    auto ndim=grid.spacedim();      // space dimension
+    assert(ndim==2);
     auto points=grid.get_points(); // Array of global nodes
     auto cells=grid.get_cells();   // Local-global dof map
 
@@ -87,7 +89,7 @@ namespace fem2d
     int ncells=grid.ncells();
     double vol=0.0;
 
-    // Local stiffness matrix
+    // Local stiffness matrix, 
     numcxx::DArray2 SLocal{{0,0,0},{0,0,0},{0,0,0}};
     numcxx::DArray2 MLocal0{{2,1,1},{1,2,1},{1,1,2}};
     MLocal0*=1.0/12.0;
@@ -96,12 +98,15 @@ namespace fem2d
     SGlobal.clear();
     double third=1.0/3.0;
 
+    
     // Loop over all elements (cells) of the triangulation
     for (int icell=0; icell<ncells; icell++)
     {
       compute_local_stiffness_matrix(icell, points,cells, SLocal, vol);
-      // Assemble into global stiffness matrix
+ 
+     // Assemble into global stiffness matrix
       double klocal=(kappa(cells(icell,0))+kappa(cells(icell,1))+kappa(cells(icell,2)))/3.0;
+
       for (int i=0;i<=ndim;i++)
         for (int j=0;j<=ndim;j++)
         {

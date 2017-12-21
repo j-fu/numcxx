@@ -7,16 +7,18 @@
 namespace fem2d
 {
   
+  /// BC value marking Dirichlet boundary condition
   const double Dirichlet=1.0e30;
   
+
   void  assemble_heat_problem(
-    const numcxx::SimpleGrid &Grid,
-    const numcxx::DArray1& BCfac,
-    const numcxx::DArray1& BCval,
-    const numcxx::DArray1& Source,
-    const numcxx::DArray1& Kappa,
-    numcxx::DSparseMatrix &SGlobal,
-    numcxx::DArray1 &Rhs);
+    const numcxx::SimpleGrid &Grid, // Discretization grid containing triangulation
+    const numcxx::DArray1& BCfac,   // Array of boudary factors  (per boundary region)
+    const numcxx::DArray1& BCval,   // Array of boudary values  (per boundary region)
+    const numcxx::DArray1& Source,  // Array of source values (per node)
+    const numcxx::DArray1& Kappa,   // Array of heat coefficient values (per node)
+    numcxx::DSparseMatrix &SGlobal, // Global stiffness matrix
+    numcxx::DArray1 &Rhs);          // Right hand side
   
   double l2norm(const numcxx::SimpleGrid &grid, 
                 const numcxx::DArray1 &u);
