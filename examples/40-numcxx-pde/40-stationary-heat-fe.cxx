@@ -1,5 +1,5 @@
 ///
-/// \example 40-heat.cxx
+/// \example 40-stationary-heat.cxx
 ///
 /// Heat equation
 /// 
@@ -55,7 +55,7 @@ int main(void)
       {0.5,1}
     });
   Geometry.set_regionnumbers({1,2});
-  Geometry.set_regionvolumes({0.01,0.01});
+  Geometry.set_regionvolumes({0.1,0.1});
   
   
   
