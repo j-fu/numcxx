@@ -20,11 +20,11 @@ namespace fvm2d
     numcxx::DSparseMatrix &SGlobal, // Global stiffness matrix
     numcxx::DArray1 &Rhs);          // Right hand side
   
-  // double l2norm(const numcxx::SimpleGrid &grid, 
-  //               const numcxx::DArray1 &u);
+  double l2norm(const numcxx::SimpleGrid &grid, 
+                const numcxx::DArray1 &u);
   
-  // double h1norm(const numcxx::SimpleGrid &grid, 
-  //               const numcxx::DArray1 &u);
+  double h1norm(const numcxx::SimpleGrid &grid, 
+                const numcxx::DArray1 &u);
 }
 #endif
 

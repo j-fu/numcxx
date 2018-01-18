@@ -44,6 +44,37 @@ namespace numcxx
     std::printf("normlist=%p\n",in->normlist);
     std::printf("numberofedges=%d\n",in->numberofedges);
   }
+
+  inline double dist(const numcxx::DArray2&points, int p1, int p2)
+  {
+    double dx=points(p2,0)-points(p1,0);
+    double dy=points(p2,1)-points(p1,1);
+    return sqrt(dx*dx+dy*dy);
+  }
+
+  void SimpleGrid::calc_hminmax(double& hmin, double& hmax) const
+  {
+    hmax=0.0;
+    hmin=1.0e100;
+    auto cells=*SimpleGrid::cells;
+    auto points=*SimpleGrid::points;
+
+    for (int icell=0; icell<ncells();icell++)
+    {
+      double h=dist(points, cells(icell,0), cells(icell,1));
+      hmin=std::min(h,hmin);
+      hmax=std::max(h,hmax);
+   
+      h=dist(points, cells(icell,1), cells(icell,2));
+      hmin=std::min(h,hmin);
+      hmax=std::max(h,hmax);
+
+      h=dist(points, cells(icell,0), cells(icell,2));
+      hmin=std::min(h,hmin);
+      hmax=std::max(h,hmax);
+    }
+
+  }
     
   SimpleGrid::SimpleGrid(const Geometry & geometry, const char * flags)
   {

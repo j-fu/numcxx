@@ -67,6 +67,9 @@ namespace numcxx
 
     /// Return number of boundary faces
     const int nbfaces() const {return bfaces->shape(0);}
+
+    /// Calculate some grid data
+    void calc_hminmax(double& hmin, double& hmax) const;
     
   private:
     std::shared_ptr<TArray2<double>> points=nullptr;

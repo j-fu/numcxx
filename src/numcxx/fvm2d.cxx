@@ -165,6 +165,69 @@ namespace fvm2d
   }
   
 
+  double l2norm(const numcxx::SimpleGrid &grid, 
+                const numcxx::DArray1 &u)
+  
+  {
+    auto ndim=grid.spacedim();
+    auto points=grid.get_points(); // Array of global nodes
+    auto cells=grid.get_cells();   // Local-global dof map
+    int npoints=grid.npoints();
+    int ncells=grid.ncells();
+
+    double vol=0.0;
+
+
+    numcxx::DArray1 epar(ndim+1);
+    numcxx::DArray1 npar(ndim+1);
+
+    
+    double norm=0.0;
+    for (int icell=0; icell<ncells; icell++)
+    {
+      double vol;
+      compute_local_formfactors(icell, points,cells,epar,npar, vol);
+
+      for (int i=0;i<=ndim;i++)
+        norm+=u(cells(icell,i))*u(cells(icell,i))*npar(i);
+    }
+    return sqrt(norm);
+  }
+
+  double h1norm(const numcxx::SimpleGrid &grid, 
+                const numcxx::DArray1 &u)
+  {
+    auto ndim=grid.spacedim();
+    auto points=grid.get_points(); // Array of global nodes
+    auto cells=grid.get_cells();   // Local-global dof map
+    int npoints=grid.npoints();
+    int ncells=grid.ncells();
+
+    double vol=0.0;
+
+
+    numcxx::DArray1 epar(ndim+1);
+    numcxx::DArray1 npar(ndim+1);
+
+    
+    double norm=0.0;
+    for (int icell=0; icell<ncells; icell++)
+    {
+      double vol;
+      compute_local_formfactors(icell, points,cells,epar,npar, vol);
+      
+      double d01=u(cells(icell,0))-u(cells(icell,1));
+      double d02=u(cells(icell,0))-u(cells(icell,2));
+      double d12=u(cells(icell,1))-u(cells(icell,2));
+
+
+      norm+=epar(0)*d12*d12+epar(1)*d02*d02+epar(2)*d01*d01;
+    }
+
+
+    return sqrt(norm);
+  }
+
 
 
 
