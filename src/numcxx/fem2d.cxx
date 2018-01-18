@@ -161,6 +161,149 @@ namespace fem2d
   
 
 
+  void  assemble_transient_heat_problem(
+    const numcxx::SimpleGrid &grid,
+    const numcxx::DArray1& bcfac,
+    const numcxx::DArray1& bcval,
+    const numcxx::DArray1& source,
+    const numcxx::DArray1& kappa,
+    double tau,
+    double theta,
+    bool lump,
+    numcxx::DArray1 &OldSol,
+    numcxx::DSparseMatrix &SGlobal,
+    numcxx::DArray1 &Rhs)
+  {
+    
+    auto ndim=grid.spacedim();
+    auto points=grid.get_points(); // Array of global nodes
+    auto cells=grid.get_cells();   // Local-global dof map
+    int npoints=grid.npoints();
+    int ncells=grid.ncells();
+    double tauinv=1.0/tau;
+    
+    // Local stiffness matrix
+    auto pSLocal=numcxx::DMatrix::create(ndim+1, ndim+1);
+    auto &SLocal=*pSLocal;
+    
+    // Local mass matrix
+   
+    auto pMFull=numcxx::DMatrix::create({{2,1,1},{1,2,1},{1,1,2}}); // from Stroud quadrature...
+    auto pMLumped=numcxx::DMatrix::create({{4,0,0},{0,4,0},{0,0,4}}); // mass lumping
+    std::shared_ptr<numcxx::DMatrix> pMLocal0;
+    if (lump)
+      pMLocal0=pMLumped;
+    else
+      pMLocal0=pMFull;
+    
+    auto &MLocal0=*pMLocal0;
+    MLocal0*=1.0/12.0;
+    
+    // Local matrix of coordinate differences
+    auto pV=numcxx::DMatrix::create(ndim, ndim);
+    auto &V=*pV;
+    
+    // Loop over all elements (cells) of the triangulation
+    Rhs=0.0;
+    SGlobal(0,0)=0;
+    SGlobal.clear();
+    for (int icell=0; icell<ncells; icell++)
+    {
+      // Fill matrix V
+      V(0,0)= points(cells(icell,1),0)- points(cells(icell,0),0);
+      V(0,1)= points(cells(icell,2),0)- points(cells(icell,0),0);
+      
+      V(1,0)= points(cells(icell,1),1)- points(cells(icell,0),1);
+      V(1,1)= points(cells(icell,2),1)- points(cells(icell,0),1);
+      
+
+      // Compute determinant
+      double det=V(0,0)*V(1,1) - V(0,1)*V(1,0);
+      double vol = 0.5*det;
+      double invvol=1.0/vol;
+      
+      // Compute entries of local stiffness matrix
+      SLocal(0,0)= invvol * (  ( V(1,0)-V(1,1) )*( V(1,0)-V(1,1) )+( V(0,1)-V(0,0) )*( V(0,1)-V(0,0) ) );
+      SLocal(0,1)= invvol * (  ( V(1,0)-V(1,1) )* V(1,1)          - ( V(0,1)-V(0,0) )*V(0,1) );
+      SLocal(0,2)= invvol * ( -( V(1,0)-V(1,1) )* V(1,0)          + ( V(0,1)-V(0,0) )*V(0,0) );
+      
+      SLocal(1,1)=  invvol * (  V(1,1)*V(1,1) + V(0,1)*V(0,1) );
+      SLocal(1,2)=  invvol * ( -V(1,1)*V(1,0) - V(0,1)*V(0,0) );
+      
+      SLocal(2,2)=  invvol * ( V(1,0)*V(1,0)+ V(0,0)*V(0,0) );
+      
+      SLocal(1,0)=SLocal(0,1);
+      SLocal(2,0)=SLocal(0,2);
+      SLocal(2,1)=SLocal(1,2);
+      
+      // Quadrature for heat transfer coefficient
+      double KLocal=(kappa(cells(icell,0))+kappa(cells(icell,1))+kappa(cells(icell,2)))/3.0;
+      
+      
+      int i;
+      for (int i=0;i<=ndim;i++)
+        for (int j=0;j<=ndim;j++)
+        {
+          SGlobal(cells(icell,i),cells(icell,j))+=theta*KLocal*SLocal(i,j)+ tauinv*vol*MLocal0(i,j);
+          Rhs(cells(icell,j))+=((1.0-theta)*KLocal*SLocal(i,j)+ tauinv*vol*MLocal0(i,j))* 
+            OldSol(cells(icell,j))+vol*MLocal0(i,j)*source(cells(icell,j));
+        }    
+    }
+
+    // Assemble boundary conditions (Dirichlet penalty method)
+    int nbfaces=grid.nbfaces();
+    auto bfaces=grid.get_bfaces();
+    auto bfaceregions=grid.get_bfaceregions();
+    
+    for (int ibface=0; ibface<nbfaces; ibface++)
+    {
+      // Obtain number of boundary condition
+      int ireg=bfaceregions(ibface);
+      
+      // Check if it is "Dirichlet"
+      if (bcfac(ireg)>=Dirichlet)
+      {
+        // Assemble penalty values
+        int i;
+        i=bfaces(ibface,0);
+        SGlobal(i,i)+=bcfac(ireg);
+        Rhs(i)+=Dirichlet*bcval(ireg);
+        
+        i=bfaces(ibface,1);
+        SGlobal(i,i)+=bcfac(ireg);
+        Rhs(i)+=Dirichlet*bcval(ireg);
+        
+      }
+      else if (bcfac(ireg)>0.0)
+      {
+
+        double dx= points(bfaces(ibface,1),0)-points(bfaces(ibface,0),0);
+        double dy= points(bfaces(ibface,1),1)-points(bfaces(ibface,0),1);
+        double h=sqrt(dx*dx+dy*dy);
+        // first oder quadrature, needs to be replaced by second order
+        int i0=bfaces(ibface,0);
+        int i1=bfaces(ibface,1);
+        
+        SGlobal(i0,i0)+=theta*h*bcfac(ireg)/3.0;
+        SGlobal(i0,i1)+=theta*h*bcfac(ireg)/6.0;
+        
+        SGlobal(i1,i0)+=theta*h*bcfac(ireg)/6.0;
+        SGlobal(i1,i1)+=theta*h*bcfac(ireg)/3.0;
+        
+        Rhs(i0)+=OldSol(i0)*(1.0-theta)*h*bcfac(ireg)/3.0;
+        Rhs(i0)+=OldSol(i1)*(1.0-theta)*h*bcfac(ireg)/6.0;
+        Rhs(i1)+=OldSol(i0)*(1.0-theta)*h*bcfac(ireg)/6.0;
+        Rhs(i1)+=OldSol(i1)*(1.0-theta)*h*bcfac(ireg)/3.0;
+        
+        Rhs(i0)+=0.5*h*bcval(ireg);
+        Rhs(i0)+=0.5*h*bcval(ireg);
+      }
+    }
+    SGlobal.flush();
+  }
+  
+
+
 
   double l2norm(const numcxx::SimpleGrid &grid, 
                 const numcxx::DArray1 &u)
