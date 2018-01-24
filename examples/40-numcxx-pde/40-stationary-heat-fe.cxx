@@ -70,7 +70,7 @@ int main(void)
   bcfac(4)=fem2d::Dirichlet;
   bcfac(1)=fem2d::Dirichlet;
   bcval(4)=1.0;
-  bcval(0)=0.0;
+  bcval(1)=0.0;
 
   auto nnodes=grid.npoints();
 

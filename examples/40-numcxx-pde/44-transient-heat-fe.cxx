@@ -48,7 +48,7 @@ int main(void)
     });
 
   Geometry.set_regionnumbers({1});
-  Geometry.set_regionvolumes({0.001});
+  Geometry.set_regionvolumes({0.0001});
   
   numcxx::SimpleGrid grid(Geometry,"zpaAqDV");
 
@@ -73,14 +73,11 @@ int main(void)
   numcxx::DArray1 bcval(6);
   bcfac=0;
   bcval=0;
-  bcfac(2)=fem2d::Dirichlet;
-  bcfac(0)=fem2d::Dirichlet;
-  bcval(2)=1.0;
-  bcval(0)=0.0;
 
-
-
-
+  bcfac(3)=fem2d::Dirichlet;
+  bcfac(1)=fem2d::Dirichlet;
+  bcval(3)=1.0;
+  bcval(1)=0.0;
 
   auto nnodes=grid.npoints();
 
@@ -88,8 +85,8 @@ int main(void)
   numcxx::DArray1 kappa(nnodes);
   kappa=1.0e-2;
   source=0;
-  double tau=0.1;
-  double theta=1;
+  double tau=0.001;
+  double theta=0.0;
   double T=100.0;
   bool lump=false;
   int N=T/tau;
@@ -100,21 +97,29 @@ int main(void)
   numcxx::DArray1 OldSol(nnodes);
   Sol=0.0;
   
-
+  numcxx::DSolverUMFPACK Solver(SGlobal);
+ 
   for (int n=0;n<N;n++)
   {
     OldSol=Sol;
     fem2d::assemble_transient_heat_problem(grid,bcfac,bcval,source,kappa,tau,theta, lump, OldSol, SGlobal, Rhs);
-    numcxx::DSolverUMFPACK Solver(SGlobal);
     
-    Solver.update(SGlobal);
-    Solver.solve(Sol,Rhs);
+    if (theta>0.0 || !lump)
+    {
+      Solver.update(SGlobal);
+      Solver.solve(Sol,Rhs);
+    }
+    else
+    {
+      for (int i=0;i<Sol.size();i++)
+       Sol(i)=Rhs(i)/SGlobal(i,i);
+    }
     frame->SetFrameTitle("Time="+std::to_string(tau*n));
     
 #ifdef VTKFIG
     
     griddata->SetPointScalar(Sol ,"Sol");
-    frame->Interact();
+    frame->Show();
     
 #endif
   }
