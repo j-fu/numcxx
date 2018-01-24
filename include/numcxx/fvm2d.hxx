@@ -1,6 +1,8 @@
 #ifndef FEM2D_H
 #define FEM2D_H
 
+#include <functional>
+
 #include <numcxx/simplegrid.hxx>
 #include <numcxx/tsparsematrix.hxx>
 
@@ -20,6 +22,24 @@ namespace fvm2d
     numcxx::DSparseMatrix &SGlobal, // Global stiffness matrix
     numcxx::DArray1 &Rhs);          // Right hand side
   
+  void  assemble_and_apply_nonlinear_heat(
+    const numcxx::SimpleGrid &grid,
+    const numcxx::DArray1& bcfac,
+    const numcxx::DArray1& bcval,
+    const numcxx::DArray1& source,
+    std::function <void(const double, double&, double&)> fkappa,
+    numcxx::DSparseMatrix &SGlobal,
+    numcxx::DArray1 &Sol,
+    numcxx::DArray1 &Rhs);
+
+
+
+  void initialize_bc(
+    numcxx::SimpleGrid &grid,// Discretization grid
+    numcxx::DArray1& g,
+    numcxx::DArray1& Sol
+    );
+
   double l2norm(const numcxx::SimpleGrid &grid, 
                 const numcxx::DArray1 &u);
   

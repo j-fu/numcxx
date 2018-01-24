@@ -7,7 +7,7 @@
 
 namespace fem2d
 {
-    
+  
   inline void compute_cell_volume(    
     const int icell,
     const numcxx::DArray2 & points,
