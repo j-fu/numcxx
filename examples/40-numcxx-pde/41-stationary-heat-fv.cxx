@@ -1,7 +1,7 @@
 ///
-/// \example 40-stationary-heat.cxx
+/// \example 41-stationary-heat-fv.cxx
 ///
-/// Heat equation
+/// Finite volume method for stationary heat equation
 /// 
 #include <cstdio>
 #include <iostream>

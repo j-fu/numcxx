@@ -1,8 +1,9 @@
 ///
-/// \example 40-stationary-heat.cxx
+/// \example 46-nonlin-fvm.cxx
 ///
-/// Heat equation
-/// 
+/// Demo for nonlinear diffusion with fvm
+///
+
 #include <cstdio>
 #include <iostream>
 #include <ctime>

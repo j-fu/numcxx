@@ -1,7 +1,7 @@
 ///
-/// \example 40-stationary-heat.cxx
+/// \example 40-stationary-heat-fe.cxx
 ///
-/// Heat equation
+/// Finite element method for stationary heat equation
 /// 
 #include <cstdio>
 #include <iostream>
@@ -67,7 +67,7 @@ int main(void)
   numcxx::DArray1 bcval(6);
   bcfac=0;
   bcval=0;
-  bcfac(4)=fem2d::Dirichlet;
+  b+cfac(4)=fem2d::Dirichlet;
   bcfac(1)=fem2d::Dirichlet;
   bcval(4)=1.0;
   bcval(1)=0.0;
