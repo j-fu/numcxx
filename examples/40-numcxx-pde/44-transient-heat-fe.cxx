@@ -1,8 +1,9 @@
 ///
-/// \example 40-stationary-heat.cxx
+/// \example 44-transient-heat-fe.cxx
 ///
-/// Heat equation
-/// 
+/// Demo for transient heat equation
+///
+
 #include <cstdio>
 #include <iostream>
 #include <ctime>
@@ -23,7 +24,18 @@
 
 int main(void)
 {
+  // Parameters to test
+  double h=0.1;     // Space step size
+  double tau=0.1; // Time step size
+  double theta=1.0; // Implicit Euler vs CN vs explicit Euler
+  double T=100.0;   // Length of time interval
+  bool lump=false;  // Mass lumping
 
+
+
+
+  ///////////////////////////////////////////////////////
+  // Describe geometry
   numcxx::Geometry Geometry;
   Geometry.set_points({
         {0,0},
@@ -48,11 +60,19 @@ int main(void)
     });
 
   Geometry.set_regionnumbers({1});
-  Geometry.set_regionvolumes({0.0001});
+
+  double vol= h*h*0.25;
+  Geometry.set_regionvolumes({vol});
   
+
+  ///////////////////////////////////////////////////////
+  // Create grid
   numcxx::SimpleGrid grid(Geometry,"zpaAqDV");
 
 
+  ///////////////////////////////////////////////////////
+  // Prepare visualization
+  
   auto griddata=numcxx::vtkfigDataSet(grid);
   
   auto frame=vtkfig::Frame::New();
@@ -69,6 +89,8 @@ int main(void)
   frame->AddFigure(solview,1);
   
   
+  ///////////////////////////////////////////////////////
+  // Set up problem data
   numcxx::DArray1 bcfac(6);
   numcxx::DArray1 bcval(6);
   bcfac=0;
@@ -85,10 +107,7 @@ int main(void)
   numcxx::DArray1 kappa(nnodes);
   kappa=1.0e-2;
   source=0;
-  double tau=0.001;
-  double theta=0.0;
-  double T=100.0;
-  bool lump=false;
+
   int N=T/tau;
 
   numcxx::DSparseMatrix SGlobal(nnodes,nnodes);

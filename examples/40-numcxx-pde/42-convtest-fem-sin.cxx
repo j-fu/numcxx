@@ -1,7 +1,7 @@
 ///
 /// \example 42-convtest-fem-sin.cxx
 ///
-/// Heat equation
+/// Stationary convergence test for fem method 
 /// 
 #include <cstdio>
 #include <iostream>

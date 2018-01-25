@@ -1,3 +1,9 @@
+///
+/// \example 45-convdiff1d.cxx
+///
+/// Demo for 1D convection-diffusion problem
+///
+
 #include <iostream>
 #include <limits>
 #include <cassert>

@@ -1,7 +1,7 @@
 ///
-/// \example 42-convtest-fem-sin.cxx
+/// \example 43-convtest-fvm-sin.cxx
 ///
-/// Heat equation
+/// Stationary convergence test for fvm method 
 /// 
 #include <cstdio>
 #include <iostream>
