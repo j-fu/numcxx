@@ -25,8 +25,8 @@
 int main(void)
 {
   // Parameters to test
-  double h=0.1;     // Space step size
-  double tau=0.1; // Time step size
+  double h=0.05;     // Space step size
+  double tau=0.01; // Time step size
   double theta=1.0; // Implicit Euler vs CN vs explicit Euler
   double T=100.0;   // Length of time interval
   bool lump=false;  // Mass lumping
@@ -76,7 +76,7 @@ int main(void)
   auto griddata=numcxx::vtkfigDataSet(grid);
   
   auto frame=vtkfig::Frame::New();
-  frame->SetSize(800,400);
+  frame->SetSize(1200,600);
   frame->SetLayout(2,1);
 
   auto gridview=vtkfig::GridView::New();
@@ -133,10 +133,10 @@ int main(void)
       for (int i=0;i<Sol.size();i++)
        Sol(i)=Rhs(i)/SGlobal(i,i);
     }
-    frame->SetFrameTitle("Time="+std::to_string(tau*n));
     
 #ifdef VTKFIG
     
+    frame->SetFrameTitle("Time="+std::to_string(tau*n));
     griddata->SetPointScalar(Sol ,"Sol");
     frame->Show();
     
