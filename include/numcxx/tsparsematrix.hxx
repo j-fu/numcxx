@@ -16,6 +16,7 @@ namespace numcxx
     
   template<typename T>   class TSolverUMFPACK;
   template<typename T>   class TPreconJacobi;
+  template<typename T>   class TPreconILU;
 
   /// Sparse matrix class using CRS storage scheme
   template<typename T> 
@@ -23,6 +24,7 @@ namespace numcxx
   {
     friend class TSolverUMFPACK<T>;
     friend class TPreconJacobi<T>;
+    friend class TPreconILU<T>;
   public:
     typedef T value_type;
 

@@ -56,7 +56,7 @@ int main(void)
       {0.5,1}
     });
   Geometry.set_regionnumbers({1,2});
-  double vol=0.0001;
+  double vol=0.001;
   Geometry.set_regionvolumes({vol,vol});
   
   
@@ -78,10 +78,11 @@ int main(void)
 
   numcxx::DArray1 source(nnodes);
   source=0;
+
   auto fkappa = [](double u, double &kappa,double &dkappa  ) 
     { 
-      kappa=0.1+100.0*u*u*u*u;
-      dkappa=400.0*u*u*u; 
+      kappa=0.001+1000.0*u*u*u*u*u*u;
+      dkappa=6000.0*u*u*u*u*u; 
     };
   
 
@@ -101,7 +102,7 @@ int main(void)
   int iter=0;
   double norm=1.0;
   double oldnorm=1.0;
-  double d=1.0;
+  double d=0.1;
   double ddelta=1.2;
   
   

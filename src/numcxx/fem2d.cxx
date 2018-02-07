@@ -168,9 +168,9 @@ namespace fem2d
     const numcxx::DArray1& bcval,
     const numcxx::DArray1& source,
     const numcxx::DArray1& kappa,
-    double tau,
-    double theta,
-    bool lump,
+    double tau, // time step size
+    double theta, // method parameter
+    bool lump,    // mass lumping
     numcxx::DArray1 &OldSol,
     numcxx::DSparseMatrix &SGlobal,
     numcxx::DArray1 &Rhs)
@@ -188,6 +188,7 @@ namespace fem2d
     numcxx::DArray2 MFull{{2,1,1},{1,2,1},{1,1,2}}; // from Stroud quadrature...
     numcxx::DArray2 MLumped{{4,0,0},{0,4,0},{0,0,4}}; // mass lumping
     numcxx::DArray2 MLocal(3,3);  
+
     if (lump)
       MLocal=MLumped/12.0;
     else
