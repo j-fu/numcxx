@@ -29,7 +29,7 @@ int main(void)
     }
     pM->flush();
     auto pJacobi=numcxx::DPreconJacobi::create(pM);
-    pJacobi->update();
+    pJacobi->update(*pM);
     double residual_norm=0.0;
     U=0.0;
     int niter=1000;
