@@ -1,4 +1,4 @@
-numcxx - a collection of python compatible classes for linear algebra in C++ {#mainpage}
+numcxx - a collection of python compatible classes for linear algebra in C++
 ======================================================================
 Authors: 
     - Jürgen Fuhrmann (http://www.wias-berlin.de/~fuhrmann)
@@ -17,9 +17,9 @@ Authors:
 
 - Zero copy,  reference  counted exchange  of  array  data with  other
   packages without copying data, in particular
-  - LAPACK
-  - UMFPACK
-  - triangle
+  - [LAPACK](http://www.netlib.org/lapack/)
+  - [UMFPACK](http://faculty.cse.tamu.edu/davis/suitesparse.html)
+  - [triangle](https://www.cs.cmu.edu/~quake/triangle.html)
 
 - interface to python/numpy (work in progress)
 
@@ -38,6 +38,7 @@ projects:
 - [Trilinos/DOMI](https://trilinos.org/packages/domi)
 
 ## Further information
+ - [Public mercurial repository](https://bitbucket.org/j-fu/numcxx)
  - [Introduction](doc/intro.md) 
  - [Installation](doc/installation.md) 
 
