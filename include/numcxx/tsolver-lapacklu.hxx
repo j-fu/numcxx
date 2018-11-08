@@ -25,7 +25,7 @@ namespace numcxx
     /// factorization
     TSolverLapackLU(const std::shared_ptr<TMatrix<T>> pMatrix);
 
-    /// Object constructor, calls update(Matriy) to obtain
+    /// Object constructor, calls update(Matrix) to obtain
     /// factorization
     TSolverLapackLU(const TMatrix<T>& Matrix);
 
@@ -58,7 +58,22 @@ namespace numcxx
 
     /// Default constructor for swig
     TSolverLapackLU() {};
+
+
+
+    TMatrix<T> & LU(){ return *pLU;}
+    TArray1<int> & IPiv(){ return *pIPiv;}
   };
+
+  template<typename T> 
+  inline std::ostream & operator << (std::ostream & s, TSolverLapackLU<T> &LU)
+  {
+    s << "LU:" << std::endl;
+    s << LU.LU() << std::endl;
+    s << "IPiv:" << std::endl;
+    s << LU.IPiv() << std::endl;
+  }
+
 }
 #include "tsolver-lapacklu.ixx"
 #endif
