@@ -11,6 +11,8 @@ install(FILES
   tmatrix.ixx
   tprecon-jacobi.hxx
   tprecon-jacobi.ixx
+  tprecon-ilu.hxx
+  tprecon-ilu.ixx
   tsolver-lapacklu.hxx
   tsolver-lapacklu.ixx
   tsolver-umfpack.hxx
