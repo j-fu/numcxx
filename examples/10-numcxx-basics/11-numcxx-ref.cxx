@@ -11,14 +11,14 @@
 void initialize(numcxx::DArray1 &X)
 {
   const int n=X.size();
-  for (int i=0;i<n;i++) X[i]= 1.0/(double)(1+n-i);
+  for (int i=0;i<n;i++) X(i)= 1.0/(double)(1+n-i);
 }
 
 // calculate the sum of the elements of x
 double sum_elements(numcxx::DArray1 & X)
 {
   double sum=0;
-  for (int i=0;i<X.size();i++)sum+=X[i];
+  for (int i=0;i<X.size();i++)sum+=X(i);
   return sum;
 }
 

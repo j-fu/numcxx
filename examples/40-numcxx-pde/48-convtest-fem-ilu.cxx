@@ -164,7 +164,7 @@ int main(void)
     double res=numcxx::norm2(SGlobal*Sol-Rhs);
     double rho=pow(res/res0,1.0/nsteps);
     double cond=(1.0+rho)/(1.0-rho);
-    printf("Jacobi contr: %g, per step: %g, kappa: %g\n", res/res0, rho,cond);
+    printf("ILU contr: %g, per step: %g, kappa: %g\n", res/res0, rho,cond);
     double t_jac=numcxx::cpu_clock()-t0;
 
 
@@ -193,7 +193,7 @@ int main(void)
     L2Error.push_back(log10(l2error));
     Cond.push_back(log10(cond));
 
-    printf("time/ms gen: %8.3f asm: %8.3f jac: %8.3f cg: %8.3f\n",
+    printf("time/ms gen: %8.3f asm: %8.3f ilu: %8.3f cg: %8.3f\n",
            t_gen*1000.0, t_asm*1000.0, t_jac*1000.0,t_cg*1000.0);
     
     N.push_back(log10(grid.npoints()));;
@@ -290,7 +290,7 @@ int main(void)
       // timeplot->SetPlotColor(0.0,0.5,0);
       // timeplot->AddPlot(N,TAsm);
 
-      timeplot->SetPlotLegend("Jacobi");
+      timeplot->SetPlotLegend("ILU");
       timeplot->SetPlotColor(0.0,0.0,0.5);
       timeplot->AddPlot(N,TJac);
 
