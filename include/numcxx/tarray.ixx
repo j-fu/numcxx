@@ -334,15 +334,14 @@ namespace numcxx
       s << "    ";
       for (index j=0;j<A.shape(1);j++) 
         s << "[" << j << "]     ";
-      s<< std::endl;
+      s<< "\n";
       for (index i=0;i<A.shape(0);i++) 
       {
         s << "[" << i << "]: ";
         for (index j=0;j<A.shape(1);j++) 
           s << A(i,j) << "   ";
-        s<< std::endl;
+        s<< "\n";
       }
-      s << std::flush;
     }
     return s;
   }
