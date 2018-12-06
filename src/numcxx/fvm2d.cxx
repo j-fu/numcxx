@@ -174,7 +174,7 @@ namespace fvm2d
     int ncells=grid.ncells();
     double vol=0.0;
 
-    // this needs to coorespond to the edge indices
+    // this needs to correspond to the edge indices
     numcxx::IArray2 edgenodes{{1,2},{0,2},{0,1}};
 
     const int nnodes_per_cell=3;
@@ -193,7 +193,7 @@ namespace fvm2d
       for (int inode=0;inode<nnodes_per_cell;inode++)
       {
         int k=cells(icell,inode);
-        Rhs(k)=source(k)*npar(inode);
+        Rhs(k)+=source(k)*npar(inode);
       }
       
       for (int iedge=0;iedge<nedges_per_cell;iedge++)
@@ -336,7 +336,7 @@ namespace fvm2d
     {
       double vol;
       compute_local_formfactors(icell, points,cells,epar,npar, vol);
-
+      
       for (int i=0;i<=ndim;i++)
         norm+=u(cells(icell,i))*u(cells(icell,i))*npar(i);
     }
@@ -351,13 +351,13 @@ namespace fvm2d
     auto cells=grid.get_cells();   // Local-global dof map
     int npoints=grid.npoints();
     int ncells=grid.ncells();
-
+    
     double vol=0.0;
-
-
+    
+    
     numcxx::DArray1 epar(ndim+1);
     numcxx::DArray1 npar(ndim+1);
-
+    
     
     double norm=0.0;
     for (int icell=0; icell<ncells; icell++)
