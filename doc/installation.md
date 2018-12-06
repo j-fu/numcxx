@@ -8,7 +8,8 @@ Win10/Cygwin
 
 ## Prerequisites
 
-Installation of the python components is currently not necessary.
+Installation of the python components is only necessary when
+the experimental python interface is needed.
 
 ### Linux
 
@@ -16,6 +17,7 @@ The following packages should be installed
 using the Linux package manager (from system to system,
 they have different names)
 
+Mandatory:
 ````
 gcc
 g++
@@ -23,12 +25,17 @@ cmake
 blas
 lapack 
 suitesparse 
+````
+
+Optional:
+````
 python
 python-devel
 python-numpy
 python-matplotlib
 swig
 ````
+
 
 ### Mac
 
@@ -68,6 +75,8 @@ for showing the way for matplotlib.
 
 - Using setup_x86_64.exe, install the following additonal packages:
 
+Mandatory:
+
 ````
       gcc-g++
       wget
@@ -76,13 +85,7 @@ for showing the way for matplotlib.
       cmake
       lapack
       libumfpack-devel
-
-      python
-      python-numpy
-      python-devel 
-      swig
 ````
-
 
 
 - If you get  tired clicking into the setup gui, download [apt-cyg](https://raw.githubusercontent.com/transcode-open/apt-cyg/master/apt-cyg)
@@ -98,6 +101,10 @@ for showing the way for matplotlib.
   - Install the cygwin packages
 
 ````
+  python
+  python-numpy
+  python-devel 
+  swig
   libfreetype-devel 
   python-pyqt4
   xorg-server
@@ -132,19 +139,6 @@ for showing the way for matplotlib.
 
 ## Installation of numcxx
 
-### TU Berlin UNIX Pool
-
-Here,  the  current  version  of  numcxx,  without  the  examples,  is
-installed in the directory /net/wir  The example subdirectories can be
-copied separately as a whole.
-
-### Virtual Machine
-
-The debian-numcxx  virtual machine can  be downloaded from  the course
-home page. Load this machine into VirtualBox and start it.
-Vtk, numcxx and vtkfig and codeblocks are installed on this machine. Examples
-can be run with the numcxx-build utility.
-
 ### Build on your own system
 
 Go to the  numcxx root directory and set up the cmake project:
@@ -160,6 +154,23 @@ This should compile the library and make it findeable by depending
 projects via an entry im the user CMake project registry found
 under ``.cmake`` in your home directory.
 
+Moreover, it places the ``numcxx-build`` script into the subdirectory ``bin``.
+This script can be used to build the examples and small projects.
+
+
+### TU Berlin UNIX Pool
+
+Here,  the  current  version  of  numcxx  is
+installed in the directory ``/net/wir``
+
+### Virtual Machine
+
+The debian-numcxx  virtual machine can  be downloaded from  the course
+home page. Load this machine into VirtualBox and start it.
+Vtk, numcxx and vtkfig and codeblocks are installed on this machine. Examples
+can be run with the numcxx-build utility.
+
+
 ### Working with the examples
 
 
@@ -170,41 +181,6 @@ $ cp -r <numcxx>/examples/whatever .
 $ cd whatever
 ````
 
-Each of the example subdirectories has its own CMakeLists.txt which
-looks for an installed numcxx during the setup phase.
+All the examples can be built with the numcxx-build script.
 
-### Plain unix
-
-
-Set up a build subdirectory and compile the project:
-
-````
-$ mkdir .build
-$ cd .build
-$ CXXFLAGS=-std=c++11 cmake ..
-$ cmake --build .
-$ ./<whatever example>
-````
-
-### Code::Blocks
-
-Set up a build subdirectory for codeblocks:
-````
-$ mkdir .build
-$ cd .build
-$ CXXFLAGS=-std=c++11 cmake -G"CodeBlocks - Unix Makefiles" ..
-$ codeblocks <whatver the project name is>.cbp
-````
-
-
-In codeblocks, select a target under "Build/Select Target".
-In the management pane (left), select the corresponding
-source file. Now you can build and run   via the correspondin
-menu items of codeblocks.
-
-### Other IDEs
-Many of them should work. Like with  code blocks, find out the name of
-the generator via ``cmake -G``. If you don't find your IDE name there,
-there might be  some chance that your IDE supports  cmake directly (as
-e.g. QTCreator does).
 
