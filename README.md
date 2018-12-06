@@ -17,9 +17,10 @@ Authors:
 
 - Zero copy,  reference  counted exchange  of  array  data with  other
   packages without copying data, in particular
-  - [LAPACK](http://www.netlib.org/lapack/)
-  - [UMFPACK](http://faculty.cse.tamu.edu/davis/suitesparse.html)
-  - [triangle](https://www.cs.cmu.edu/~quake/triangle.html)
+  - [LAPACK](http://www.netlib.org/lapack/) (to be installed via system installer)
+  - [UMFPACK](http://faculty.cse.tamu.edu/davis/suitesparse.html) (to be installed via system installer)
+  - [triangle](https://www.cs.cmu.edu/~quake/triangle.html) (provided with numcxx)
+  - [iterative method templates](http://www.netlib.org/templates/cpp/) (provided with numcxx)
 
 - interface to python/numpy (work in progress)
 
@@ -38,7 +39,8 @@ projects:
 - [Trilinos/DOMI](https://trilinos.org/packages/domi)
 
 ## Further information
- - [Public mercurial repository](https://bitbucket.org/j-fu/numcxx)
- - [Introduction](doc/intro.md) 
- - [Installation](doc/installation.md) 
+ - [Public mercurial repository (on bitbucket)](https://bitbucket.org/j-fu/numcxx)
+ - [Doxygen documentation (via WIAS)](http://www.wias-berlin.de/people/fuhrmann/numcxx/html/index.html)
+ - Introduction: [(local)](intro.md) [(via WIAS)](http://www.wias-berlin.de/people/fuhrmann/numcxx/html/md_doc_intro.html) 
+ - Installation: [(local)](installation.md) [(via WIAS)](http://www.wias-berlin.de/people/fuhrmann/numcxx/html/md_doc_installation.html) 
 

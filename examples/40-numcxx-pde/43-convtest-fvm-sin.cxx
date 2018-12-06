@@ -146,9 +146,11 @@ int main(void)
     t0=numcxx::cpu_clock();
     Solver.solve(Sol,Rhs);
     double t_lus=numcxx::cpu_clock()-t0;
+
     
     double l2error=fvm2d::l2norm(grid,Sol-exact);
     double h1error=fvm2d::h1norm(grid,Sol-exact);
+    l2error=numcxx::normi(Sol-exact);
 
     printf("h: %8.3e l2: %8.3e h1: %8.3e\n",hmax,l2error,h1error);
     H.push_back(log10(hmax));

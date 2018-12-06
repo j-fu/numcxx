@@ -45,6 +45,7 @@ int main(void)
     auto gridview=vtkfig::GridView::New();
     gridview->SetData(griddata);
     frame->AddFigure(gridview);
+    frame->Show();
     frame->Interact();
     #endif
 }
