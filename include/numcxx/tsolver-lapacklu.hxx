@@ -72,6 +72,7 @@ namespace numcxx
     s << LU.LU() << std::endl;
     s << "IPiv:" << std::endl;
     s << LU.IPiv() << std::endl;
+    return s;
   }
 
 }

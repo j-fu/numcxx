@@ -31,6 +31,13 @@ namespace numcxx
     ///
     SimpleGrid(const Geometry &geometry, const char *triangle_flags);
 
+
+    /// 
+    /// Construct simple grid from array of x/y coordinats
+    /// 
+    SimpleGrid(const DArray1 & xcoord, const  DArray1 & ycoord);
+
+    
     /// Static constructor from reference to geometry
     static std::shared_ptr<SimpleGrid> create(const Geometry &geometry, const std::string triangle_flags) { return std::make_shared<SimpleGrid>(geometry,triangle_flags.c_str());}
 
