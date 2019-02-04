@@ -166,7 +166,6 @@ namespace numcxx
     if (geometry.regionpoints)
     {
       int nregs,nholes,ireg,ihole;
-      int i;
       nregs=nholes=0;
       if (!geometry.regionnumbers)
       {
@@ -176,7 +175,7 @@ namespace numcxx
       {
         throw std::runtime_error("numcxx: triangulate: Missing region volumes"); 
       }
-      for (i=0;i<geometry.regionnumbers->shape(0);i++)
+      for (long i=0;i<geometry.regionnumbers->shape(0);i++)
       {
         if ((*geometry.regionnumbers)(i)>=0)
           nregs++; 
@@ -190,7 +189,7 @@ namespace numcxx
       in.regionlist=(double*)malloc(4*nregs*sizeof(double));
       ireg=ihole=0;
             
-      for (i=0;i<geometry.regionnumbers->shape(0);i++)
+      for (long i=0;i<geometry.regionnumbers->shape(0);i++)
         if ((*geometry.regionnumbers)(i)>=0)
         {
           in.regionlist[ireg+0]=(*geometry.regionpoints)(i,0);
@@ -239,7 +238,7 @@ namespace numcxx
     // Furthermore, they are mandatory in our process, so we
     // set them to 0 if they are not available
     {
-      int *triattr,i;
+      int i;
             
       cellregions=std::make_shared<numcxx::TArray1<int>>(out.numberoftriangles);
       if (out.triangleattributelist)
@@ -264,4 +263,137 @@ namespace numcxx
     }
 
   }
+
+
+  /// 
+  /// Construct simple grid from array of x/y coordinats
+  ///
+
+  bool is_monotone(const DArray1 & x)
+  {
+    int nx=x.shape(0);
+    for (int i=1;i<nx;i++)
+    {
+      if (x(i)<x(i-1)) return false;
+    }
+    return true;
+  }
+
+  inline bool leq(double x, double x1, double x2)
+  {
+    if (x>x1) return false;
+    if (x>x2) return false;
+    return true;
+  }
+  
+  inline bool geq(double x, double x1, double x2)
+  {
+    if (x<x1) return false;
+    if (x<x2) return false;
+    return true;
+  }
+
+  inline void check_bface(int n1, int n2,
+                          double x1,double xn,
+                          double y1,double yn,
+                          DArray2& coord, IArray2& BFN, IArray1 & BFR,  
+                          int &ibf)
+  {
+    if (geq(x1,coord(n1,0),coord(n2,0))) { BFN(ibf,0)=n1; BFN(ibf,1)=n2; BFR(ibf)=4; ++ibf; return;}
+    if (leq(xn,coord(n1,0),coord(n2,0))) { BFN(ibf,0)=n1; BFN(ibf,1)=n2; BFR(ibf)=2; ++ibf; return;}
+    if (geq(y1,coord(n1,1),coord(n2,1))) { BFN(ibf,0)=n1; BFN(ibf,1)=n2; BFR(ibf)=1; ++ibf; return;}
+    if (leq(yn,coord(n1,1),coord(n2,1))) { BFN(ibf,0)=n1; BFN(ibf,1)=n2; BFR(ibf)=3; ++ibf; return;}
+  }                                                                                         
+  
+  
+  
+  SimpleGrid::SimpleGrid(const DArray1 & x, const  DArray1 & y)
+  {
+    int nx=x.shape(0);
+    int ny=y.shape(0);
+    assert(is_monotone(x));
+    assert(is_monotone(y));
+    
+    
+    double hmin=x(1)-x(0);
+    for (int i=0;i<nx-1;i++) if ((x(i+1)-x(i)) <hmin) hmin=x(i+1)-x(i);
+    for (int i=0;i<ny-1;i++) if ((y(i+1)-y(i)) <hmin) hmin=y(i+1)-y(i);
+    
+    assert(hmin>0.0);
+    double eps=1.0e-5*hmin;
+    
+    int nnodes=nx*ny;
+    int ncells=2*(nx-1)*(ny-1);
+    int nbfaces=2*(nx-1)+2*(ny-1);
+    
+    points=DArray2::create(nnodes,2);
+    cells=IArray2::create(ncells,3);
+    cellregions=IArray1::create(ncells);
+    bfaces=IArray2::create(nbfaces,2);
+    bfaceregions=IArray1::create(nbfaces);
+    
+    
+    auto & coord=*points;
+    int icoord=0;
+    for(int iy=0;iy<ny;iy++)
+      for (int ix=0;ix<nx;ix++)
+      {
+        coord(icoord,0)=x(ix);
+        coord(icoord,1)=y(iy);
+        icoord++;
+      }
+    assert(icoord==nnodes);
+    
+    auto & cn=*cells;
+    auto & cr=*cellregions;
+    int icell=0;
+    for(int iy=0;iy<ny-1;iy++)
+      for (int ix=0;ix<nx-1;ix++)
+      {
+	int ip=ix+iy*nx;
+	int p00 = ip;
+	int p10 = ip+1;
+        int p01 = ip  +nx;
+        int p11 = ip+1+nx;
+        
+        cn(icell,0)=p00;
+        cn(icell,1)=p10;
+        cn(icell,2)=p11;
+        cr(icell)=1;
+        icell++;
+        cn(icell,0)=p11;
+        cn(icell,1)=p01;
+        cn(icell,2)=p00;
+        cr(icell)=1;
+        icell++;
+        
+      }
+    assert(icell==ncells);
+    
+    // lazy way to  create boundary grid
+    double x1=x(0)+eps;
+    double xn=x(nx-1)-eps;
+    double y1=y(0)+eps;
+    double yn=y(ny-1)-eps;
+    
+    int ibface=0;
+    // lazy but easy...
+    for (int icell=0;icell<ncells;icell++)
+    {
+      int n1=cn(icell,0);
+      int n2=cn(icell,1);
+      int n3=cn(icell,2);
+      check_bface(n1,n2,x1,xn,y1,yn,coord,*bfaces,*bfaceregions,ibface);
+      check_bface(n1,n3,x1,xn,y1,yn,coord,*bfaces,*bfaceregions,ibface);
+      check_bface(n2,n3,x1,xn,y1,yn,coord,*bfaces,*bfaceregions,ibface);
+    }
+    assert(ibface==nbfaces);
+  }
+  
+  
+  
 }
+
+
+
+
