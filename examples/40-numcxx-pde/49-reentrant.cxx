@@ -1,9 +1,8 @@
 ///
-/// \example 46-nonlin-fvm.cxx
+/// \example 41-stationary-heat-fv.cxx
 ///
-/// Demo for nonlinear diffusion with fvm
-///
-
+/// Finite volume method for stationary heat equation
+/// 
 #include <cstdio>
 #include <iostream>
 #include <ctime>
@@ -26,14 +25,13 @@ int main(void)
 {
   numcxx::Geometry Geometry;
   Geometry.set_points({
-      {-2,0},
-      {0,0},
-      {2,0},
-      {2,2},
-      {0.5,2},
-      {0,1},
-      {-0.5,2},
-      {-2,2}
+      {0.0,0.0},
+      {0.5,0.0},
+      {1.0,0.0},
+      {1.0,0.5},
+      {0.5,0.5},
+      {0.5,1.0},
+      {0.0,1.0},
     });
 
   Geometry.set_bfaces({
@@ -43,21 +41,17 @@ int main(void)
       {3,4},
       {4,5},
       {5,6},
-      {6,7},
-      {7,0},
-      {5,1},
+      {6,0},
         });
   
   
-  Geometry.set_bfaceregions({1,1,2,3,4,4,3,2,5});
+  Geometry.set_bfaceregions({1,2,3,4,5,6,7});
   
   Geometry.set_regionpoints({
-      {-0.5,1},
-      {0.5,1}
+      {0.1, 0.1}
     });
-  Geometry.set_regionnumbers({1,2});
-  double vol=0.001;
-  Geometry.set_regionvolumes({vol,vol});
+  Geometry.set_regionnumbers({1});
+  Geometry.set_regionvolumes({0.001});
   
   
   
@@ -65,61 +59,40 @@ int main(void)
   
   
   
-  numcxx::DArray1 bcfac(8);
-  numcxx::DArray1 bcval(8);
+  numcxx::DArray1 bcfac(9);
+  numcxx::DArray1 bcval(9);
   bcfac=0;
   bcval=0;
   bcfac(4)=fvm2d::Dirichlet;
-  bcfac(1)=fvm2d::Dirichlet;
   bcval(4)=1.0;
+
+  bcfac(5)=fvm2d::Dirichlet;
+  bcval(5)=1.0;
+
+  bcfac(1)=fvm2d::Dirichlet;
   bcval(1)=0.0;
+
+  bcfac(7)=fvm2d::Dirichlet;
+  bcval(7)=0.0;
+
 
   auto nnodes=grid.npoints();
 
   numcxx::DArray1 source(nnodes);
+  numcxx::DArray1 kappa(nnodes);
+  kappa=1;
   source=0;
 
-  auto fkappa = [](double u, double &kappa,double &dkappa  ) 
-    { 
-      kappa=0.001+1000.0*u*u*u*u*u*u;
-      dkappa=6000.0*u*u*u*u*u; 
-    };
-  
-
   numcxx::DSparseMatrix SGlobal(nnodes,nnodes);
-  numcxx::DSolverUMFPACK Solver(SGlobal);
-
   numcxx::DArray1 Rhs(nnodes);
   numcxx::DArray1 Sol(nnodes);
-  numcxx::DArray1 Res(nnodes);
-  numcxx::DArray1 Upd(nnodes);
-
-  Sol=0.0;
-  fvm2d::initialize_bc(grid,bcval,Sol);
-
   
-
-  int iter=0;
-  double norm=1.0;
-  double oldnorm=1.0;
-  double d=0.1;
-  double ddelta=1.2;
+  fvm2d::assemble_heat_problem(grid,bcfac,bcval,source,kappa,SGlobal, Rhs);
+  numcxx::DSolverUMFPACK Solver(SGlobal);
   
+  Solver.update(SGlobal);
+  Solver.solve(Sol,Rhs);
   
-  while (iter<1000 && norm >1.0e-13)
-  {
-    fvm2d::assemble_and_apply_nonlinear_heat(grid,bcfac,bcval, source,fkappa, SGlobal,  Sol, Res);
-    Solver.update(SGlobal);
-    Solver.solve(Upd,Res);
-    oldnorm=norm;
-    norm=numcxx::norm2(Upd);
-    printf("iter=%d norm=%8.4e contract=%8.5e d=%8.5e\n", iter,norm,norm/oldnorm,d);
-    Sol=Sol-d*Upd;
-    iter++;
-    d= std::min(1.0, d*ddelta);
-  }
-
-
   
 #ifdef VTKFIG
   auto griddata=numcxx::vtkfigDataSet(grid);

@@ -21,6 +21,18 @@ namespace fvm2d
     const numcxx::DArray1& Kappa,   // Array of heat coefficient values (per node)
     numcxx::DSparseMatrix &SGlobal, // Global stiffness matrix
     numcxx::DArray1 &Rhs);          // Right hand side
+
+  void  assemble_transient_heat_problem(
+    const numcxx::SimpleGrid &grid,
+    const numcxx::DArray1& bcfac,
+    const numcxx::DArray1& bcval,
+    const numcxx::DArray1& source,
+    const numcxx::DArray1& kappa,
+    double tau, // time step size
+    numcxx::DArray1 &OldSol,
+    numcxx::DSparseMatrix &SGlobal,
+    numcxx::DArray1 &Rhs);
+
   
   void  assemble_and_apply_nonlinear_heat(
     const numcxx::SimpleGrid &grid,
