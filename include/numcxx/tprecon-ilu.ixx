@@ -7,7 +7,7 @@ namespace numcxx
   inline TPreconILU<T>::TPreconILU(const std::shared_ptr<TSparseMatrix<T>> pMatrix)
   {
     pInvDiag=std::make_shared<TArray1<T>>(pMatrix->shape(0));
-    pDiagIdx=std::make_shared<TArray1<int>>(pMatrix.shape(0));
+    pDiagIdx=std::make_shared<TArray1<int>>(pMatrix->shape(0));
     update(*pMatrix);
   }
 
@@ -35,7 +35,7 @@ namespace numcxx
     pA=M.pA;
     pIA=M.pIA;
     pJA=M.pJA;
-
+    
     auto & A=*pA;
     auto & IA=*pIA;
     auto & JA=*pJA;

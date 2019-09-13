@@ -215,6 +215,70 @@ namespace fvm2d
   
 
 
+  void  assemble_transient_heat_problem(
+    const numcxx::SimpleGrid &grid,
+    const numcxx::DArray1& bcfac,
+    const numcxx::DArray1& bcval,
+    const numcxx::DArray1& source,
+    const numcxx::DArray1& kappa,
+    double tau, // time step size
+    numcxx::DArray1 &OldSol,
+    numcxx::DSparseMatrix &SGlobal,
+    numcxx::DArray1 &Rhs)
+  {
+
+    auto ndim=grid.spacedim();      // space dimension
+    assert(ndim==2);
+    auto points=grid.get_points(); // Array of global nodes
+    auto cells=grid.get_cells();   // Local-global dof map
+
+    int npoints=grid.npoints();
+    int ncells=grid.ncells();
+    double vol=0.0;
+
+    // this needs to correspond to the edge indices
+    numcxx::IArray2 edgenodes{{1,2},{0,2},{0,1}};
+
+    const int nnodes_per_cell=3;
+    const int nedges_per_cell=3;
+    numcxx::DArray1 epar(nnodes_per_cell);
+    numcxx::DArray1 npar(nedges_per_cell);
+    Rhs=0.0;
+    SGlobal(0,0)=0;
+    SGlobal.clear();
+    
+    // Loop over all elements (cells) of the triangulation
+    for (int icell=0; icell<ncells; icell++)
+    {
+
+      compute_local_formfactors(icell, points,cells,epar,npar, vol);
+      for (int inode=0;inode<nnodes_per_cell;inode++)
+      {
+        int k=cells(icell,inode);
+        SGlobal(k,k)+=npar(inode)/tau;
+        Rhs(k)+=(source(k)+OldSol(k)/tau)*npar(inode);
+      }
+      
+      for (int iedge=0;iedge<nedges_per_cell;iedge++)
+      {
+        int k0=cells(icell,edgenodes(iedge,0));
+        int k1=cells(icell,edgenodes(iedge,1));
+        
+        // Assemble fluxes with edge averaged diffusion
+        // coefficients into global matrix
+        SGlobal(k0,k0)+=epar(iedge)*0.5*(kappa(k0)+kappa(k1));
+        SGlobal(k0,k1)-=epar(iedge)*0.5*(kappa(k0)+kappa(k1));
+        SGlobal(k1,k0)-=epar(iedge)*0.5*(kappa(k0)+kappa(k1));
+        SGlobal(k1,k1)+=epar(iedge)*0.5*(kappa(k0)+kappa(k1));
+      }
+    }    
+    assemble_bc(grid, bcfac, bcval, SGlobal, Rhs);
+    SGlobal.flush();
+  }
+  
+
+  
+
 
   void  assemble_and_apply_nonlinear_heat(
     const numcxx::SimpleGrid &grid,

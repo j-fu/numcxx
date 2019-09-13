@@ -10,7 +10,7 @@
 #include <cmath>
 #include <numcxx/numcxx.hxx>
 #include <numcxx/simplegrid.hxx>
-#include <numcxx/fem2d.hxx>
+#include <numcxx/fvm2d.hxx>
 #ifdef VTKFIG
 #include "numcxx/vtkfig-simplegrid.hxx"
 #endif
@@ -27,11 +27,7 @@ int main(void)
   // Parameters to test
   double h=0.05;    // Space step size
   double tau=0.05;  // Time step size
-  double theta=1.0; // Implicit Euler vs CN vs explicit Euler
   double T=3.0;   // Length of time interval
-  bool lump=true;  // Mass lumping
-
-
 
 
   ///////////////////////////////////////////////////////
@@ -96,8 +92,8 @@ int main(void)
   bcfac=0;
   bcval=0;
 
-  bcfac(3)=fem2d::Dirichlet;
-  bcfac(1)=fem2d::Dirichlet;
+  bcfac(3)=fvm2d::Dirichlet;
+  bcfac(1)=fvm2d::Dirichlet;
   bcval(3)=1.0;
   bcval(1)=0.0;
 
@@ -121,18 +117,10 @@ int main(void)
   for (int n=0;n<N;n++)
   {
     OldSol=Sol;
-    fem2d::assemble_transient_heat_problem(grid,bcfac,bcval,source,kappa,tau,theta, lump, OldSol, SGlobal, Rhs);
+    fvm2d::assemble_transient_heat_problem(grid,bcfac,bcval,source,kappa,tau,OldSol, SGlobal, Rhs);
     
-    if (theta>0.0 || !lump)
-    {
-      Solver.update(SGlobal);
-      Solver.solve(Sol,Rhs);
-    }
-    else
-    {
-      for (int i=0;i<Sol.size();i++)
-       Sol(i)=Rhs(i)/SGlobal(i,i);
-    }
+    Solver.update(SGlobal);
+    Solver.solve(Sol,Rhs);
     
 #ifdef VTKFIG
     
